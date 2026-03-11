@@ -19,6 +19,9 @@ importers:
       '@ddd/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@ddd/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       next:
         specifier: 16.1.6
         version: 16.1.6(@babel/core@7.29.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -85,6 +88,19 @@ importers:
       drizzle-kit:
         specifier: ^0.31.9
         version: 0.31.9
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/ui:
+    dependencies:
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+    devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.2.14
       typescript:
         specifier: ^5.9.3
         version: 5.9.3

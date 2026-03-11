@@ -3,7 +3,9 @@
   "compilerOptions": {
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@ddd/ui": ["../../packages/ui/index.ts"],
+      "@ddd/ui/*": ["../../packages/ui/*"]
     }
   },
   "include": [
