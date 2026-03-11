@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "./dist",
+    "paths": {}
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist", "drizzle"]
+}

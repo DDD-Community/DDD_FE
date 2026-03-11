@@ -1,26 +1,14 @@
 {
-  "name": "ddd-admin",
-  "version": "0.1.0",
+  "name": "ddd-monorepo",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev:admin": "pnpm --filter @ddd/admin dev",
+    "dev:web":   "pnpm --filter @ddd/web dev",
+    "build:admin": "pnpm --filter @ddd/admin build",
+    "db:generate": "pnpm --filter @ddd/db db:generate",
+    "db:migrate":  "pnpm --filter @ddd/db db:migrate",
+    "db:push":     "pnpm --filter @ddd/db db:push",
+    "db:studio":   "pnpm --filter @ddd/db db:studio"
   },
-  "dependencies": {
-    "next": "16.1.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  }
+  "engines": { "node": ">=20", "pnpm": ">=9" }
 }
