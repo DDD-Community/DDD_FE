@@ -3,36 +3,37 @@ import {
   updateApplicationStatus,
   createMember,
 } from "@ddd/db";
+import { ERROR_CODE } from "../errors";
 
 export async function passApplication(applicationId: string) {
-  const app = await getApplicationById(applicationId);
-  if (!app) throw new Error("APPLICATION_NOT_FOUND");
-  if (app.status === "PASSED") throw new Error("ALREADY_PASSED");
-  if (app.status === "FAILED") throw new Error("ALREADY_FAILED");
+  const application = await getApplicationById(applicationId);
+  if (!application) throw new Error(ERROR_CODE.APPLICATION_NOT_FOUND);
+  if (application.status === "PASSED") throw new Error(ERROR_CODE.ALREADY_PASSED);
+  if (application.status === "FAILED") throw new Error(ERROR_CODE.ALREADY_FAILED);
 
   await updateApplicationStatus(applicationId, "PASSED");
   await createMember({
-    applicationId: app.id,
-    seasonId: app.seasonId,
-    name: app.name,
-    email: app.email,
-    phone: app.phone,
+    applicationId: application.id,
+    seasonId: application.seasonId,
+    name: application.name,
+    email: application.email,
+    phone: application.phone,
   });
 }
 
 export async function failApplication(applicationId: string) {
-  const app = await getApplicationById(applicationId);
-  if (!app) throw new Error("APPLICATION_NOT_FOUND");
-  if (app.status === "PASSED") throw new Error("ALREADY_PASSED");
-  if (app.status === "FAILED") throw new Error("ALREADY_FAILED");
+  const application = await getApplicationById(applicationId);
+  if (!application) throw new Error(ERROR_CODE.APPLICATION_NOT_FOUND);
+  if (application.status === "PASSED") throw new Error(ERROR_CODE.ALREADY_PASSED);
+  if (application.status === "FAILED") throw new Error(ERROR_CODE.ALREADY_FAILED);
 
   await updateApplicationStatus(applicationId, "FAILED");
 }
 
 export async function moveToInterview(applicationId: string) {
-  const app = await getApplicationById(applicationId);
-  if (!app) throw new Error("APPLICATION_NOT_FOUND");
-  if (app.status !== "RECEIVED") throw new Error("INVALID_STATUS_TRANSITION");
+  const application = await getApplicationById(applicationId);
+  if (!application) throw new Error(ERROR_CODE.APPLICATION_NOT_FOUND);
+  if (application.status !== "RECEIVED") throw new Error(ERROR_CODE.INVALID_STATUS_TRANSITION);
 
   await updateApplicationStatus(applicationId, "INTERVIEW");
 }

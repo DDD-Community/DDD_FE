@@ -1,15 +1,16 @@
 import { getMemberById, updateMember } from "@ddd/db";
 import type { Member } from "@ddd/db";
+import { ERROR_CODE } from "../errors";
 
 export async function assignTeam(memberId: string, team: Member["team"]) {
-  const m = await getMemberById(memberId);
-  if (!m) throw new Error("MEMBER_NOT_FOUND");
+  const member = await getMemberById(memberId);
+  if (!member) throw new Error(ERROR_CODE.MEMBER_NOT_FOUND);
   return updateMember(memberId, { team });
 }
 
 export async function deactivateMember(memberId: string) {
-  const m = await getMemberById(memberId);
-  if (!m) throw new Error("MEMBER_NOT_FOUND");
-  if (!m.isActive) throw new Error("ALREADY_INACTIVE");
+  const member = await getMemberById(memberId);
+  if (!member) throw new Error(ERROR_CODE.MEMBER_NOT_FOUND);
+  if (!member.isActive) throw new Error(ERROR_CODE.ALREADY_INACTIVE);
   return updateMember(memberId, { isActive: false });
 }
