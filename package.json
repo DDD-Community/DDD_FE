@@ -6,5 +6,8 @@
     "dev:web":   "pnpm --filter @ddd/web dev",
     "build:admin": "pnpm --filter @ddd/admin build"
   },
-  "engines": { "node": ">=20", "pnpm": ">=9" }
+  "engines": { "node": ">=20", "pnpm": ">=9" },
+  "pnpm": {
+    "onlyBuiltDependencies": ["@swc/core", "esbuild", "sharp", "unrs-resolver"]
+  }
 }

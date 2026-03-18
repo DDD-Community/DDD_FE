@@ -3,9 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./tokens": "./tokens/index.ts",
+    "./tokens/*": "./tokens/*.css.ts"
   },
   "dependencies": {
+    "@vanilla-extract/css": "^1.17.0",
     "react": "19.2.3"
   },
   "devDependencies": {
