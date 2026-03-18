@@ -9,9 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@auth/drizzle-adapter": "^1.11.1",
-    "@ddd/core": "workspace:*",
-    "@ddd/db": "workspace:*",
     "@ddd/ui": "workspace:*",
     "next": "16.1.6",
     "next-auth": "5.0.0-beta.30",
