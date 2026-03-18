@@ -4,7 +4,9 @@
   "scripts": {
     "dev:admin": "pnpm --filter @ddd/admin dev",
     "dev:web":   "pnpm --filter @ddd/web dev",
-    "build:admin": "pnpm --filter @ddd/admin build"
+    "build:admin": "pnpm --filter @ddd/admin build",
+    "storybook": "pnpm --filter @ddd/ui storybook",
+    "test:ui": "pnpm --filter @ddd/ui test"
   },
   "engines": { "node": ">=20", "pnpm": ">=9" },
   "pnpm": {
