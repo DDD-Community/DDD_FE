@@ -1,62 +1,133 @@
 # 코드 규약 및 철학 (Code Rules & Philosophy)
 
 ## 1. 목적 및 핵심 철학
+
 - 본 문서는 프로젝트의 실행 규약이자 코드 작성 철학을 담은 문서이다.
 - 구현, 리뷰, 테스트, PR 승인 판단은 모두 본 문서를 기준으로 한다.
 
-**[ 9대 핵심 개발 철학 ]**
+**[ 7대 핵심 개발 철학 ]**
+
 1. **return 연산 제한**: `return`문에는 연산이나 복잡한 식을 최대한 배제하고 읽기 깔끔하게 작성한다.
 2. **코드 흐름 (Top-Down)**: 코드는 고수준(정책)에서 저수준(구현 세부사항) 순서로 읽기 쉽게 작성한다.
-3. **응집도와 결합도**: 도메인 모듈 내의 응집도는 높이고, 외부 모듈/계층 간의 결합도는 확고하게 낮춘다.
-4. **선언적 조건문**: 제어문(`if`)이 복잡해질 경우 가독성을 위해 `ts-pattern`의 `match`를 적극 활용한다.
-5. **화살표 함수 지향**: 가독성이 명백한 경우 일반 `function` 대신 `const` 화살표 함수로 개발한다.
-6. **Self-Documenting Code**: 코드를 설명하는 주석(어떻게 동작하는지)은 배제하고, 명확한 네이밍으로 표현한다. (단, 도메인 용어나 비즈니스 로직 상 영어로 설명하기 너무 어렵거나 의미가 퇴색되는 경우, 과감히 **한글 변수명이나 Enum 값**을 사용하는 것을 허용한다.)
+3. **선언적 조건문**: 제어문(`if`)이 복잡해질 경우 가독성을 위해 맵 기반 분기 (lookup table)를 적극 활용한다.
+4. **화살표 함수 지향**: 가독성이 명백한 경우 일반 `function` 대신 `const` 화살표 함수로 개발한다.
+5. **Self-Documenting Code**: 코드를 설명하는 주석(어떻게 동작하는지)은 배제하고, 명확한 네이밍으로 표현한다. (단, 도메인 용어나 비즈니스 로직 상 영어로 설명하기 너무 어렵거나 의미가 퇴색되는 경우, 과감히 **한글 변수명이나 Enum 값**을 사용하는 것을 허용한다.)
    - **축약어 지양**: 변수명은 의미를 알 수 없는 축약어(예: `m`, `app`, `req`) 대신 의도가 명확히 드러나는 풀네임(예: `member`, `application`, `request`)을 지향한다.
-7. **복잡한 합성 타입 배제**: `Pick`, `Omit` 등이 과도하게 얽힌 어려운 유틸리티 합성 타입 사용을 지양한다.
-8. **관심사 분리**: 각 함수/모듈은 단일 책임을 가지며, 역할이 섞이지 않도록 관심사를 철저히 분리한다.
-9. **비즈니스와 DB 격리**: 비즈니스 로직(Core)과 데이터베이스 접근 로직(DB)은 물리적(패키지), 논리적으로 완벽히 분리하여 섞어 쓰지 않는다.
+6. **복잡한 합성 타입 배제**: `Pick`, `Omit` 등이 과도하게 얽힌 어려운 유틸리티 합성 타입 사용을 지양한다.
+7. **관심사 분리**: 각 함수/모듈/컴포넌트는 단일 책임을 가지며, 역할이 섞이지 않도록 관심사를 철저히 분리한다.
 
 ---
 
 ## 2. 규칙 레벨
+
 - `MUST`: 반드시 준수
 - `SHOULD`: 특별한 이유가 없으면 준수
 
 ## 3. MUST 규칙
 
-### 3.1 아키텍처/설계 (Layered Architecture)
-1. **계층 분리**: `Presentation` → `Application` → `Service` → `Repository` 계층 역할을 철저히 분리한다. (철학 8, 9 반영)
-2. **패키지 의존성**: 의존 방향은 바깥에서 안쪽으로만 허용한다. (`apps/*` -> `packages/core` -> `packages/db`)
-3. **직하방 호출**: 각 계층은 바로 아래 계층만 호출하며, 계층을 건너뛰지 않는다. 
-   - *단, 권한 체크나 로직이 전혀 없는 순수 읽기(Read) 전용 화면(Page)에서는 `db` 모듈 직접 호출을 예외적으로 허용한다.*
-4. **Presentation (`app/**/page.tsx`)**: UI 렌더링만 담당한다.
-5. **Application (`app/**/_actions/*.ts`)**: Server Action(BFF)으로 구성되며, **비즈니스 로직을 직접 작성하지 않는다.** 인가(Session) 확인과 입력값 검증(Zod)만 수행한 뒤 Service 계층을 호출한다.
-6. **Service (`packages/core`)**: 프레임워크(Next.js, NextAuth)나 DB ORM(Drizzle) 객체에 직접 의존하지 않고, 순수 비즈니스 로직과 Zod 스키마 정의만 담당한다.
-7. **Repository (`packages/db`)**: Drizzle ORM 기반 순수 CRUD만 담당하며, **DB 통신 외의 어떤 비즈니스 판단도 하지 않는다.** DB 예외(Unique Constraint 등)만 포착하여 서비스 계층이 이해할 수 있는 에러로 던진다.
-8. **API Routes 제한**: API Routes(`app/api/**`)는 웹훅, 구글 캘린더 등 **외부 서비스 콜백**에만 사용하고, 내부 통신은 모두 Server Action으로 처리한다.
+### 3.1 프로젝트 구조
 
-### 3.2 코드 작성 (Next.js & Typescript)
-1. **타입 안정성**: `any`는 금지하고 `unknown` + Zod 스키마 검증(`safeParse`)으로 타입을 안전하게 좁힌다.
-2. **매직 넘버/스트링**: 의미를 알 수 없는 숫자나 문자열은 상수 또는 상태(Enum)로 분리한다.
-3. **DTO와 DB 모델**: DB 쿼리 반환값과 입력값(Zod) 정보를 억지로 변환/매핑(Entity 화)하려 하지 말고 자연스럽게 사용한다.
-4. **BFF 응답 포맷**: Server Action에서 클라이언트로 반환할 때 명시적 공통 응답 포맷(`{ success: boolean, data?: any, error?: string }`)을 준수한다.
-5. **BFF 로직 공용화**: Server Action마다 반복되는 세션 체크, 스키마 검증, 에러 캐치 로직은 단일 **유틸리티/래퍼 함수(actionClient 등)**를 통해 공용화한다.
+1. **패키지 의존성**: 의존 방향은 앱에서 패키지로만 허용한다. (`apps/*` → `packages/ui`)
+2. **공통 컴포넌트**: 여러 앱에서 사용하는 컴포넌트는 `@ddd/ui`에 작성한다.
+3. **앱 전용 컴포넌트**: 특정 앱에서만 사용하는 컴포넌트는 해당 앱의 `components/`에 작성한다.
 
-### 3.3 예외/로깅/트랜잭션
-1. **Service 예외 던지기**: Service 계층(`packages/core`)에서 HTTP 예외 객체를 직접 만들지 않는다. 비즈니스 예외는 도메인 전용 커스텀 예외 클래스로 던진다. (예: `throw new AppError(ERRORS.ALREADY_PASSED)`)
-2. **에러 처리 공용화**: Application 계층(Server Action)은 Service 계층에서 던져진 `AppError`를 Catch하여, 안에 담긴 `error.message`와 `error.code`를 손쉽게 추출해 클라이언트에 통일된 포맷(`{ success: false, error: ... }`)으로 응답한다.
-3. **트랜잭션**: 트랜잭션 경계는 비즈니스 로직(Service 레이어)에서 관리한다.
-4. **로그 정책**: 로그는 구조화하고 민감정보(토큰, 비밀번호, 개인정보)는 절대 남기지 않는다.
+### 3.2 React 컴포넌트
 
-### 3.4 테스트
-1. 테스트 단위는 **Service Layer(`packages/core`)의 public 메서드** 기준으로 작성한다.
-2. Application/Presentation 계층의 경우 모든 코드를 유닛 테스트하기보다 **핵심 권한/인가 우회 시나리오** 검증에 집중한다.
-3. 버그 수정 시 반드시 해당 버그를 재현하고 검증하는 회귀 테스트를 추가한다.
+1. **컴포넌트 분리 기준**: 컴포넌트는 재사용 가능성, 복잡도, 관심사에 따라 적절히 분리한다.
+2. **Props 타입 정의**: 컴포넌트 Props는 `interface`로 정의하고, 컴포넌트명 + `Props` 형식을 따른다.
+   ```tsx
+   interface ButtonProps {
+     variant: "primary" | "secondary";
+     children: React.ReactNode;
+   }
+   ```
+3. **컴포넌트 선언**: 화살표 함수로 선언하고, `export`는 named export를 기본으로 한다.
+   ```tsx
+   export const Button = ({ variant, children }: ButtonProps) => {
+     return <button className={styles[variant]}>{children}</button>;
+   };
+   ```
+4. **Server/Client 컴포넌트 구분**: Next.js App Router에서 Client Component는 파일 최상단에 `'use client'`를 명시한다. 불필요한 `'use client'`는 지양한다.
 
-## 4. PR 체크리스트
-- [ ] Server Action 내부에 비즈니스 정책이 하드코딩되어 있지 않은가? (관심사 분리)
-- [ ] Repository에 비즈니스적인 분기(if)나 정책이 들어있진 않은가? (비즈니스/DB 분리)
-- [ ] API Routes가 외부 연동(웹훅/콜백) 외의 일반적인 통신 용도로 쓰이지 않았는가?
-- [ ] 에러 발생 시 공통응답포맷과 에러 맵핑(Dictionary)을 통해 클라이언트 친화적인 메시지로 반환되는가?
+### 3.3 커스텀 훅
+
+1. **네이밍**: 커스텀 훅은 `use` 접두사를 사용한다. (예: `useAuth`, `useMember`)
+2. **단일 책임**: 하나의 훅은 하나의 관심사만 다룬다.
+3. **반환값**: 객체 구조 분해가 가능하도록 객체로 반환한다.
+
+   ```tsx
+   const useAuth = () => {
+     const [user, setUser] = useState<User | null>(null);
+     const isAuthenticated = user !== null;
+
+     return { user, isAuthenticated, setUser };
+   };
+   ```
+
+### 3.4 상태 관리
+
+1. **로컬 상태 우선**: 가능한 컴포넌트 로컬 상태(`useState`)를 우선 사용한다.
+2. **Props Drilling 회피**: 3단계 이상 props가 전달되면 Context 또는 상태 관리 라이브러리 도입을 검토한다.
+3. **서버 상태 분리**: API 응답 데이터(서버 상태)와 UI 상태는 명확히 구분한다.
+
+### 3.5 스타일링 (vanilla-extract)
+
+1. **파일 위치**: 스타일 파일은 컴포넌트와 같은 폴더에 `*.css.ts` 형식으로 작성한다.
+2. **디자인 토큰**: 색상, 타이포그래피, 스페이싱은 `@ddd/ui/tokens`의 토큰을 사용한다.
+3. **네이밍**: 스타일 변수는 용도가 명확히 드러나도록 네이밍한다.
+
+   ```tsx
+   // button.css.ts
+   import { style } from "@vanilla-extract/css";
+   import { colors } from "@ddd/ui/tokens";
+
+   export const primaryButton = style({
+     backgroundColor: colors.primary,
+   });
+   ```
+
+### 3.6 API 통신
+
+1. **타입 정의**: API 요청/응답 타입은 명시적으로 정의한다.
+2. **에러 처리**: API 호출 시 에러 상황을 반드시 처리한다.
+3. **로딩 상태**: 비동기 작업 시 로딩 상태를 사용자에게 표시한다.
+
+### 3.7 코드 작성 (TypeScript)
+
+1. **타입 안정성**: `any`는 금지하고 `unknown` + 타입 가드로 타입을 안전하게 좁힌다.
+2. **매직 넘버/스트링**: 의미를 알 수 없는 숫자나 문자열은 상수 또는 Enum으로 분리한다.
+3. **Null 체크**: Optional Chaining(`?.`)과 Nullish Coalescing(`??`)을 적절히 활용한다.
+
+### 3.8 테스트
+
+1. **컴포넌트 테스트**: 사용자 상호작용 중심으로 테스트를 작성한다.
+2. **훅 테스트**: 커스텀 훅은 `@testing-library/react`의 `renderHook`을 사용한다.
+3. **버그 수정 시**: 해당 버그를 재현하고 검증하는 회귀 테스트를 추가한다.
+
+---
+
+## 4. SHOULD 규칙
+
+### 4.1 성능
+
+1. **메모이제이션**: `useMemo`, `useCallback`은 실제 성능 문제가 있을 때만 사용한다.
+2. **이미지 최적화**: Next.js `Image` 컴포넌트를 사용한다.
+3. **번들 크기**: 불필요한 의존성 추가를 지양하고, tree-shaking을 고려한다.
+
+### 4.2 접근성
+
+1. **시맨틱 HTML**: 적절한 HTML 요소를 사용한다. (`<button>`, `<nav>`, `<main>` 등)
+2. **키보드 접근성**: 인터랙티브 요소는 키보드로 접근 가능해야 한다.
+3. **대체 텍스트**: 이미지에는 의미 있는 `alt` 텍스트를 제공한다.
+
+---
+
+## 5. PR 체크리스트
+
+- [ ] 컴포넌트가 단일 책임 원칙을 따르는가? (관심사 분리)
+- [ ] 공통으로 사용될 컴포넌트가 `@ddd/ui`에 있는가?
 - [ ] `any`, 어려운 `Pick/Omit` 합성 구조, 코드를 설명(번역)하는 주석이 없는가?
 - [ ] `return` 문 안에 복잡한 연산이 숨어있진 않은가?
+- [ ] Client Component에 불필요한 `'use client'`가 있지 않은가?
+- [ ] 디자인 토큰을 사용하여 일관된 스타일을 적용했는가?
+- [ ] API 에러 상황과 로딩 상태를 적절히 처리했는가?
