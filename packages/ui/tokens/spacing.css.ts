@@ -6,21 +6,21 @@ export const vars = createGlobalTheme(":root", {
     "1": "0.25rem",  // 4px
     "2": "0.5rem",   // 8px
     "3": "0.75rem",  // 12px
-    "4": "0.9rem",   // ~14px — item separation (invisible gutter)
-    "5": "1.1rem",   // ~18px — dense section gap
-    "6": "1.5rem",   // 24px
-    "8": "2rem",     // 32px
-    "10": "2.5rem",  // 40px — min interactive target
-    "12": "3rem",    // 48px
-    "16": "3.5rem",  // 56px — major section breathing room
-    "20": "5rem",    // 80px
-    "24": "6rem",    // 96px
+    "4": "1.4rem",   // ~22px — list item separation
+    "5": "1.7rem",   // ~27px — min container internal padding
+    "6": "2.25rem",  // 36px — content block gap
+    "8": "3rem",     // 48px — section divider
+    "10": "4rem",    // 64px
+    "12": "4.5rem",  // 72px
+    "16": "5.5rem",  // 88px — top-level section breathing room
+    "20": "7rem",    // 112px
+    "24": "8rem",    // 128px
   },
   radius: {
     sm: "0.25rem",   // 4px
-    md: "0.375rem",  // 6px
-    lg: "0.5rem",    // 8px — buttons / cards
-    xl: "0.75rem",   // 12px
+    md: "0.5rem",    // 8px
+    lg: "1rem",      // 16px — buttons / cards
+    xl: "1.5rem",    // 24px — large containers
     full: "9999px",  // chips / pills
   },
 });

@@ -2,22 +2,24 @@ import { createGlobalTheme } from "@vanilla-extract/css";
 
 export const vars = createGlobalTheme(":root", {
   shadow: {
-    // No shadow — surface tonal layering handles depth
     none: "none",
-    // Floating elements: modals, tooltips (24–40px blur, on-surface at 4%)
-    floating:
-      "0 8px 24px rgba(25, 28, 30, 0.04), 0 16px 40px rgba(25, 28, 30, 0.04)",
-    // Subtle hover lift
-    hover: "0 4px 12px rgba(25, 28, 30, 0.06)",
+    // Floating elements — large blur, low opacity, tinted (not pure black)
+    sm: "0 4px 16px rgba(26, 27, 31, 0.04)",
+    md: "0 8px 32px rgba(26, 27, 31, 0.06)",
+    lg: "0 16px 64px rgba(26, 27, 31, 0.08)",
   },
   blur: {
-    // Glassmorphism backdrop — modals, global search command
-    glass: "12px",
+    // Glassmorphism — 20–40px range
+    sm: "20px",
+    md: "32px",
+    lg: "40px",
   },
   opacity: {
-    // surface-container-lowest at 80% for glassmorphism overlays
+    // Floating elements: surface_container_lowest at 80%
     glass: "0.8",
-    // ghost border — outline-variant when border is strictly required
-    ghostBorder: "0.2",
+    // Nav / modal overlays: surface_bright at 70%
+    overlay: "0.7",
+    // Ghost border fallback — outline_variant at 15%
+    ghostBorder: "0.15",
   },
 });

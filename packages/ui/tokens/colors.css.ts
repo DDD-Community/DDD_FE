@@ -6,13 +6,12 @@ export const vars = createGlobalTheme(":root", {
     primary: "#005bb2",
     primaryContainer: "#0073df",
     onPrimary: "#ffffff",
-    primaryFixed: "#d6e3ff",
 
-    // Secondary
-    secondaryContainer: "#dde6f5",
-    onSecondaryContainer: "#001e36",
+    // Secondary (cool violet tint)
+    secondaryContainer: "#e8e3f0",
+    onSecondaryContainer: "#1d1a2b",
 
-    // Tertiary (Warning / IT Alert)
+    // Tertiary (warning)
     tertiaryContainer: "#bf5500",
     onTertiaryContainer: "#ffffff",
 
@@ -22,20 +21,21 @@ export const vars = createGlobalTheme(":root", {
     onError: "#ffffff",
     onErrorContainer: "#410002",
 
-    // Surface Hierarchy — paper stack, no lines, only tonal shifts
-    surface: "#f7f9fb",
+    // Surface Hierarchy — violet-tinted paper stack
+    surface: "#faf9fe",
     surfaceContainerLowest: "#ffffff",
-    surfaceContainerLow: "#f2f4f6",
-    surfaceContainer: "#eaecee",
-    surfaceContainerHigh: "#e6e8ea",
-    surfaceContainerHighest: "#e0e2e4",
+    surfaceContainerLow: "#f4f3f8",
+    surfaceContainer: "#eeedf2",
+    surfaceContainerHigh: "#e9e7ed",
+    surfaceContainerHighest: "#e3e1e7",
+    surfaceBright: "#fdfcff",
 
     // On-Surface
-    onSurface: "#191c1e",
-    onSurfaceVariant: "#41474d",
+    onSurface: "#1a1b1f",
+    onSurfaceVariant: "#414754",
 
-    // Outline — ghost border only when strictly necessary
-    outline: "#72787e",
-    outlineVariant: "#c4c7c9",
+    // Outline — ghost border only, max 15% opacity
+    outline: "#6d7180",
+    outlineVariant: "#c1c6d6",
   },
 });
