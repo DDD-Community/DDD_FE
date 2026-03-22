@@ -2,18 +2,20 @@ import { createGlobalTheme } from "@vanilla-extract/css";
 
 export const vars = createGlobalTheme(":root", {
   font: {
-    sans: "'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    mono: "'Geist Mono', 'Menlo', monospace",
+    // Manrope — editorial authority for display & headlines
+    display: "'Manrope', sans-serif",
+    headline: "'Manrope', sans-serif",
+    // Inter — functional precision for body text
+    title: "'Inter', sans-serif",
+    body: "'Inter', sans-serif",
+    label: "'Inter', sans-serif",
   },
   fontSize: {
-    xs: "0.75rem",    // 12px
-    sm: "0.875rem",   // 14px
-    md: "1rem",       // 16px
-    lg: "1.125rem",   // 18px
-    xl: "1.25rem",    // 20px
-    "2xl": "1.5rem",  // 24px
-    "3xl": "1.875rem", // 30px
-    "4xl": "2.25rem", // 36px
+    displayLg: "3.5rem",    // 56px — large data milestones
+    headlineSm: "1.5rem",   // 24px — section titles / dashboard headers
+    titleMd: "1.125rem",    // 18px — card headings / list headers
+    bodyMd: "0.875rem",     // 14px — standard data / descriptions
+    labelSm: "0.6875rem",   // 11px — metadata / caps-lock tags
   },
   fontWeight: {
     regular: "400",
@@ -22,8 +24,14 @@ export const vars = createGlobalTheme(":root", {
     bold: "700",
   },
   lineHeight: {
-    tight: "1.25",
+    tight: "1.2",
     normal: "1.5",
     relaxed: "1.75",
+  },
+  letterSpacing: {
+    tight: "-0.02em",
+    normal: "0em",
+    wide: "0.05em",
+    wider: "0.08em",
   },
 });

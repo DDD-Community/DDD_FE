@@ -3,33 +3,39 @@ import { createGlobalTheme } from "@vanilla-extract/css";
 export const vars = createGlobalTheme(":root", {
   color: {
     // Primary
-    primary50: "#eef2ff",
-    primary100: "#e0e7ff",
-    primary500: "#6366f1",
-    primary600: "#4f46e5",
-    primary700: "#4338ca",
+    primary: "#005bb2",
+    primaryContainer: "#0073df",
+    onPrimary: "#ffffff",
+    primaryFixed: "#d6e3ff",
 
-    // Neutral
-    neutral0: "#ffffff",
-    neutral50: "#f9fafb",
-    neutral100: "#f3f4f6",
-    neutral200: "#e5e7eb",
-    neutral300: "#d1d5db",
-    neutral400: "#9ca3af",
-    neutral500: "#6b7280",
-    neutral600: "#4b5563",
-    neutral700: "#374151",
-    neutral800: "#1f2937",
-    neutral900: "#111827",
+    // Secondary
+    secondaryContainer: "#dde6f5",
+    onSecondaryContainer: "#001e36",
 
-    // Semantic
-    success: "#22c55e",
-    successSubtle: "#dcfce7",
-    warning: "#f59e0b",
-    warningSubtle: "#fef3c7",
-    error: "#ef4444",
-    errorSubtle: "#fee2e2",
-    info: "#3b82f6",
-    infoSubtle: "#dbeafe",
+    // Tertiary (Warning / IT Alert)
+    tertiaryContainer: "#bf5500",
+    onTertiaryContainer: "#ffffff",
+
+    // Error
+    error: "#ba1a1a",
+    errorContainer: "#ffdad6",
+    onError: "#ffffff",
+    onErrorContainer: "#410002",
+
+    // Surface Hierarchy — paper stack, no lines, only tonal shifts
+    surface: "#f7f9fb",
+    surfaceContainerLowest: "#ffffff",
+    surfaceContainerLow: "#f2f4f6",
+    surfaceContainer: "#eaecee",
+    surfaceContainerHigh: "#e6e8ea",
+    surfaceContainerHighest: "#e0e2e4",
+
+    // On-Surface
+    onSurface: "#191c1e",
+    onSurfaceVariant: "#41474d",
+
+    // Outline — ghost border only when strictly necessary
+    outline: "#72787e",
+    outlineVariant: "#c4c7c9",
   },
 });
