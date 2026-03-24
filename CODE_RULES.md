@@ -44,10 +44,9 @@
 3. **컴포넌트 선언**: 화살표 함수로 선언하고, `export`는 named export를 기본으로 한다.
    ```tsx
    export const Button = ({ variant, children }: ButtonProps) => {
-     return <button className={styles[variant]}>{children}</button>;
+     return <button className={cn(buttonVariants({ variant }))}>{children}</button>;
    };
    ```
-4. **Server/Client 컴포넌트 구분**: Next.js App Router에서 Client Component는 파일 최상단에 `'use client'`를 명시한다. 불필요한 `'use client'`는 지양한다.
 
 ### 3.3 커스텀 훅
 
@@ -70,20 +69,25 @@
 2. **Props Drilling 회피**: 3단계 이상 props가 전달되면 Context 또는 상태 관리 라이브러리 도입을 검토한다.
 3. **서버 상태 분리**: API 응답 데이터(서버 상태)와 UI 상태는 명확히 구분한다.
 
-### 3.5 스타일링 (vanilla-extract)
+### 3.5 스타일링 (Tailwind CSS)
 
-1. **파일 위치**: 스타일 파일은 컴포넌트와 같은 폴더에 `*.css.ts` 형식으로 작성한다.
-2. **디자인 토큰**: 색상, 타이포그래피, 스페이싱은 `@ddd/ui/tokens`의 토큰을 사용한다.
-3. **네이밍**: 스타일 변수는 용도가 명확히 드러나도록 네이밍한다.
+1. **클래스 병합**: 조건부 클래스 조합은 `cn()` 유틸리티(`clsx` + `tailwind-merge`)를 사용한다.
+2. **컴포넌트 변형**: 복수의 variant가 있는 컴포넌트는 `cva()`(class-variance-authority)로 정의한다.
+3. **디자인 토큰**: 색상, 타이포그래피, 스페이싱은 `@ddd/ui/tokens`에 정의된 Tailwind 테마 값을 사용한다. 임의의 하드코딩 값(`text-[13px]`, `bg-[#fff]`) 사용을 지양한다.
 
    ```tsx
-   // button.css.ts
-   import { style } from "@vanilla-extract/css";
-   import { colors } from "@ddd/ui/tokens";
-
-   export const primaryButton = style({
-     backgroundColor: colors.primary,
+   const buttonVariants = cva("rounded font-medium", {
+     variants: {
+       variant: {
+         primary: "bg-primary text-primary-foreground",
+         secondary: "bg-secondary text-secondary-foreground",
+       },
+     },
    });
+
+   export const Button = ({ variant, className, ...props }: ButtonProps) => {
+     return <button className={cn(buttonVariants({ variant }), className)} {...props} />;
+   };
    ```
 
 ### 3.6 API 통신
@@ -111,8 +115,7 @@
 ### 4.1 성능
 
 1. **메모이제이션**: `useMemo`, `useCallback`은 실제 성능 문제가 있을 때만 사용한다.
-2. **이미지 최적화**: Next.js `Image` 컴포넌트를 사용한다.
-3. **번들 크기**: 불필요한 의존성 추가를 지양하고, tree-shaking을 고려한다.
+2. **번들 크기**: 불필요한 의존성 추가를 지양하고, tree-shaking을 고려한다.
 
 ### 4.2 접근성
 
@@ -128,6 +131,5 @@
 - [ ] 공통으로 사용될 컴포넌트가 `@ddd/ui`에 있는가?
 - [ ] `any`, 어려운 `Pick/Omit` 합성 구조, 코드를 설명(번역)하는 주석이 없는가?
 - [ ] `return` 문 안에 복잡한 연산이 숨어있진 않은가?
-- [ ] Client Component에 불필요한 `'use client'`가 있지 않은가?
-- [ ] 디자인 토큰을 사용하여 일관된 스타일을 적용했는가?
+- [ ] 하드코딩된 스타일 값 없이 디자인 토큰을 사용했는가?
 - [ ] API 에러 상황과 로딩 상태를 적절히 처리했는가?
