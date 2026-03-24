@@ -29,8 +29,8 @@ export class ApiError extends Error {
     this.name = "ApiError";
     this.code = code;
   }
-
-  is(code: ErrorMessageKey): this is ApiError {
+  // 타입 가드 메서드 강화
+  is(code: ErrorMessageKey): this is ApiError & { code: typeof code } {
     return this.code === code;
   }
 }
