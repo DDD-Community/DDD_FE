@@ -15,9 +15,7 @@ type Story = StoryObj<typeof DDDLogo>;
 
 export const Default: Story = {
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    expect(
-      canvasElement.querySelector("[class*='spread']")
-    ).toBeInTheDocument();
+    const _canvas = within(canvasElement);
+    expect(canvasElement.querySelector("[class*='spread']")).toBeInTheDocument();
   },
 };
