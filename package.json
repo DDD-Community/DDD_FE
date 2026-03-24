@@ -2,14 +2,25 @@
   "name": "ddd-monorepo",
   "private": true,
   "scripts": {
+    "install:admin": "pnpm --filter @ddd/admin install",
+    "install:web": "pnpm --filter @ddd/web install",
     "dev:admin": "pnpm --filter @ddd/admin dev",
-    "dev:web":   "pnpm --filter @ddd/web dev",
+    "dev:web": "pnpm --filter @ddd/web dev",
     "build:admin": "pnpm --filter @ddd/admin build",
+    "build:web": "pnpm --filter @ddd/web build",
     "storybook": "pnpm --filter @ddd/ui storybook",
     "test:ui": "pnpm --filter @ddd/ui test"
   },
-  "engines": { "node": ">=20", "pnpm": ">=9" },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
   "pnpm": {
-    "onlyBuiltDependencies": ["@swc/core", "esbuild", "sharp", "unrs-resolver"]
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
   }
 }
