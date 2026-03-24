@@ -2,7 +2,7 @@ import { ApiError } from "./errors";
 import type { ApiResponse } from "./types";
 
 function getBaseUrl(): string {
-  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  const envUrl = import.meta.env.VITE_API_URL;
   if (envUrl && envUrl.trim() !== "") {
     return envUrl;
   }
