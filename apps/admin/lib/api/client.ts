@@ -57,7 +57,10 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     try {
       body = (await res.json()) as ApiResponse<T>;
     } catch (error) {
-      throw new ApiError("UNKNOWN_ERROR", "Failed to parse JSON response.");
+      throw new ApiError(
+        "UNKNOWN_ERROR",
+        error instanceof Error ? error.message : String(error),
+      );
     }
   } else {
     const text = await res.text().catch(() => "");

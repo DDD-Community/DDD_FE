@@ -1,6 +1,6 @@
-import type { ErrorMessageKey } from './errors';
+import type { ErrorMessageKey } from "./errors";
 
-type ResponseCode = ErrorMessageKey | 'SUCCESS';
+type ResponseCode = ErrorMessageKey | "SUCCESS";
 
 interface ResponseMeta {
   requestId?: string;

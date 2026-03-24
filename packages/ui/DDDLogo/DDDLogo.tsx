@@ -5,10 +5,7 @@ export const DDDLogo = () => {
   return (
     <div className={styles.relative}>
       {Array.from({ length: 3 }).map((_, index) => (
-        <div
-          key={index}
-          className={styles[`spread${["First", "Second", "Third"][index]}`]}
-        >
+        <div key={index} className={styles[`spread${["First", "Second", "Third"][index]}`]}>
           <D
             className={`${styles.dddLogo} ${styles[`${["first", "second", "third"][index]}Shadow`]}`}
             strokeColor="#909090"
