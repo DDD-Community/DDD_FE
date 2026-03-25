@@ -22,7 +22,7 @@ IT 사이드 프로젝트 동아리(DDD) 운영을 위한 프론트엔드 모노
 (root)
 ├── apps/
 │   ├── admin/        (@ddd/admin) — Vite + React, Tailwind CSS
-│   └── web/          (@ddd/web)   — Next.js App Router (추후)
+│   └── web/          (@ddd/web)   — Next.js App Router
 └── packages/
     └── api/          (@ddd/api)   — API 클라이언트, 타입, Zod 스키마, Hey API 생성 코드
 ```
@@ -32,11 +32,11 @@ IT 사이드 프로젝트 동아리(DDD) 운영을 위한 프론트엔드 모노
 
 ### 앱별 기술 스택
 
-| 앱 | 프레임워크 | 스타일링 | 상태 | 비고 |
-|----|-----------|---------|------|------|
-| `apps/admin` | Vite + React 19 | Tailwind CSS 4 | 개발 중 | shadcn/ui, React Router |
-| `apps/web` | Next.js 16 (App Router) | - | 미개발 | 랜딩 + 신청 폼 |
-| `packages/api` | - | - | 개발 중 | Hey API, Zod |
+| 앱             | 프레임워크              | 스타일링       | 상태    | 비고                    |
+| -------------- | ----------------------- | -------------- | ------- | ----------------------- |
+| `apps/admin`   | Vite + React 19         | Tailwind CSS 4 | 개발 중 | shadcn/ui, React Router |
+| `apps/web`     | Next.js 16 (App Router) | -              | 미개발  | 랜딩 + 신청 폼          |
+| `packages/api` | -                       | -              | 개발 중 | Hey API, Zod            |
 
 ---
 
