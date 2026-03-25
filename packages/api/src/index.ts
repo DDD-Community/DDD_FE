@@ -1,3 +1,3 @@
-export { api } from "./client";
+export { api, configureApi } from "./client";
 export { ApiError, ErrorMessage } from "./errors";
 export type { ErrorMessageKey } from "./errors";

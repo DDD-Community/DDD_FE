@@ -1,4 +1,5 @@
 export const ErrorMessage = {
+  // 어드민 관련 에러 메시지
   INTERNAL_SERVER_ERROR: "서버 내부 오류가 발생했습니다.",
   UNAUTHORIZED: "인증이 필요합니다.",
   FORBIDDEN: "접근 권한이 없습니다.",
@@ -17,6 +18,7 @@ export const ErrorMessage = {
   INTERVIEW_SLOT_ALREADY_RESERVED: "이미 예약된 면접 슬롯입니다.",
 
   UNKNOWN_ERROR: "알 수 없는 오류가 발생했습니다.",
+  // 추가적인 에러 메시지를 여기에 정의할 수 있습니다.
 } as const;
 
 export type ErrorMessageKey = keyof typeof ErrorMessage;

@@ -10,7 +10,7 @@ IT 사이드 프로젝트 동아리(DDD) 운영을 위한 프론트엔드 모노
 
 - `apps/admin` — 동아리 운영진용 어드민 페이지 (현재 개발 중)
 - `apps/web` — 랜딩페이지 + 동아리 신청 폼 (추후 개발)
-- `packages/ui` — 공통 UI 컴포넌트 + 디자인 토큰
+- `packages/api` — 공통 API 클라이언트 SDK, 타입, Zod 스키마 (Hey API 코드 생성 포함)
 
 백엔드는 별도 레포지토리에서 관리. 이 레포는 프론트엔드 전용.
 
@@ -24,7 +24,7 @@ IT 사이드 프로젝트 동아리(DDD) 운영을 위한 프론트엔드 모노
 │   ├── admin/        (@ddd/admin) — Vite + React, Tailwind CSS
 │   └── web/          (@ddd/web)   — Next.js App Router (추후)
 └── packages/
-    └── ui/           (@ddd/ui)    — 공통 컴포넌트, Storybook, Vitest
+    └── api/          (@ddd/api)   — API 클라이언트, 타입, Zod 스키마, Hey API 생성 코드
 ```
 
 **패키지 매니저**: PNPM Workspaces
@@ -36,7 +36,7 @@ IT 사이드 프로젝트 동아리(DDD) 운영을 위한 프론트엔드 모노
 |----|-----------|---------|------|------|
 | `apps/admin` | Vite + React 19 | Tailwind CSS 4 | 개발 중 | shadcn/ui, React Router |
 | `apps/web` | Next.js 16 (App Router) | - | 미개발 | 랜딩 + 신청 폼 |
-| `packages/ui` | - | - | 운영 중 | Storybook, Vitest |
+| `packages/api` | - | - | 개발 중 | Hey API, Zod |
 
 ---
 
@@ -50,8 +50,7 @@ pnpm build:admin        # 어드민 빌드
 pnpm dev:web            # 웹 개발 서버 (추후)
 pnpm build:web          # 웹 빌드 (추후)
 
-pnpm storybook          # UI 패키지 Storybook
-pnpm test:ui            # UI 패키지 테스트
+pnpm gen:api            # Hey API로 OpenAPI 스키마 → 타입/SDK 코드 생성
 
 pnpm lint               # 전체 린트
 pnpm lint:fix           # 전체 린트 자동 수정
@@ -59,5 +58,5 @@ pnpm format             # 전체 Prettier 포맷
 
 # 패키지 필터
 pnpm --filter @ddd/admin dev
-pnpm --filter @ddd/ui storybook
+pnpm --filter @ddd/api generate
 ```

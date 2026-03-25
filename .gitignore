@@ -21,6 +21,9 @@
 **/build/
 **/dist/
 
+# Hey API generated code (백엔드 스펙 동기화 전까지 gitignore)
+packages/api/generated/
+
 # misc
 .DS_Store
 *.pem

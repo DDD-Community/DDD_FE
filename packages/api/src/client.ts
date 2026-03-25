@@ -1,12 +1,19 @@
 import { ApiError } from "./errors";
 import type { ApiResponse } from "./types";
 
+let _baseUrl: string | null = null;
+
+export function configureApi(baseUrl: string): void {
+  _baseUrl = baseUrl;
+}
+
 function getBaseUrl(): string {
-  const envUrl = import.meta.env.VITE_API_URL;
-  if (envUrl && envUrl.trim() !== "") {
-    return envUrl;
+  if (_baseUrl && _baseUrl.trim() !== "") {
+    return _baseUrl;
   }
-  throw new Error("API URL is not defined");
+  throw new Error(
+    "API base URL is not configured. Call configureApi(baseUrl) before using the api client.",
+  );
 }
 
 // URL 생성 로직을 별도 함수로 분리, '/' 신경쓰지않아도 되도록 수정
