@@ -1,3 +1,17 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+catalog:
+  # 공유 도구
+  typescript: "~5.9.3"
+  eslint: "^9.39.4"
+  "@eslint/js": "^9.39.4"
+  prettier: "^3.8.1"
+
+  # 공유 런타임
+  zod: "^3.24.0"
+  react: "^19.2.4"
+  react-dom: "^19.2.4"
+  "@types/react": "^19.2.14"
+  "@types/react-dom": "^19.2.3"
