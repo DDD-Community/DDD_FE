@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 
 /** 지원자 관리 페이지 */
-export default function Applications() {
+export function Applications() {
   return (
     <div className="flex min-h-svh p-6">
       <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">

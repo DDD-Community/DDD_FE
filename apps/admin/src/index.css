@@ -128,3 +128,85 @@
     @apply font-sans;
     }
 }
+
+/* DDD Logo Animation */
+
+/* 전체 컨테이너 회전: 0 → 오른쪽 10도 → 왼쪽 5도 → 오른쪽 10도 */
+@keyframes ddd-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  33% {
+    transform: rotate(10deg);
+  }
+  66% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 1번 D (오른쪽): 모임 → 오른쪽 펼침 → 왼쪽 살짝 → 오른쪽 펼침 */
+@keyframes spread-first {
+  0% {
+    transform: translateX(0);
+  }
+  33% {
+    transform: translateX(50px);
+  }
+  66% {
+    transform: translateX(-25px);
+  }
+  100% {
+    transform: translateX(50px);
+  }
+}
+
+/* 3번 D (왼쪽): 모임 → 왼쪽 펼침 → 오른쪽 살짝 → 왼쪽 펼침 */
+@keyframes spread-third {
+  0% {
+    transform: translateX(0);
+  }
+  33% {
+    transform: translateX(-50px);
+  }
+  66% {
+    transform: translateX(25px);
+  }
+  100% {
+    transform: translateX(-50px);
+  }
+}
+
+/* Sparkle: 첫 펼침과 함께 나타났다가 최종 펼침 전 사라짐 */
+@keyframes sparkle {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  20% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  33% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  66% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+  80% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
