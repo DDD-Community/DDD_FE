@@ -13,8 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DDD - IT 사이드 프로젝트 동아리",
-  description: "개발자, 디자이너가 함께하는 IT 사이드 프로젝트 동아리 DDD입니다.",
+  title: {
+    default: "DDD - 사이드 프로젝트로 성장하는 개발자 커뮤니티",
+    template: "%s | DDD",
+  },
+  description: "개발자, 디자이너, 기획자가 함께 사이드 프로젝트를 만들고 성장하는 커뮤니티 DDD. 실전 협업 경험을 쌓아보세요.",
 };
 
 export default function RootLayout({
