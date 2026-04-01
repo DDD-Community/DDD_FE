@@ -1,7 +1,7 @@
 import { HugeiconsIcon } from "@hugeicons/react"
 import type { IconSvgElement } from "@hugeicons/react"
 import { SidebarLeft01Icon } from "@hugeicons/core-free-icons"
-import { Link, useLocation } from "react-router"
+import { Link, useLocation, useNavigate } from "react-router"
 import { useToggle } from "react-simplikit"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,33 +18,33 @@ export const SideBar = () => {
   const [isOpen, toggle] = useToggle(true)
 
   return (
-    <nav
-      aria-label="사이드바 네비게이션"
-      className={`overflow-hidden border-r py-2 transition-[width] duration-300 ease-in-out ${isOpen ? "w-56" : "w-18"}`}
-    >
-      <FlexBox
-        direction="column"
-        className="h-full w-full items-start justify-between"
+    <TooltipProvider delay={200}>
+      <nav
+        aria-label="사이드바 네비게이션"
+        className={`border-r py-2 transition-[width] duration-300 ease-in-out ${isOpen ? "w-56" : "w-18"}`}
       >
-        <section className="w-full">
-          <TooltipProvider delay={200}>
+        <FlexBox
+          direction="column"
+          className="h-full w-full items-start justify-between"
+        >
+          <section className="w-full">
             <SideBarHeader isOpen={isOpen} toggle={toggle} />
             <MenuList isOpen={isOpen} />
-          </TooltipProvider>
-        </section>
+          </section>
 
-        <footer className="flex w-full items-center gap-x-4 border-t px-4 pt-2 font-medium">
-          <Avatar className="inline-flex size-10 items-center justify-center rounded-full bg-gray-100 align-middle text-base text-gray-900 select-none">
-            W
-          </Avatar>
-          <span
-            className={`text-sm whitespace-nowrap text-gray-900 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"} `}
-          >
-            User Name
-          </span>
-        </footer>
-      </FlexBox>
-    </nav>
+          <footer className="flex w-full items-center gap-x-4 border-t px-4 pt-2 font-medium">
+            <Avatar className="inline-flex size-10 items-center justify-center rounded-full bg-gray-100 align-middle text-base text-gray-900 select-none">
+              W
+            </Avatar>
+            <span
+              className={`text-sm whitespace-nowrap text-gray-900 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"} `}
+            >
+              User Name
+            </span>
+          </footer>
+        </FlexBox>
+      </nav>
+    </TooltipProvider>
   )
 }
 
@@ -73,10 +73,13 @@ const SideBarHeader = ({ isOpen, toggle }: SideBarHeaderProps) => {
 const OpenSideBarButton = ({ toggle }: { toggle: () => void }) => {
   return (
     <Tooltip>
-      <TooltipTrigger className="absolute inset-0 opacity-0 group-hover:opacity-100">
-        <Button onClick={toggle} variant="ghost" aria-label="사이드바 열기">
-          <HugeiconsIcon aria-hidden="true" icon={SidebarLeft01Icon} />
-        </Button>
+      <TooltipTrigger
+        className="absolute inset-0 opacity-0 group-hover:opacity-100"
+        render={
+          <Button onClick={toggle} variant="ghost" aria-label="사이드바 열기" />
+        }
+      >
+        <HugeiconsIcon aria-hidden="true" icon={SidebarLeft01Icon} />
       </TooltipTrigger>
       <TooltipContent side="right">사이드바 열기</TooltipContent>
     </Tooltip>
@@ -85,24 +88,23 @@ const OpenSideBarButton = ({ toggle }: { toggle: () => void }) => {
 
 const CloseSideBarButton = ({ isOpen, toggle }: SideBarHeaderProps) => {
   return (
-    <TooltipProvider delay={200}>
-      <Tooltip>
-        <TooltipTrigger
-          tabIndex={isOpen ? 0 : -1}
-          className={`shrink-0 ${isOpen ? "cursor-pointer opacity-100" : "pointer-events-none opacity-0"}`}
-        >
+    <Tooltip>
+      <TooltipTrigger
+        tabIndex={isOpen ? 0 : -1}
+        className={`shrink-0 ${isOpen ? "cursor-pointer opacity-100" : "pointer-events-none opacity-0"}`}
+        render={
           <Button
             variant="ghost"
             size="icon"
             aria-label="사이드바 닫기"
             onClick={toggle}
-          >
-            <HugeiconsIcon aria-hidden="true" icon={SidebarLeft01Icon} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="right">사이드바 닫기</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+          />
+        }
+      >
+        <HugeiconsIcon aria-hidden="true" icon={SidebarLeft01Icon} />
+      </TooltipTrigger>
+      <TooltipContent side="right">사이드바 닫기</TooltipContent>
+    </Tooltip>
   )
 }
 
@@ -149,32 +151,29 @@ type MenuItemProps = {
 const MenuItem = ({ item, isOpen, isActive }: MenuItemProps) => {
   return (
     <li>
-      <TooltipProvider delay={200}>
-        <Tooltip>
-          <TooltipTrigger tabIndex={isOpen ? -1 : 0} className="w-full">
-            <Link
-              to={item.path}
-              aria-current={isActive ? "page" : undefined}
-              className="flex w-full items-center gap-x-2 overflow-hidden rounded-lg px-2.5 py-2 hover:bg-muted"
-            >
-              <HugeiconsIcon
-                icon={item.icon}
-                size={18}
-                aria-hidden="true"
-                className="shrink-0"
-              />
-              <span
-                className={`whitespace-nowrap transition-opacity duration-300 ${
-                  isOpen ? "opacity-100" : "opacity-0"
-                }`}
-              >
-                {item.name}
-              </span>
-            </Link>
-          </TooltipTrigger>
-          {!isOpen && <TooltipContent side="right">{item.name}</TooltipContent>}
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip disabled={isOpen}>
+        <TooltipTrigger
+          tabIndex={0}
+          aria-current={isActive ? "page" : undefined}
+          className="flex w-full items-center gap-x-2 rounded-lg px-2.5 py-2 hover:bg-muted"
+          render={<Link to={item.path} />}
+        >
+          <HugeiconsIcon
+            icon={item.icon}
+            size={18}
+            aria-hidden="true"
+            className="shrink-0"
+          />
+          <span
+            className={`whitespace-nowrap transition-opacity duration-300 ${
+              isOpen ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            {item.name}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="right">{item.name}</TooltipContent>
+      </Tooltip>
     </li>
   )
 }
