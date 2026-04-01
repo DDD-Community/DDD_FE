@@ -1,8 +1,8 @@
 import { Outlet } from "react-router"
-import { SideBar } from "./SideBar/SideBar"
+import { SideBar } from "@/widgets/sidebar/SideBar"
 
 /** 어드민 페이지 전체에서 사용하는 기본 레이아웃 */
-export const DefaultLayout = () => {
+export const AdminLayout = () => {
   return (
     <div className="flex h-screen w-screen">
       <SideBar />

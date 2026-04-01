@@ -1,5 +1,5 @@
 import { useRouteError, isRouteErrorResponse } from "react-router"
-import { FlexBox } from "@/components/layout/FlexBox"
+import { FlexBox } from "@/shared/ui/FlexBox"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { RssErrorIcon } from "@hugeicons/core-free-icons"
 

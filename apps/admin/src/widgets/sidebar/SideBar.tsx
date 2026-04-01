@@ -3,16 +3,16 @@ import type { IconSvgElement } from "@hugeicons/react"
 import { SidebarLeft01Icon } from "@hugeicons/core-free-icons"
 import { Link, useLocation } from "react-router"
 import { useToggle } from "react-simplikit"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/shared/ui/button"
 import {
   Tooltip,
   TooltipTrigger,
   TooltipProvider,
   TooltipContent,
-} from "@/components/ui/tooltip"
-import { Avatar } from "@/components/ui/avatar"
+} from "@/shared/ui/tooltip"
+import { Avatar } from "@/shared/ui/avatar"
 import { OPERATIONS, CONTENTS } from "./constants"
-import { FlexBox } from "../FlexBox"
+import { FlexBox } from "@/shared/ui/FlexBox"
 
 export const SideBar = () => {
   const [isOpen, toggle] = useToggle(true)

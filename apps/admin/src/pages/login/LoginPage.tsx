@@ -1,10 +1,10 @@
-import DDDAnimated from "@/components/animated/DDDAnimated"
-import { FlexBox } from "@/components/layout/FlexBox"
-import { GoogleButton } from "@/components/buttons/GoogleButton"
+import DDDAnimated from "@/shared/ui/DDDAnimated"
+import { FlexBox } from "@/shared/ui/FlexBox"
+import { GoogleButton } from "@/shared/ui/GoogleButton"
 import { useNavigate } from "react-router"
-import { paths } from "@/lib/paths"
+import { paths } from "@/shared/lib/paths"
 
-export default function Login() {
+export default function LoginPage() {
   const navigate = useNavigate()
 
   return (

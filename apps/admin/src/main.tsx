@@ -3,8 +3,8 @@ import { createRoot } from "react-dom/client"
 import { configureApi } from "@ddd/api"
 
 import "./index.css"
-import Router from "./routes/index.tsx"
-import { ThemeProvider } from "@/components/theme-provider.tsx"
+import Router from "./pages/index.tsx"
+import { ThemeProvider } from "@/app/providers/ThemeProvider.tsx"
 
 configureApi(import.meta.env.VITE_API_URL)
 

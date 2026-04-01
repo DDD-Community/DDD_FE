@@ -1,5 +1,5 @@
 import { type ButtonHTMLAttributes } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/shared/ui/button"
 
 const GoogleLogo = () => (
   <svg
@@ -27,6 +27,7 @@ const GoogleLogo = () => (
     />
   </svg>
 )
+
 /** Google 로그인 버튼 컴포넌트 */
 export const GoogleButton = ({
   className = "",
