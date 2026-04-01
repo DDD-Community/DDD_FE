@@ -1,7 +1,7 @@
 import { HugeiconsIcon } from "@hugeicons/react"
 import type { IconSvgElement } from "@hugeicons/react"
 import { SidebarLeft01Icon } from "@hugeicons/core-free-icons"
-import { Link, useLocation, useNavigate } from "react-router"
+import { Link, useLocation } from "react-router"
 import { useToggle } from "react-simplikit"
 import { Button } from "@/components/ui/button"
 import {
