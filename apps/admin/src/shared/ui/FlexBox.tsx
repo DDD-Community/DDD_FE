@@ -1,5 +1,5 @@
 import React, { type JSX } from "react"
-import { cn } from "@/lib/utils/cn"
+import { cn } from "@/shared/lib/cn"
 
 type Props = JSX.IntrinsicElements["div"] & {
   children: React.ReactNode

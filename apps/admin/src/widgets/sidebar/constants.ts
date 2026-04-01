@@ -1,4 +1,4 @@
-import { paths } from "@/lib/paths"
+import { paths } from "@/shared/lib/paths"
 import {
   BellDot,
   Calendar01Icon,
