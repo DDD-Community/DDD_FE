@@ -107,6 +107,9 @@ importers:
       react-router:
         specifier: ^7.6.0
         version: 7.13.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react-simplikit:
+        specifier: ^0.0.48
+        version: 0.0.48(react@19.2.4)
       shadcn:
         specifier: ^4.1.0
         version: 4.1.0(@types/node@24.12.0)(babel-plugin-macros@3.1.0)(typescript@5.9.3)
@@ -3473,6 +3476,11 @@ packages:
     peerDependenciesMeta:
       react-dom:
         optional: true
+
+  react-simplikit@0.0.48:
+    resolution: {integrity: sha512-WbHgqyTD4ZKPv563r9xYivXC64adOVR9TbR1ThrTTQ6OUqWh7MIwT/iuYyNXQK3duBYHudta+AbGAU276DJY/g==}
+    peerDependencies:
+      react: '*'
 
   react-style-singleton@2.2.3:
     resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
@@ -7376,6 +7384,10 @@ snapshots:
       set-cookie-parser: 2.7.2
     optionalDependencies:
       react-dom: 19.2.4(react@19.2.4)
+
+  react-simplikit@0.0.48(react@19.2.4):
+    dependencies:
+      react: 19.2.4
 
   react-style-singleton@2.2.3(@types/react@19.2.14)(react@19.2.4):
     dependencies:
