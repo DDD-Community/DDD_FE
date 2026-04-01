@@ -21,7 +21,7 @@ export const SideBar = () => {
     <TooltipProvider delay={200}>
       <nav
         aria-label="사이드바 네비게이션"
-        className={`border-r py-2 transition-[width] duration-300 ease-in-out ${isOpen ? "w-56" : "w-18"}`}
+        className={`overflow-hidden border-r py-2 transition-[width] duration-300 ease-in-out ${isOpen ? "w-56" : "w-18"}`}
       >
         <FlexBox
           direction="column"
@@ -37,7 +37,7 @@ export const SideBar = () => {
               W
             </Avatar>
             <span
-              className={`text-sm whitespace-nowrap text-gray-900 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"} `}
+              className={`overflow-hidden whitespace-nowrap text-sm text-gray-900 transition-all duration-300 ${isOpen ? "max-w-xs opacity-100" : "max-w-0 opacity-0"}`}
             >
               User Name
             </span>
@@ -165,8 +165,8 @@ const MenuItem = ({ item, isOpen, isActive }: MenuItemProps) => {
             className="shrink-0"
           />
           <span
-            className={`whitespace-nowrap transition-opacity duration-300 ${
-              isOpen ? "opacity-100" : "opacity-0"
+            className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
+              isOpen ? "max-w-xs opacity-100" : "max-w-0 opacity-0"
             }`}
           >
             {item.name}
