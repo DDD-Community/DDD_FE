@@ -1,5 +1,4 @@
 import { HugeiconsIcon } from "@hugeicons/react"
-import type { IconSvgElement } from "@hugeicons/react"
 import { SidebarLeft01Icon } from "@hugeicons/core-free-icons"
 import { Link, useLocation } from "react-router"
 import { useToggle } from "react-simplikit"
@@ -13,6 +12,7 @@ import {
 import { Avatar } from "@/shared/ui/avatar"
 import { OPERATIONS, CONTENTS } from "./constants"
 import { FlexBox } from "@/shared/ui/FlexBox"
+import type { MenuItemType } from "./types"
 
 export const SideBar = () => {
   const [isOpen, toggle] = useToggle(true)
@@ -33,11 +33,11 @@ export const SideBar = () => {
           </section>
 
           <footer className="flex w-full items-center gap-x-4 border-t px-4 pt-2 font-medium">
-            <Avatar className="inline-flex size-10 items-center justify-center rounded-full bg-gray-100 align-middle text-base text-gray-900 select-none">
+            <Avatar className="inline-flex size-10 items-center justify-center rounded-full bg-green-400 align-middle text-base text-white select-none">
               W
             </Avatar>
             <span
-              className={`overflow-hidden whitespace-nowrap text-sm text-gray-900 transition-all duration-300 ${isOpen ? "max-w-xs opacity-100" : "max-w-0 opacity-0"}`}
+              className={`overflow-hidden text-sm whitespace-nowrap text-gray-900 transition-all duration-300 ${isOpen ? "max-w-xs opacity-100" : "max-w-0 opacity-0"}`}
             >
               User Name
             </span>
@@ -64,7 +64,6 @@ const SideBarHeader = ({ isOpen, toggle }: SideBarHeaderProps) => {
         />
         {!isOpen && <OpenSideBarButton toggle={toggle} />}
       </div>
-
       <CloseSideBarButton isOpen={isOpen} toggle={toggle} />
     </div>
   )
@@ -135,12 +134,6 @@ const MenuList = ({ isOpen }: { isOpen: boolean }) => {
       </ul>
     </>
   )
-}
-
-type MenuItemType = {
-  name: string
-  icon: IconSvgElement
-  path: string
 }
 
 type MenuItemProps = {
