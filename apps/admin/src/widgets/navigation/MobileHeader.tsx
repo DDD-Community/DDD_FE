@@ -1,6 +1,12 @@
 import { Avatar } from "@/shared/ui/avatar"
 import { Button } from "@/shared/ui/button"
-import { Drawer, DrawerContent, DrawerTrigger } from "@/shared/ui/drawer"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerTrigger,
+  DrawerDescription,
+} from "@/shared/ui/drawer"
 import { FlexBox } from "@/shared/ui/FlexBox"
 import { OPERATIONS, CONTENTS } from "./constants"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -37,14 +43,14 @@ export const MobileHeader = () => {
         </DrawerTrigger>
         <DrawerContent>
           <FlexBox direction="column">
-            <div className="flex w-full items-center justify-between px-4 pt-2.5">
-              <span className="size-10">
+            <DrawerTitle className="flex w-full items-center justify-between px-4 py-2">
+              <div className="size-8">
                 <img
                   src="/logo.png"
                   alt="Logo"
                   className={`size-full ${isOpen ? "" : "group-hover:opacity-0"}`}
                 />
-              </span>
+              </div>
               <Button
                 variant="ghost"
                 onClick={() => setIsOpen(false)}
@@ -57,8 +63,12 @@ export const MobileHeader = () => {
                   className="shrink-0"
                 />
               </Button>
-            </div>
+            </DrawerTitle>
             <MenuList />
+            <DrawerDescription className="hidden">
+              이것은 모바일 헤더입니다. 햄버거 메뉴를 클릭하여 사이드바를 열고
+              닫을 수 있습니다.
+            </DrawerDescription>
           </FlexBox>
         </DrawerContent>
       </Drawer>
@@ -122,9 +132,9 @@ const HanburgerIcon = () => {
       color="currentColor"
       fill="none"
       stroke="#141B34"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     >
       <path d="M4 5L20 5" />
       <path d="M4 12L20 12" />
