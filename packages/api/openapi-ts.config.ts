@@ -1,9 +1,21 @@
 import { defineConfig } from "@hey-api/openapi-ts";
 
-export default defineConfig({
-  input: "https://admin.dddstudy.site/api-docs-json",
-  output: {
-    path: "./src/generated",
+const apiDocsUrl = "https://admin.dddstudy.site/api-docs-json";
+export default defineConfig([
+  {
+    input: {
+      path: apiDocsUrl,
+      include:
+        "^(getAuthGoogle|getAuthGoogleCallback|refreshAuthToken|logoutAuth|deleteAuthWithdrawal)",
+    },
+    output: { path: "./src/generated/auth" },
   },
-  plugins: ["@hey-api/types", "@hey-api/client-fetch", { name: "@hey-api/schemas", type: "zod" }],
-});
+  {
+    input: {
+      path: apiDocsUrl,
+      include:
+        "^(createAdminCohort|deleteAdminCohortById|getAdminCohorts|updateAdminCohortById|updateAdminCohortPartsById|getCohortActive)",
+    },
+    output: { path: "./src/generated/cohort" },
+  },
+]);
