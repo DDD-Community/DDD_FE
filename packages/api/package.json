@@ -10,15 +10,12 @@
     "generate": "openapi-ts",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "@hey-api/client-fetch": "latest"
-  },
   "peerDependencies": {
     "zod": "catalog:"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "latest",
-    "zod": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "zod": "catalog:"
   }
 }
