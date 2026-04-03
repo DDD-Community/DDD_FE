@@ -22,7 +22,11 @@ function buildUrl(path: string): string {
   return new URL(path, baseUrl).toString();
 }
 
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+export async function apiFetch<T>(
+  path: string,
+  init?: RequestInit,
+  signal?: AbortSignal,
+): Promise<T> {
   /**
    * 기본값은 application/json, 필요에 따라 다른 헤더 추가 가능 및, Content-Type 변경 가능하도록 구현
    */
@@ -43,6 +47,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   const res = await fetch(buildUrl(path), {
     ...init,
     headers,
+    signal,
   });
 
   const contentType = res.headers.get("Content-Type") || "";
@@ -50,10 +55,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 
   if (res.status === 204 || res.headers.get("content-length") === "0") {
     if (!res.ok) {
-      throw new ApiError(
-        "UNKNOWN_ERROR",
-        "No content returned from the server.",
-      );
+      throw new ApiError("UNKNOWN_ERROR", "No content returned from the server.");
     }
     return null as T;
   }
@@ -64,10 +66,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
     try {
       body = (await res.json()) as ApiResponse<T>;
     } catch (error) {
-      throw new ApiError(
-        "UNKNOWN_ERROR",
-        error instanceof Error ? error.message : String(error),
-      );
+      throw new ApiError("UNKNOWN_ERROR", error instanceof Error ? error.message : String(error));
     }
   } else {
     const text = await res.text().catch(() => "");
@@ -99,27 +98,16 @@ function resolveBody(body: unknown): BodyInit | undefined {
 }
 
 export const api = {
-  get: <T>(path: string, init?: RequestInit) =>
-    apiFetch<T>(path, { ...init, method: "GET" }),
+  get: <T>(path: string, init?: RequestInit) => apiFetch<T>(path, { ...init, method: "GET" }),
 
-  post: <T>(
-    path: string,
-    body: BodyInit | FormData | string | null,
-    init?: RequestInit,
-  ) => apiFetch<T>(path, { ...init, method: "POST", body: resolveBody(body) }),
+  post: <T>(path: string, body: BodyInit | FormData | string | null, init?: RequestInit) =>
+    apiFetch<T>(path, { ...init, method: "POST", body: resolveBody(body) }),
 
-  patch: <T>(
-    path: string,
-    body: BodyInit | FormData | string | null,
-    init?: RequestInit,
-  ) => apiFetch<T>(path, { ...init, method: "PATCH", body: resolveBody(body) }),
+  patch: <T>(path: string, body: BodyInit | FormData | string | null, init?: RequestInit) =>
+    apiFetch<T>(path, { ...init, method: "PATCH", body: resolveBody(body) }),
 
-  put: <T>(
-    path: string,
-    body: BodyInit | FormData | string | null,
-    init?: RequestInit,
-  ) => apiFetch<T>(path, { ...init, method: "PUT", body: resolveBody(body) }),
+  put: <T>(path: string, body: BodyInit | FormData | string | null, init?: RequestInit) =>
+    apiFetch<T>(path, { ...init, method: "PUT", body: resolveBody(body) }),
 
-  delete: <T>(path: string, init?: RequestInit) =>
-    apiFetch<T>(path, { ...init, method: "DELETE" }),
+  delete: <T>(path: string, init?: RequestInit) => apiFetch<T>(path, { ...init, method: "DELETE" }),
 };

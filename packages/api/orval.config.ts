@@ -9,10 +9,11 @@ export default defineConfig({
       mode: "tags-split",
       target: "./src/generated",
       schemas: "./src/generated/models",
+      client: "react-query",
       override: {
         mutator: {
-          path: "./src/mutator.ts",
-          name: "mutator",
+          path: "./src/client.ts",
+          name: "apiFetch",
         },
       },
     },

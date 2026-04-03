@@ -11,9 +11,11 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
+    "@tanstack/react-query": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@tanstack/react-query": "catalog:",
     "orval": "^8.6.2",
     "typescript": "catalog:",
     "zod": "catalog:"
