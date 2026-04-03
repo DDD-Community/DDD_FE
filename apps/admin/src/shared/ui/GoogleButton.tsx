@@ -36,9 +36,8 @@ export const GoogleButton = ({
 }: ButtonHTMLAttributes<HTMLButtonElement>) => {
   return (
     <Button
-      size="lg"
       className={
-        "w-full bg-white text-black hover:bg-gray-100 focus:ring-gray-300 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-500 " +
+        "h-12 w-full bg-white text-base text-black hover:bg-gray-100 focus:ring-gray-300 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-500 " +
         className
       }
       {...rest}

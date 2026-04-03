@@ -55,6 +55,11 @@ const router = createBrowserRouter([
     // 이벤트 핸들러의 의한 에러를 제외하고 라우터에서 잡히는 에러에 대한 UI
     errorElement: <ErrorPage />,
   },
+  {
+    path: "/register",
+    element: <></>,
+    errorElement: <ErrorPage />,
+  },
 ])
 
 export default function Router() {
