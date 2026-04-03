@@ -7,14 +7,14 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "generate": "openapi-ts",
+    "generate": "orval",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "latest",
+    "orval": "^8.6.2",
     "typescript": "catalog:",
     "zod": "catalog:"
   }

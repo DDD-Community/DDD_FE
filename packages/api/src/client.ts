@@ -22,7 +22,7 @@ function buildUrl(path: string): string {
   return new URL(path, baseUrl).toString();
 }
 
-async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   /**
    * 기본값은 application/json, 필요에 따라 다른 헤더 추가 가능 및, Content-Type 변경 가능하도록 구현
    */
@@ -113,6 +113,12 @@ export const api = {
     body: BodyInit | FormData | string | null,
     init?: RequestInit,
   ) => apiFetch<T>(path, { ...init, method: "PATCH", body: resolveBody(body) }),
+
+  put: <T>(
+    path: string,
+    body: BodyInit | FormData | string | null,
+    init?: RequestInit,
+  ) => apiFetch<T>(path, { ...init, method: "PUT", body: resolveBody(body) }),
 
   delete: <T>(path: string, init?: RequestInit) =>
     apiFetch<T>(path, { ...init, method: "DELETE" }),
