@@ -6,7 +6,7 @@ import ProjectsPage from "./projects/ProjectsPage"
 import BlogPostsPage from "./blog-posts/BlogPostsPage"
 import { ErrorPage } from "./error/ErrorPage"
 import { AdminLayout } from "@/widgets/admin-layout/AdminLayout"
-import { ApplicationsPage } from "./applications/ApplicationsPage"
+import ApplicationsPage from "./applications/ApplicationsPage"
 
 /** 라우터 설정 (리액트 라우터 Data Mode 기반) */
 const router = createBrowserRouter([
