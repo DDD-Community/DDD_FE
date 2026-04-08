@@ -9,6 +9,7 @@
     "build:admin": "pnpm --filter @ddd/admin build",
     "build:web": "pnpm --filter @ddd/web build",
     "gen:api": "pnpm --filter @ddd/api generate",
+    "lint:admin": "pnpm --filter @ddd/admin lint",
     "lint": "pnpm -r lint",
     "lint:fix": "pnpm -r lint:fix",
     "format": "prettier --write .",

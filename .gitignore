@@ -21,8 +21,8 @@
 **/build/
 **/dist/
 
-# Hey API generated code (백엔드 스펙 동기화 전까지 gitignore)
-packages/api/generated/
+# Orval generated code (백엔드 스펙 동기화 전까지 gitignore)
+packages/api/src/generated/
 
 # misc
 .DS_Store

@@ -7,18 +7,17 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "generate": "openapi-ts",
+    "generate": "orval",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "@hey-api/client-fetch": "latest"
-  },
   "peerDependencies": {
+    "@tanstack/react-query": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "latest",
-    "zod": "catalog:",
-    "typescript": "catalog:"
+    "@tanstack/react-query": "catalog:",
+    "orval": "^8.6.2",
+    "typescript": "catalog:",
+    "zod": "catalog:"
   }
 }

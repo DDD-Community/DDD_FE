@@ -6,7 +6,7 @@ import ProjectsPage from "./projects/ProjectsPage"
 import BlogPostsPage from "./blog-posts/BlogPostsPage"
 import { ErrorPage } from "./error/ErrorPage"
 import { AdminLayout } from "@/widgets/admin-layout/AdminLayout"
-import { ApplicationsPage } from "./applications/ApplicationsPage"
+import ApplicationsPage from "./applications/ApplicationsPage"
 
 /** 라우터 설정 (리액트 라우터 Data Mode 기반) */
 const router = createBrowserRouter([
@@ -53,6 +53,11 @@ const router = createBrowserRouter([
     element: <LoginPage />,
     // element 내부적으로 Errorboundary가 잡지 않는,
     // 이벤트 핸들러의 의한 에러를 제외하고 라우터에서 잡히는 에러에 대한 UI
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/register",
+    element: <></>,
     errorElement: <ErrorPage />,
   },
 ])

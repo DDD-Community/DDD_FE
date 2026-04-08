@@ -4,14 +4,26 @@ import { configureApi } from "@ddd/api"
 
 import "./index.css"
 import Router from "./pages/index.tsx"
+import { QueryProvider } from "@/app/providers/QueryProvider.tsx"
 import { ThemeProvider } from "@/app/providers/ThemeProvider.tsx"
 
 configureApi(import.meta.env.VITE_API_URL)
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider>
-      <Router />
-    </ThemeProvider>
-  </StrictMode>
-)
+async function enableMocking() {
+  if (import.meta.env.DEV && import.meta.env.VITE_MSW_ENABLED === "true") {
+    const { worker } = await import("./mocks/browser")
+    return worker.start({ onUnhandledRequest: "bypass" })
+  }
+}
+
+enableMocking().then(() => {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <QueryProvider>
+        <ThemeProvider>
+          <Router />
+        </ThemeProvider>
+      </QueryProvider>
+    </StrictMode>
+  )
+})
