@@ -1,0 +1,6 @@
+pre-commit:
+  commands:
+    lint-admin:
+      run: pnpm --filter @ddd/admin lint
+    lint-web:
+      run: pnpm --filter @ddd/web lint
