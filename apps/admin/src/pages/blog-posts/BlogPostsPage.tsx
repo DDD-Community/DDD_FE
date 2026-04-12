@@ -59,7 +59,7 @@ export default function BlogPostsPage() {
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <Select variant="secondary" className="max-w-36">
+          <Select variant="secondary" className="max-w-36" aria-label="상태 필터">
             <Select.Trigger>
               <Select.Value>{statusFilter}</Select.Value>
               <Select.Indicator />

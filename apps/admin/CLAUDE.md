@@ -88,12 +88,12 @@ pages/applications/             # 복잡해질 때: 세그먼트로 분리
 
 ### shared/ui에만 배치하는 컴포넌트
 
-| 경로 | 용도 | 비고 |
-|---|---|---|
-| `shared/ui/FlexBox.tsx` | flex 레이아웃 유틸 | Tailwind 직접 사용으로 대체 가능 |
-| `shared/ui/GridBox.tsx` | grid 레이아웃 유틸 | Tailwind 직접 사용으로 대체 가능 |
-| `shared/ui/DDDAnimated.tsx` | DDD 브랜드 로고 애니메이션 | 커스텀 구현 |
-| `shared/ui/GoogleButton.tsx` | Google 로그인 버튼 | 커스텀 구현 |
+| 경로                         | 용도                       | 비고                             |
+| ---------------------------- | -------------------------- | -------------------------------- |
+| `shared/ui/FlexBox.tsx`      | flex 레이아웃 유틸         | Tailwind 직접 사용으로 대체 가능 |
+| `shared/ui/GridBox.tsx`      | grid 레이아웃 유틸         | Tailwind 직접 사용으로 대체 가능 |
+| `shared/ui/DDDAnimated.tsx`  | DDD 브랜드 로고 애니메이션 | 커스텀 구현                      |
+| `shared/ui/GoogleButton.tsx` | Google 로그인 버튼         | 커스텀 구현                      |
 
 ### HeroUI v3에서 직접 import하는 컴포넌트
 
@@ -109,6 +109,7 @@ import { Button, Input, Card, Drawer, Table, Tabs } from "@heroui/react"
 ```
 
 **HeroUI v3 컴포넌트 목록** (자주 사용되는 것들):
+
 - **기본**: Button, Input, TextArea, Checkbox, Radio, Switch, Label
 - **선택**: Select, ComboBox, Autocomplete
 - **폼**: Form, Fieldset, TextField (복합 필드)
@@ -120,12 +121,12 @@ import { Button, Input, Card, Drawer, Table, Tabs } from "@heroui/react"
 
 ### shared/hooks와 shared/lib
 
-| 경로 | 용도 |
-|---|---|
-| `shared/hooks/useIsMobile.ts` | 모바일 뷰포트 감지 훅 |
-| `shared/lib/cn.ts` | clsx + tailwind-merge 유틸 |
-| `shared/lib/paths.ts` | 라우트 경로 상수 |
-| `shared/lib/auth.ts` | 인증 체크 로더 유틸 (TODO) |
+| 경로                          | 용도                       |
+| ----------------------------- | -------------------------- |
+| `shared/hooks/useIsMobile.ts` | 모바일 뷰포트 감지 훅      |
+| `shared/lib/cn.ts`            | clsx + tailwind-merge 유틸 |
+| `shared/lib/paths.ts`         | 라우트 경로 상수           |
+| `shared/lib/auth.ts`          | 인증 체크 로더 유틸 (TODO) |
 
 ---
 
@@ -203,17 +204,10 @@ import { Form, Fieldset, TextField, Label } from "@heroui/react"
 </Form>
 ```
 
-### 주의사항
-
-- ⚠️ HeroUI v3는 **베타 버전** — 버전 업그레이드 시 breaking changes 가능
-- ⚠️ 커스텀 스타일이 필요하면 `cn()` 유틸로 Tailwind 클래스 병합
-- ✅ 모든 컴포넌트는 다크모드 자동 지원 (ThemeProvider에 의해 관리)
-
----
-
 ## 기능 개발 현황 체크리스트
 
 > 기준: [어드민 기능 명세서 3.x] (2026-04-11 기준)
+>
 > - ✅ 완료 / 🔧 부분 구현 (UI만 있고 실제 기능 미연결) / ⬜ 미구현
 
 ---
@@ -241,10 +235,10 @@ import { Form, Fieldset, TextField, Label } from "@heroui/react"
 - ✅ 통계 카드 (전체 기수, 현재 상태, 누적 지원자, 누적 활동 멤버)
 - 🔧 수동 상태 변경 버튼 UI ("모집중 전환") — 실제 API 미연결
 - 🔧 기수 수정 버튼 UI — 실제 수정 폼/모달 미구현
-- ⬜ 새 기수 등록 폼 (기수번호, 상태, 모집기간 날짜 범위)
-- ⬜ 프로세스 일정 등록/수정 (서류발표일, 온라인 인터뷰일, 최종발표일)
-- ⬜ 커리큘럼 등록/수정 (9주차 JSON 배열 편집 UI)
-- ⬜ 파트별 지원서 양식 관리 (질문 추가/수정/삭제)
+- 🔧 새 기수 등록 폼 (기수번호, 상태, 모집기간 날짜 범위) — Drawer + DatePicker + Select UI 구현, 실제 API 미연결
+- 🔧 프로세스 일정 등록/수정 (서류발표일, 온라인 인터뷰일, 최종발표일) — DatePicker UI 구현, 실제 API 미연결
+- 🔧 커리큘럼 등록/수정 (9주차 JSON 배열 편집 UI) — DatePicker + Input UI 구현, 실제 API 미연결
+- 🔧 파트별 지원서 양식 관리 (질문 추가/수정/삭제) — Tabs + TextArea + 버튼 UI 구현, 실제 API 미연결
 - ⬜ 모집 종료일 경과 시 자동 "활동중" 전환 처리
 
 ---

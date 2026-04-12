@@ -4,7 +4,7 @@ import { api } from "@ddd/api"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
-import { Button, Input, Table, Drawer, DrawerContent } from "@heroui/react"
+import { Button, Input, Table, Select, ListBox, Drawer } from "@heroui/react"
 
 import { GridBox } from "@/shared/ui/GridBox"
 import { FlexBox } from "@/shared/ui/FlexBox"
@@ -47,39 +47,50 @@ export default function SemestersPage() {
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection onOpenDrawer={() => setIsDrawerOpen(true)} />
-      <CardSection />
-
-      <Drawer isOpen={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <DrawerContent>
-          <SemesterRegisterDrawer onClose={() => setIsDrawerOpen(false)} />
-        </DrawerContent>
+      <Drawer>
+        <TitleSection />
+        <CardSection />
+        <SemesterRegisterDrawer />
       </Drawer>
 
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
         <FlexBox className="justify-between">
           <Input
+            variant="secondary"
             placeholder="검색..."
             className="max-w-xs"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="max-w-36 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm"
+          <Select
+            variant="secondary"
+            className="max-w-36"
+            aria-label="상태 필터"
           >
-            {STATUS_FILTER_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+            <Select.Trigger>
+              <Select.Value>{statusFilter}</Select.Value>
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                {STATUS_FILTER_OPTIONS.map((option) => (
+                  <ListBox.Item
+                    key={option}
+                    id={option}
+                    textValue={option}
+                    onClick={() => setStatusFilter(option)}
+                  >
+                    {option}
+                  </ListBox.Item>
+                ))}
+              </ListBox>
+            </Select.Popover>
+          </Select>
         </FlexBox>
 
         <Table>
           <Table.ScrollContainer>
-            <Table.Content aria-label="기수 목록" className="min-w-[800px]">
+            <Table.Content aria-label="기수 목록">
               <Table.Header>
                 <Table.Column isRowHeader>기수</Table.Column>
                 <Table.Column>상태</Table.Column>
@@ -117,18 +128,14 @@ export default function SemestersPage() {
   )
 }
 
-interface TitleSectionProps {
-  onOpenDrawer: () => void
-}
-
-const TitleSection = ({ onOpenDrawer }: TitleSectionProps) => {
+const TitleSection = () => {
   return (
     <FlexBox className="justify-between">
       <header className="space-y-2">
         <Title title="기수 관리" />
         <Description title="DDD 활동 기수를 등록하고 상태를 관리합니다." />
       </header>
-      <Button onPress={onOpenDrawer}>
+      <Button>
         <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />새 기수 등록
       </Button>
     </FlexBox>

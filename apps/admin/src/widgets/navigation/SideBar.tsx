@@ -129,7 +129,7 @@ const MenuItem = ({ item, isOpen, isActive }: MenuItemProps) => {
       <Link
         to={item.path}
         aria-current={isActive ? "page" : undefined}
-        className="flex w-full items-center gap-x-2 rounded-lg px-2.5 py-2 hover:bg-gray-100"
+        className="flex w-full items-center gap-x-2 rounded-lg px-2.5 py-2 hover:bg-gray-200 data-[current=page]:bg-gray-300"
       >
         <HugeiconsIcon
           icon={item.icon}

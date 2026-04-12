@@ -4,7 +4,7 @@ import { api } from "@ddd/api"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
-import { Button, Input, Table } from "@heroui/react"
+import { Button, Input, Table, Select, ListBox } from "@heroui/react"
 
 import { GridBox } from "@/shared/ui/GridBox"
 import { FlexBox } from "@/shared/ui/FlexBox"
@@ -56,22 +56,32 @@ export default function RemindersPage() {
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
         <FlexBox className="justify-between">
           <Input
+            variant="secondary"
             placeholder="이름 또는 이메일 검색..."
             className="max-w-xs"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="max-w-36 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm"
-          >
-            {STATUS_FILTER_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+          <Select variant="secondary" className="max-w-36" aria-label="상태 필터">
+            <Select.Trigger>
+              <Select.Value>{statusFilter}</Select.Value>
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                {STATUS_FILTER_OPTIONS.map((option) => (
+                  <ListBox.Item
+                    key={option}
+                    id={option}
+                    textValue={option}
+                    onClick={() => setStatusFilter(option)}
+                  >
+                    {option}
+                  </ListBox.Item>
+                ))}
+              </ListBox>
+            </Select.Popover>
+          </Select>
         </FlexBox>
 
         <Table>
