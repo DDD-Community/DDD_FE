@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "heroui-migration": {
+      "source": "heroui-inc/heroui",
+      "sourceType": "github",
+      "computedHash": "9696b5cf0009120bfe03e00cc94c0e2defc1f5af981fc5bb10b1eeffa53e34cf"
+    }
+  }
+}
