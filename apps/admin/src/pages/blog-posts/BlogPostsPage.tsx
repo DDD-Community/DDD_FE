@@ -18,22 +18,12 @@ import {
 } from "@/shared/ui/Table"
 import { Title, Description } from "@/widgets/heading"
 
-import type { BlogPostInfo, BlogPostStatus } from "./types"
-
-const STATUS_LABEL: Record<BlogPostStatus, string> = {
-  published: "게시됨",
-  draft: "임시저장",
-  archived: "보관됨",
-}
-
-const STATUS_FILTER_OPTIONS = ["전체", "게시됨", "임시저장", "보관됨"]
-
-const STATUS_FILTER_MAP: Record<string, BlogPostStatus | null> = {
-  전체: null,
-  게시됨: "published",
-  임시저장: "draft",
-  보관됨: "archived",
-}
+import type { BlogPostInfo } from "./types"
+import {
+  STATUS_LABEL,
+  STATUS_FILTER_OPTIONS,
+  STATUS_FILTER_MAP,
+} from "./constants"
 
 const getBlogPostData = async () => {
   try {

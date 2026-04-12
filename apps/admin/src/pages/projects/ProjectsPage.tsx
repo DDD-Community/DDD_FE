@@ -18,22 +18,12 @@ import {
 } from "@/shared/ui/Table"
 import { Title, Description } from "@/widgets/heading"
 
-import type { ProjectInfo, ProjectStatus } from "./types"
-
-const STATUS_LABEL: Record<ProjectStatus, string> = {
-  in_progress: "진행 중",
-  completed: "완료",
-  cancelled: "취소",
-}
-
-const STATUS_FILTER_OPTIONS = ["전체", "진행 중", "완료", "취소"]
-
-const STATUS_FILTER_MAP: Record<string, ProjectStatus | null> = {
-  전체: null,
-  "진행 중": "in_progress",
-  완료: "completed",
-  취소: "cancelled",
-}
+import type { ProjectInfo } from "./types"
+import {
+  STATUS_LABEL,
+  STATUS_FILTER_OPTIONS,
+  STATUS_FILTER_MAP,
+} from "./constants"
 
 const getProjectData = async () => {
   try {

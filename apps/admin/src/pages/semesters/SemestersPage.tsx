@@ -20,30 +20,14 @@ import {
 } from "@/shared/ui/Table"
 import { Title, Description } from "@/widgets/heading"
 
-import type { SemesterInfo, SemesterStatus } from "./types"
-
-const STATUS_LABEL: Record<SemesterStatus, string> = {
-  active: "활동중",
-  inactive: "활동종료",
-  upcoming: "모집 예정",
-  recruiting: "모집중",
-}
-
-const STATUS_FILTER_OPTIONS = [
-  "전체",
-  "활동중",
-  "활동종료",
-  "모집 예정",
-  "모집중",
-]
-
-const STATUS_FILTER_MAP: Record<string, SemesterStatus | null> = {
-  전체: null,
-  "모집 예정": "upcoming",
-  모집중: "recruiting",
-  활동중: "active",
-  활동종료: "inactive",
-}
+import type { SemesterInfo } from "./types"
+import {
+  STATUS_LABEL,
+  STATUS_FILTER_OPTIONS,
+  STATUS_FILTER_MAP,
+} from "./constants"
+import { Drawer, DrawerTrigger } from "@/shared/ui/drawer"
+import { SemesterRegisterDrawer } from "./SemesterRegisterDrawer"
 
 const getSemesterData = async () => {
   try {
@@ -73,9 +57,11 @@ export default function SemestersPage() {
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection />
-      <CardSection />
-
+      <Drawer direction="right">
+        <TitleSection />
+        <CardSection />
+        <SemesterRegisterDrawer />
+      </Drawer>
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
         <FlexBox className="justify-between">
           <Input
@@ -137,9 +123,9 @@ const TitleSection = () => {
         <Title title="기수 관리" />
         <Description title="DDD 활동 기수를 등록하고 상태를 관리합니다." />
       </header>
-      <Button size="lg">
+      <DrawerTrigger>
         <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />새 기수 등록
-      </Button>
+      </DrawerTrigger>
     </FlexBox>
   )
 }

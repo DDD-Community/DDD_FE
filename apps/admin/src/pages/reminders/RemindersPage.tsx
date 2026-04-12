@@ -20,26 +20,13 @@ import {
 } from "@/shared/ui/Table"
 import { Title, Description } from "@/widgets/heading"
 
-import type { ReminderInfo, ReminderRole, ReminderStatus } from "./types"
-
-const ROLE_LABEL: Record<ReminderRole, string> = {
-  developer: "개발자",
-  designer: "디자이너",
-  planner: "기획자",
-}
-
-const STATUS_LABEL: Record<ReminderStatus, string> = {
-  pending: "대기",
-  notified: "발송 완료",
-}
-
-const STATUS_FILTER_OPTIONS = ["전체", "대기", "발송 완료"]
-
-const STATUS_FILTER_MAP: Record<string, ReminderStatus | null> = {
-  전체: null,
-  대기: "pending",
-  "발송 완료": "notified",
-}
+import type { ReminderInfo } from "./types"
+import {
+  ROLE_LABEL,
+  STATUS_LABEL,
+  STATUS_FILTER_OPTIONS,
+  STATUS_FILTER_MAP,
+} from "./constants"
 
 const getReminderData = async () => {
   try {

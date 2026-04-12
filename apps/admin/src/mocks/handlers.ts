@@ -1,10 +1,10 @@
 import type { RequestHandler } from "msw"
 
-import { semesterHandlers } from "@/pages/semesters/semester.handlers"
-import { reminderHandlers } from "@/pages/reminders/reminder.handlers"
-import { applicationHandlers } from "@/pages/applications/application.handlers"
-import { projectHandlers } from "@/pages/projects/project.handlers"
-import { blogPostHandlers } from "@/pages/blog-posts/blog-post.handlers"
+import { semesterHandlers } from "@/pages/semesters/mockApi"
+import { reminderHandlers } from "@/pages/reminders/mockApi"
+import { applicationHandlers } from "@/pages/applications/mockApi"
+import { projectHandlers } from "@/pages/projects/mockApi"
+import { blogPostHandlers } from "@/pages/blog-posts/mockApi"
 
 /**
  * MSW 핸들러 목록
