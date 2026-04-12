@@ -4,20 +4,10 @@ import { api } from "@ddd/api"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
-import { Card } from "@/shared/ui/Card"
+import { Button, Input, Table } from "@heroui/react"
+
 import { GridBox } from "@/shared/ui/GridBox"
 import { FlexBox } from "@/shared/ui/FlexBox"
-import { Button } from "@/shared/ui/button"
-import { Input } from "@/shared/ui/input"
-import { Select } from "@/shared/ui/Select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-} from "@/shared/ui/Table"
 import { Title, Description } from "@/widgets/heading"
 
 import type { ReminderInfo } from "./types"
@@ -71,49 +61,59 @@ export default function RemindersPage() {
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <Select
-            items={STATUS_FILTER_OPTIONS}
-            className="max-w-36"
+          <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-          />
+            className="max-w-36 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm"
+          >
+            {STATUS_FILTER_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </FlexBox>
 
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>이름</TableHeaderCell>
-              <TableHeaderCell>이메일</TableHeaderCell>
-              <TableHeaderCell>직군</TableHeaderCell>
-              <TableHeaderCell>관심 기수</TableHeaderCell>
-              <TableHeaderCell>신청일</TableHeaderCell>
-              <TableHeaderCell>상태</TableHeaderCell>
-              <TableHeaderCell>액션</TableHeaderCell>
-            </TableRow>
-          </TableHead>
+          <Table.ScrollContainer>
+            <Table.Content
+              aria-label="알림 신청 목록"
+              className="min-w-[800px]"
+            >
+              <Table.Header>
+                <Table.Column isRowHeader>이름</Table.Column>
+                <Table.Column>이메일</Table.Column>
+                <Table.Column>직군</Table.Column>
+                <Table.Column>관심 기수</Table.Column>
+                <Table.Column>신청일</Table.Column>
+                <Table.Column>상태</Table.Column>
+                <Table.Column>액션</Table.Column>
+              </Table.Header>
 
-          <TableBody>
-            {filteredReminders.map((reminder) => (
-              <TableRow key={reminder.id}>
-                <TableCell>{reminder.name}</TableCell>
-                <TableCell>{reminder.email}</TableCell>
-                <TableCell>{ROLE_LABEL[reminder.role]}</TableCell>
-                <TableCell>{reminder.semester}</TableCell>
-                <TableCell>
-                  {new Date(reminder.appliedAt).toLocaleDateString("ko-KR")}
-                </TableCell>
-                <TableCell>{STATUS_LABEL[reminder.status]}</TableCell>
-                <TableCell>
-                  <Button size="sm" variant="outline" className="mr-2">
-                    발송
-                  </Button>
-                  <Button size="sm" variant="destructive">
-                    취소
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+              <Table.Body>
+                {filteredReminders.map((reminder) => (
+                  <Table.Row key={reminder.id}>
+                    <Table.Cell>{reminder.name}</Table.Cell>
+                    <Table.Cell>{reminder.email}</Table.Cell>
+                    <Table.Cell>{ROLE_LABEL[reminder.role]}</Table.Cell>
+                    <Table.Cell>{reminder.semester}</Table.Cell>
+                    <Table.Cell>
+                      {new Date(reminder.appliedAt).toLocaleDateString("ko-KR")}
+                    </Table.Cell>
+                    <Table.Cell>{STATUS_LABEL[reminder.status]}</Table.Cell>
+                    <Table.Cell>
+                      <Button size="sm" variant="outline" className="mr-2">
+                        발송
+                      </Button>
+                      <Button size="sm" variant="danger">
+                        취소
+                      </Button>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Content>
+          </Table.ScrollContainer>
         </Table>
       </div>
     </div>
@@ -139,27 +139,27 @@ type CardSectionProps = { total: number }
 
 const CardSection = ({ total }: CardSectionProps) => {
   return (
-    <GridBox>
-      <Card
-        renderTitle={() => "전체 신청"}
-        renderDescription={() => `${total}명`}
-        renderAdditionalInfo={() => "누적 알림 신청 수"}
-      />
-      <Card
-        renderTitle={() => "대기"}
-        renderDescription={() => "발송 예정"}
-        renderAdditionalInfo={() => "알림 미발송 신청"}
-      />
-      <Card
-        renderTitle={() => "발송 완료"}
-        renderDescription={() => "알림 발송됨"}
-        renderAdditionalInfo={() => "모집 시작 알림 발송"}
-      />
-      <Card
-        renderTitle={() => "취소"}
-        renderDescription={() => "신청 취소됨"}
-        renderAdditionalInfo={() => "사용자 취소 건수"}
-      />
+    <GridBox className="grid-cols-4 gap-5">
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">전체 신청</h3>
+        <p className="text-2xl font-bold">{total}명</p>
+        <p className="text-sm text-gray-500">누적 알림 신청 수</p>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">대기</h3>
+        <p className="text-2xl font-bold">발송 예정</p>
+        <p className="text-sm text-gray-500">알림 미발송 신청</p>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">발송 완료</h3>
+        <p className="text-2xl font-bold">알림 발송됨</p>
+        <p className="text-sm text-gray-500">모집 시작 알림 발송</p>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">취소</h3>
+        <p className="text-2xl font-bold">신청 취소됨</p>
+        <p className="text-sm text-gray-500">사용자 취소 건수</p>
+      </div>
     </GridBox>
   )
 }

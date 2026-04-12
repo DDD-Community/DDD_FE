@@ -4,18 +4,9 @@ import { api } from "@ddd/api"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
+import { Button, Input, Table, Select, ListBox } from "@heroui/react"
+
 import { FlexBox } from "@/shared/ui/FlexBox"
-import { Button } from "@/shared/ui/button"
-import { Input } from "@/shared/ui/input"
-import { Select } from "@/shared/ui/Select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-} from "@/shared/ui/Table"
 import { Title, Description } from "@/widgets/heading"
 
 import type { BlogPostInfo } from "./types"
@@ -62,56 +53,73 @@ export default function BlogPostsPage() {
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
         <FlexBox className="justify-between">
           <Input
+            variant="secondary"
             placeholder="제목 또는 작성자 검색..."
             className="max-w-xs"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <Select
-            items={STATUS_FILTER_OPTIONS}
-            className="max-w-36"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          />
+          <Select variant="secondary" className="max-w-36">
+            <Select.Trigger>
+              <Select.Value>{statusFilter}</Select.Value>
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                {STATUS_FILTER_OPTIONS.map((option) => (
+                  <ListBox.Item
+                    key={option}
+                    id={option}
+                    textValue={option}
+                    onClick={() => setStatusFilter(option)}
+                  >
+                    {option}
+                  </ListBox.Item>
+                ))}
+              </ListBox>
+            </Select.Popover>
+          </Select>
         </FlexBox>
 
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>제목</TableHeaderCell>
-              <TableHeaderCell>작성자</TableHeaderCell>
-              <TableHeaderCell>카테고리</TableHeaderCell>
-              <TableHeaderCell>상태</TableHeaderCell>
-              <TableHeaderCell>게시일</TableHeaderCell>
-              <TableHeaderCell>등록일</TableHeaderCell>
-              <TableHeaderCell>액션</TableHeaderCell>
-            </TableRow>
-          </TableHead>
+          <Table.ScrollContainer>
+            <Table.Content aria-label="블로그 목록" className="min-w-[900px]">
+              <Table.Header>
+                <Table.Column isRowHeader>제목</Table.Column>
+                <Table.Column>작성자</Table.Column>
+                <Table.Column>카테고리</Table.Column>
+                <Table.Column>상태</Table.Column>
+                <Table.Column>게시일</Table.Column>
+                <Table.Column>등록일</Table.Column>
+                <Table.Column>액션</Table.Column>
+              </Table.Header>
 
-          <TableBody>
-            {filteredBlogPosts.map((blogPost) => (
-              <TableRow key={blogPost.id}>
-                <TableCell>{blogPost.title}</TableCell>
-                <TableCell>{blogPost.author}</TableCell>
-                <TableCell>{blogPost.category}</TableCell>
-                <TableCell>{STATUS_LABEL[blogPost.status]}</TableCell>
-                <TableCell>
-                  {new Date(blogPost.publishedAt).toLocaleDateString("ko-KR")}
-                </TableCell>
-                <TableCell>
-                  {new Date(blogPost.createdAt).toLocaleDateString("ko-KR")}
-                </TableCell>
-                <TableCell>
-                  <Button size="sm" variant="outline" className="mr-2">
-                    수정
-                  </Button>
-                  <Button size="sm" variant="destructive">
-                    삭제
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+              <Table.Body>
+                {filteredBlogPosts.map((blogPost) => (
+                  <Table.Row key={blogPost.id}>
+                    <Table.Cell>{blogPost.title}</Table.Cell>
+                    <Table.Cell>{blogPost.author}</Table.Cell>
+                    <Table.Cell>{blogPost.category}</Table.Cell>
+                    <Table.Cell>{STATUS_LABEL[blogPost.status]}</Table.Cell>
+                    <Table.Cell>
+                      {new Date(blogPost.publishedAt).toLocaleDateString("ko-KR")}
+                    </Table.Cell>
+                    <Table.Cell>
+                      {new Date(blogPost.createdAt).toLocaleDateString("ko-KR")}
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Button size="sm" variant="outline" className="mr-2">
+                        수정
+                      </Button>
+                      <Button size="sm" variant="danger">
+                        삭제
+                      </Button>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Content>
+          </Table.ScrollContainer>
         </Table>
       </div>
     </div>

@@ -4,18 +4,9 @@ import { api } from "@ddd/api"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
+import { Button, Input, Table, Select, ListBox } from "@heroui/react"
+
 import { FlexBox } from "@/shared/ui/FlexBox"
-import { Button } from "@/shared/ui/button"
-import { Input } from "@/shared/ui/input"
-import { Select } from "@/shared/ui/Select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-} from "@/shared/ui/Table"
 import { Title, Description } from "@/widgets/heading"
 
 import type { ProjectInfo } from "./types"
@@ -59,54 +50,71 @@ export default function ProjectsPage() {
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
         <FlexBox className="justify-between">
           <Input
+            variant="secondary"
             placeholder="프로젝트명 검색..."
             className="max-w-xs"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <Select
-            items={STATUS_FILTER_OPTIONS}
-            className="max-w-36"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          />
+          <Select variant="secondary" className="max-w-36">
+            <Select.Trigger>
+              <Select.Value>{statusFilter}</Select.Value>
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                {STATUS_FILTER_OPTIONS.map((option) => (
+                  <ListBox.Item
+                    key={option}
+                    id={option}
+                    textValue={option}
+                    onClick={() => setStatusFilter(option)}
+                  >
+                    {option}
+                  </ListBox.Item>
+                ))}
+              </ListBox>
+            </Select.Popover>
+          </Select>
         </FlexBox>
 
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>프로젝트명</TableHeaderCell>
-              <TableHeaderCell>설명</TableHeaderCell>
-              <TableHeaderCell>기수</TableHeaderCell>
-              <TableHeaderCell>팀원 수</TableHeaderCell>
-              <TableHeaderCell>상태</TableHeaderCell>
-              <TableHeaderCell>등록일</TableHeaderCell>
-              <TableHeaderCell>액션</TableHeaderCell>
-            </TableRow>
-          </TableHead>
+          <Table.ScrollContainer>
+            <Table.Content aria-label="프로젝트 목록" className="min-w-[900px]">
+              <Table.Header>
+                <Table.Column isRowHeader>프로젝트명</Table.Column>
+                <Table.Column>설명</Table.Column>
+                <Table.Column>기수</Table.Column>
+                <Table.Column>팀원 수</Table.Column>
+                <Table.Column>상태</Table.Column>
+                <Table.Column>등록일</Table.Column>
+                <Table.Column>액션</Table.Column>
+              </Table.Header>
 
-          <TableBody>
-            {filteredProjects.map((project) => (
-              <TableRow key={project.id}>
-                <TableCell>{project.name}</TableCell>
-                <TableCell>{project.description}</TableCell>
-                <TableCell>{project.semester}</TableCell>
-                <TableCell>{project.memberCount}</TableCell>
-                <TableCell>{STATUS_LABEL[project.status]}</TableCell>
-                <TableCell>
-                  {new Date(project.createdAt).toLocaleDateString("ko-KR")}
-                </TableCell>
-                <TableCell>
-                  <Button size="sm" variant="outline" className="mr-2">
-                    수정
-                  </Button>
-                  <Button size="sm" variant="destructive">
-                    삭제
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+              <Table.Body>
+                {filteredProjects.map((project) => (
+                  <Table.Row key={project.id}>
+                    <Table.Cell>{project.name}</Table.Cell>
+                    <Table.Cell>{project.description}</Table.Cell>
+                    <Table.Cell>{project.semester}</Table.Cell>
+                    <Table.Cell>{project.memberCount}</Table.Cell>
+                    <Table.Cell>{STATUS_LABEL[project.status]}</Table.Cell>
+                    <Table.Cell>
+                      {new Date(project.createdAt).toLocaleDateString("ko-KR")}
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Button size="sm" variant="outline" className="mr-2">
+                        수정
+                      </Button>
+                      <Button size="sm" variant="danger">
+                        삭제
+                      </Button>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Content>
+          </Table.ScrollContainer>
         </Table>
       </div>
     </div>

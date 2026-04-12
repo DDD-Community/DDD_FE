@@ -3,16 +3,14 @@ import { MinusSignIcon, PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
 import {
-  DrawerClose,
-  DrawerContent,
+  Button,
+  Input,
+  TextArea,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle,
-} from "@/shared/ui/drawer"
-import { Button } from "@/shared/ui/button"
-import { Input } from "@/shared/ui/input"
-import { Textarea } from "@/shared/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs"
+  DrawerBody,
+  Tabs,
+} from "@heroui/react"
 
 import {
   CURRICULUM_WEEK_COUNT,
@@ -52,7 +50,13 @@ const createInitialForm = (): SemesterRegisterForm => ({
   },
 })
 
-export function SemesterRegisterDrawer() {
+interface SemesterRegisterDrawerProps {
+  onClose: () => void
+}
+
+export function SemesterRegisterDrawer({
+  onClose,
+}: SemesterRegisterDrawerProps) {
   const [form, setForm] = useState<SemesterRegisterForm>(createInitialForm)
 
   const handleBasicChange = (
@@ -124,15 +128,16 @@ export function SemesterRegisterDrawer() {
   const handleSubmit = () => {
     // TODO: 실제 API 연동 시 여기서 mutate 호출
     console.log("등록:", form)
+    onClose()
   }
 
   return (
-    <DrawerContent className="min-w-full md:min-w-1/2">
-      <DrawerHeader>
-        <DrawerTitle>신규 기수 등록</DrawerTitle>
+    <>
+      <DrawerHeader className="flex flex-col gap-1">
+        <h2 className="text-lg font-semibold">신규 기수 등록</h2>
       </DrawerHeader>
 
-      <div className="flex-1 space-y-8 overflow-y-auto px-4 pb-4">
+      <DrawerBody className="flex-1 space-y-8 overflow-y-auto">
         <BasicInfoSection form={form} onChange={handleBasicChange} />
         <ProcessSection process={form.process} onChange={handleProcessChange} />
         <CurriculumSection
@@ -145,13 +150,15 @@ export function SemesterRegisterDrawer() {
           onAddQuestion={addQuestion}
           onRemoveQuestion={removeQuestion}
         />
-      </div>
+      </DrawerBody>
 
-      <DrawerFooter className="flex-row justify-end gap-2">
-        <DrawerClose>취소</DrawerClose>
-        <Button onClick={handleSubmit}>등록</Button>
+      <DrawerFooter>
+        <Button onPress={onClose} variant="outline">
+          취소
+        </Button>
+        <Button onPress={handleSubmit}>등록</Button>
       </DrawerFooter>
-    </DrawerContent>
+    </>
   )
 }
 
@@ -172,7 +179,7 @@ function BasicInfoSection({ form, onChange }: BasicInfoSectionProps) {
   return (
     <section className="space-y-4">
       <SectionTitle>기본 정보</SectionTitle>
-      <GridBox cols={{ base: 2, md: 2 }}>
+      <GridBox className="grid-cols-2 gap-x-5">
         <FormField label="기수">
           <Input
             type="text"
@@ -183,7 +190,7 @@ function BasicInfoSection({ form, onChange }: BasicInfoSectionProps) {
         </FormField>
         <FormField label="상태">
           <select
-            className="h-9 w-full rounded-md border border-input bg-transparent px-2.5 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+            className="border-input focus-visible:border-ring focus-visible:ring-ring/50 dark:bg-input/30 h-9 w-full rounded-md border bg-transparent px-2.5 py-1 text-sm shadow-xs outline-none focus-visible:ring-3"
             value={form.status}
             onChange={(e) =>
               onChange(
@@ -278,7 +285,7 @@ function CurriculumSection({ curriculum, onChange }: CurriculumSectionProps) {
       <div className="space-y-3">
         {curriculum.map((week, index) => (
           <div key={index} className="flex items-center gap-2">
-            <span className="w-12 shrink-0 text-sm text-muted-foreground">
+            <span className="w-12 shrink-0 text-sm text-gray-500">
               {index + 1}주차
             </span>
             <Input
@@ -315,16 +322,20 @@ function ApplicationFormSection({
   return (
     <section className="space-y-4">
       <SectionTitle>파트별 지원서 양식</SectionTitle>
-      <Tabs defaultValue={SEMESTER_PARTS[0]}>
-        <TabsList className="h-auto flex-wrap gap-1">
-          {SEMESTER_PARTS.map((part) => (
-            <TabsTrigger key={part} value={part}>
-              {part}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <Tabs>
+        <Tabs.ListContainer>
+          <Tabs.List aria-label="파트별 지원서">
+            {SEMESTER_PARTS.map((part) => (
+              <Tabs.Tab key={part} id={part}>
+                {part}
+                <Tabs.Indicator />
+              </Tabs.Tab>
+            ))}
+          </Tabs.List>
+        </Tabs.ListContainer>
+
         {SEMESTER_PARTS.map((part) => (
-          <TabsContent key={part} value={part} className="space-y-3">
+          <Tabs.Panel key={part} id={part} className="space-y-3 py-4">
             {applicationForms[part].map((question, qIndex) => (
               <div key={qIndex} className="space-y-1.5">
                 <div className="flex items-center justify-between">
@@ -333,15 +344,16 @@ function ApplicationFormSection({
                   </label>
                   {applicationForms[part].length > 1 && (
                     <Button
-                      size="icon-sm"
-                      variant="ghost"
-                      onClick={() => onRemoveQuestion(part, qIndex)}
+                      isIconOnly
+                      variant="outline"
+                      size="sm"
+                      onPress={() => onRemoveQuestion(part, qIndex)}
                     >
                       <HugeiconsIcon icon={MinusSignIcon} />
                     </Button>
                   )}
                 </div>
-                <Textarea
+                <TextArea
                   placeholder="질문을 입력하세요"
                   value={question}
                   onChange={(e) =>
@@ -354,12 +366,12 @@ function ApplicationFormSection({
               size="sm"
               variant="outline"
               className="w-full"
-              onClick={() => onAddQuestion(part)}
+              onPress={() => onAddQuestion(part)}
             >
               <HugeiconsIcon icon={PlusSignIcon} className="mr-1" />
               질문 추가
             </Button>
-          </TabsContent>
+          </Tabs.Panel>
         ))}
       </Tabs>
     </section>

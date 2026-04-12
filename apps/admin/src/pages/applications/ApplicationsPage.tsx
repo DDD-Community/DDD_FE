@@ -1,21 +1,11 @@
 import { useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { api } from "@ddd/api"
+import { Button, Input, Table } from "@heroui/react"
+
 import { Title, Description } from "@/widgets/heading"
-import { Card } from "@/shared/ui/Card"
 import { GridBox } from "@/shared/ui/GridBox"
 import { FlexBox } from "@/shared/ui/FlexBox"
-import { Button } from "@/shared/ui/button"
-import { Input } from "@/shared/ui/input"
-import { Select } from "@/shared/ui/Select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-} from "@/shared/ui/Table"
 
 import type { ApplicationInfo } from "./types"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -70,46 +60,55 @@ export default function ApplicationsPage() {
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <Select
-            items={STATUS_FILTER_OPTIONS}
-            className="max-w-36"
+          <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-          />
+            className="max-w-36 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm"
+          >
+            {STATUS_FILTER_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </FlexBox>
 
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>이름</TableHeaderCell>
-              <TableHeaderCell>이메일</TableHeaderCell>
-              <TableHeaderCell>직군</TableHeaderCell>
-              <TableHeaderCell>지원 기수</TableHeaderCell>
-              <TableHeaderCell>지원일</TableHeaderCell>
-              <TableHeaderCell>상태</TableHeaderCell>
-              <TableHeaderCell>액션</TableHeaderCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredApplications.map((application) => (
-              <TableRow key={application.id}>
-                <TableCell>{application.name}</TableCell>
-                <TableCell>{application.email}</TableCell>
-                <TableCell>{ROLE_LABEL[application.role]}</TableCell>
-                <TableCell>{application.semester}</TableCell>
-                <TableCell>
-                  {new Date(application.appliedAt).toLocaleDateString("ko-KR")}
-                </TableCell>
-                <TableCell>{STATUS_LABEL[application.status]}</TableCell>
-                <TableCell>
-                  <Button size="sm" variant="outline" className="mr-2">
-                    수정
-                  </Button>
-                  <Button size="sm">합격 처리</Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+          <Table.ScrollContainer>
+            <Table.Content aria-label="지원자 목록" className="min-w-[800px]">
+              <Table.Header>
+                <Table.Column isRowHeader>이름</Table.Column>
+                <Table.Column>이메일</Table.Column>
+                <Table.Column>직군</Table.Column>
+                <Table.Column>지원 기수</Table.Column>
+                <Table.Column>지원일</Table.Column>
+                <Table.Column>상태</Table.Column>
+                <Table.Column>액션</Table.Column>
+              </Table.Header>
+              <Table.Body>
+                {filteredApplications.map((application) => (
+                  <Table.Row key={application.id}>
+                    <Table.Cell>{application.name}</Table.Cell>
+                    <Table.Cell>{application.email}</Table.Cell>
+                    <Table.Cell>{ROLE_LABEL[application.role]}</Table.Cell>
+                    <Table.Cell>{application.semester}</Table.Cell>
+                    <Table.Cell>
+                      {new Date(application.appliedAt).toLocaleDateString(
+                        "ko-KR"
+                      )}
+                    </Table.Cell>
+                    <Table.Cell>{STATUS_LABEL[application.status]}</Table.Cell>
+                    <Table.Cell>
+                      <Button size="sm" variant="outline" className="mr-2">
+                        수정
+                      </Button>
+                      <Button size="sm">합격 처리</Button>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Content>
+          </Table.ScrollContainer>
         </Table>
       </div>
     </div>
@@ -135,32 +134,32 @@ type CardSectionProps = { total: number }
 
 const CardSection = ({ total }: CardSectionProps) => {
   return (
-    <GridBox className="lg:grid-cols-5">
-      <Card
-        renderTitle={() => "전체 지원"}
-        renderDescription={() => `${total}명`}
-        renderAdditionalInfo={() => "14기 기준"}
-      />
-      <Card
-        renderTitle={() => "대기"}
-        renderDescription={() => "서류 대기"}
-        renderAdditionalInfo={() => "검토 필요"}
-      />
-      <Card
-        renderTitle={() => "면접 대기"}
-        renderDescription={() => "18명"}
-        renderAdditionalInfo={() => "면접 대상자"}
-      />
-      <Card
-        renderTitle={() => "면접 합격"}
-        renderDescription={() => "18명"}
-        renderAdditionalInfo={() => "활동 예정"}
-      />
-      <Card
-        renderTitle={() => "활동중"}
-        renderDescription={() => "0명"}
-        renderAdditionalInfo={() => "현재 활동"}
-      />
+    <GridBox className="grid-cols-5 gap-5">
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">전체 지원</h3>
+        <p className="text-2xl font-bold">{total}명</p>
+        <p className="text-sm text-gray-500">14기 기준</p>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">대기</h3>
+        <p className="text-2xl font-bold">서류 대기</p>
+        <p className="text-sm text-gray-500">검토 필요</p>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">면접 대기</h3>
+        <p className="text-2xl font-bold">18명</p>
+        <p className="text-sm text-gray-500">면접 대상자</p>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">면접 합격</h3>
+        <p className="text-2xl font-bold">18명</p>
+        <p className="text-sm text-gray-500">활동 예정</p>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">활동중</h3>
+        <p className="text-2xl font-bold">0명</p>
+        <p className="text-sm text-gray-500">현재 활동</p>
+      </div>
     </GridBox>
   )
 }
