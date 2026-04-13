@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
-import styled from '@emotion/styled';
-import { assets } from '@/constants/assets';
-import { colors, fontSizes, fontWeights, lineHeights } from '@/constants/tokens';
+import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import styled from "@emotion/styled";
+import { assets } from "@/constants/assets";
+import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
 
 const ARTICLES = [
   {
-    id: '1',
-    title: '픽셀을 넘어 공간으로: AI 시대, 디자이너가 XR에 주목해야 하는 이유',
+    id: "1",
+    title: "픽셀을 넘어 공간으로: AI 시대, 디자이너가 XR에 주목해야 하는 이유",
     description:
       "오늘은 요즘 디자이너들 사이에서 가장 뜨거운 화두인 'AI', 그리고 그 너머의 'Next Generation'에 대해 이야기해 보려 합니다. 오늘은 요즘 디자이너들 사이에서 가장 뜨거운 화두인 'AI', 그리고 그 너머의 'Next Generation'에 대해 이야기해 보려 합니다.",
     thumbnail: assets.blogThumbnails[0],
   },
   {
-    id: '2',
-    title: '픽셀을 넘어 공간으로: AI 시대, 디자이너가 XR에 주목해야 하는 이유',
+    id: "2",
+    title: "픽셀을 넘어 공간으로: AI 시대, 디자이너가 XR에 주목해야 하는 이유",
     description:
       "오늘은 요즘 디자이너들 사이에서 가장 뜨거운 화두인 'AI', 그리고 그 너머의 'Next Generation'에 대해 이야기해 보려 합니다. 오늘은 요즘 디자이너들 사이에서 가장 뜨거운 화두인 'AI', 그리고 그 너머의 'Next Generation'에 대해 이야기해 보려 합니다.",
     thumbnail: assets.blogThumbnails[1],
@@ -25,32 +25,32 @@ const ARTICLES = [
 
 const Section = styled.section({
   background: colors.background,
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-  padding: '120px 320px',
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-start",
+  padding: "120px 80px",
 
-  '@media (max-width: 1024px)': { padding: '120px 80px' },
-  '@media (max-width: 768px)': { padding: '100px 40px' },
-  '@media (max-width: 375px)': { padding: '80px 16px' },
+  "@media (max-width: 1024px)": { padding: "120px 80px" },
+  "@media (max-width: 768px)": { padding: "100px 40px" },
+  "@media (max-width: 375px)": { padding: "80px 16px" },
 });
 
 const Inner = styled.div({
-  width: '100%',
-  maxWidth: '1920px',
-  margin: '0 auto',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '40px',
+  width: "100%",
+  maxWidth: "1280px",
+  margin: "0 auto",
+  display: "flex",
+  flexDirection: "column",
+  gap: "40px",
 });
 
 const TitleArea = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '24px',
+  display: "flex",
+  flexDirection: "column",
+  gap: "24px",
 
-  '@media (max-width: 375px)': {
-    gap: '16px',
+  "@media (max-width: 375px)": {
+    gap: "16px",
   },
 });
 
@@ -61,16 +61,16 @@ const SectionLabel = styled.p({
   lineHeight: lineHeights.paragraphLarge,
   color: colors.textInverse,
 
-  '@media (max-width: 375px)': {
+  "@media (max-width: 375px)": {
     fontSize: fontSizes.small,
     lineHeight: lineHeights.small,
   },
 });
 
 const TitleGroup = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px',
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
 });
 
 const SectionTitle = styled.h2({
@@ -80,13 +80,13 @@ const SectionTitle = styled.h2({
   lineHeight: lineHeights.headingXl,
   color: colors.textInverse,
 
-  '@media (max-width: 768px)': {
-    fontSize: '30px',
-    lineHeight: '36px',
+  "@media (max-width: 768px)": {
+    fontSize: "30px",
+    lineHeight: "36px",
   },
-  '@media (max-width: 375px)': {
-    fontSize: '24px',
-    lineHeight: '30px',
+  "@media (max-width: 375px)": {
+    fontSize: "24px",
+    lineHeight: "30px",
   },
 });
 
@@ -97,81 +97,81 @@ const SectionSubtitle = styled.p({
   lineHeight: lineHeights.headingLarge,
   color: colors.textInverse,
 
-  '@media (max-width: 768px)': {
-    fontSize: '20px',
-    lineHeight: '25px',
+  "@media (max-width: 768px)": {
+    fontSize: "20px",
+    lineHeight: "25px",
   },
-  '@media (max-width: 375px)': {
-    fontSize: '14px',
-    lineHeight: '18px',
+  "@media (max-width: 375px)": {
+    fontSize: "14px",
+    lineHeight: "18px",
   },
 });
 
 const ArticleList = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '24px',
-  width: '100%',
+  display: "flex",
+  flexDirection: "column",
+  gap: "24px",
+  width: "100%",
 
-  '@media (max-width: 768px)': {
-    flexDirection: 'row',
-    overflowX: 'auto',
-    scrollSnapType: 'x mandatory',
-    gap: '12px',
-    WebkitOverflowScrolling: 'touch',
-    scrollbarWidth: 'none',
-    msOverflowStyle: 'none',
+  "@media (max-width: 768px)": {
+    flexDirection: "row",
+    overflowX: "auto",
+    scrollSnapType: "x mandatory",
+    gap: "12px",
+    WebkitOverflowScrolling: "touch",
+    scrollbarWidth: "none",
+    msOverflowStyle: "none",
 
-    '&::-webkit-scrollbar': {
-      display: 'none',
+    "&::-webkit-scrollbar": {
+      display: "none",
     },
   },
 });
 
 const ArticleCard = styled.article({
-  display: 'flex',
-  gap: '25px',
-  alignItems: 'center',
-  background: 'white',
-  borderRadius: '30px',
-  overflow: 'hidden',
-  height: '324px',
-  paddingRight: '25px',
+  display: "flex",
+  gap: "25px",
+  alignItems: "center",
+  background: "white",
+  borderRadius: "30px",
+  overflow: "hidden",
+  height: "324px",
+  paddingRight: "25px",
 
-  '@media (max-width: 768px)': {
-    height: '189px',
-    borderRadius: '20px',
-    padding: '20px',
-    minWidth: '100%',
-    flex: '0 0 100%',
-    scrollSnapAlign: 'start',
+  "@media (max-width: 768px)": {
+    height: "189px",
+    borderRadius: "20px",
+    padding: "20px",
+    minWidth: "100%",
+    flex: "0 0 100%",
+    scrollSnapAlign: "start",
   },
 });
 
 const ArticleThumbnail = styled.div({
-  width: '410px',
-  height: '100%',
+  width: "410px",
+  height: "100%",
   flexShrink: 0,
 
-  '& img': {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
+  "& img": {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
   },
 
-  '@media (max-width: 768px)': {
-    display: 'none',
+  "@media (max-width: 768px)": {
+    display: "none",
   },
 });
 
 const ArticleContent = styled.div({
-  flex: '1 0 0',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '12px',
+  flex: "1 0 0",
+  display: "flex",
+  flexDirection: "column",
+  gap: "12px",
   minWidth: 0,
 
-  '@media (max-width: 768px)': {
+  "@media (max-width: 768px)": {
     padding: 0,
   },
 });
@@ -183,13 +183,13 @@ const ArticleTitle = styled.h3({
   lineHeight: lineHeights.headingLarge,
   color: colors.textPrimary,
 
-  '@media (max-width: 768px)': {
-    fontSize: '24px',
-    lineHeight: '30px',
+  "@media (max-width: 768px)": {
+    fontSize: "24px",
+    lineHeight: "30px",
   },
-  '@media (max-width: 375px)': {
-    fontSize: '16px',
-    lineHeight: '20px',
+  "@media (max-width: 375px)": {
+    fontSize: "16px",
+    lineHeight: "20px",
   },
 });
 
@@ -199,84 +199,84 @@ const ArticleDescription = styled.p({
   fontWeight: fontWeights.regular,
   lineHeight: lineHeights.paragraphMedium,
   color: colors.textSecondary,
-  overflow: 'hidden',
-  display: '-webkit-box',
+  overflow: "hidden",
+  display: "-webkit-box",
   WebkitLineClamp: 3,
-  WebkitBoxOrient: 'vertical',
+  WebkitBoxOrient: "vertical",
 
-  '@media (max-width: 768px)': {
-    fontSize: '14px',
-    lineHeight: '18px',
+  "@media (max-width: 768px)": {
+    fontSize: "14px",
+    lineHeight: "18px",
     WebkitLineClamp: 2,
   },
-  '@media (max-width: 375px)': {
-    fontSize: '12px',
-    lineHeight: '15px',
+  "@media (max-width: 375px)": {
+    fontSize: "12px",
+    lineHeight: "15px",
   },
 });
 
 const ContentAndButton = styled.div({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: '40px',
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "40px",
 });
 
 const MobileBulletRow = styled.div({
-  display: 'none',
+  display: "none",
 
-  '@media (max-width: 768px)': {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '10px',
+  "@media (max-width: 768px)": {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
   },
 });
 
 const MobileBullet = styled.button<{ active: boolean }>(({ active }) => ({
-  width: '10px',
-  height: '10px',
-  borderRadius: '50%',
+  width: "10px",
+  height: "10px",
+  borderRadius: "50%",
   background: active ? colors.slate500 : colors.slate200,
   opacity: active ? 1 : 0.9,
-  border: 'none',
+  border: "none",
   padding: 0,
-  cursor: 'pointer',
+  cursor: "pointer",
 }));
 
 const MoreButton = styled(Link)({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '4px',
-  height: '80px',
-  padding: '20px 50px',
+  display: "flex",
+  alignItems: "center",
+  gap: "4px",
+  height: "80px",
+  padding: "20px 50px",
   background: colors.primary,
-  borderRadius: '100px',
+  borderRadius: "100px",
   color: colors.textInverse,
   fontFamily: "'Pretendard', sans-serif",
   fontSize: fontSizes.large,
   fontWeight: fontWeights.medium,
   lineHeight: lineHeights.paragraphLarge,
-  textDecoration: 'none',
-  whiteSpace: 'nowrap',
+  textDecoration: "none",
+  whiteSpace: "nowrap",
   flexShrink: 0,
-  transition: 'background 0.15s',
+  transition: "background 0.15s",
 
-  '&:hover': {
-    background: '#1f5fe0',
+  "&:hover": {
+    background: "#1f5fe0",
   },
 
-  '@media (max-width: 768px)': {
-    height: '68px',
-    padding: '16px 36px',
-    fontSize: '18px',
-    lineHeight: '24px',
+  "@media (max-width: 768px)": {
+    height: "68px",
+    padding: "16px 36px",
+    fontSize: "18px",
+    lineHeight: "24px",
   },
-  '@media (max-width: 375px)': {
-    height: '56px',
-    padding: '30px 40px',
-    fontSize: '14px',
-    lineHeight: '18px',
+  "@media (max-width: 375px)": {
+    height: "56px",
+    padding: "30px 40px",
+    fontSize: "14px",
+    lineHeight: "18px",
   },
 });
 
@@ -313,7 +313,7 @@ export const BlogSection = () => {
     const target = container.children[index] as HTMLElement | undefined;
     if (!target) return;
 
-    container.scrollTo({ left: target.offsetLeft, behavior: 'smooth' });
+    container.scrollTo({ left: target.offsetLeft, behavior: "smooth" });
     setActiveSlide(index);
   }, []);
 
@@ -322,12 +322,12 @@ export const BlogSection = () => {
     if (!container) return;
 
     const onScroll = () => updateActiveSlide();
-    container.addEventListener('scroll', onScroll, { passive: true });
+    container.addEventListener("scroll", onScroll, { passive: true });
     let raf = 0;
     raf = requestAnimationFrame(() => updateActiveSlide());
 
     return () => {
-      container.removeEventListener('scroll', onScroll);
+      container.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
   }, [updateActiveSlide]);
@@ -340,7 +340,8 @@ export const BlogSection = () => {
           <TitleGroup>
             <SectionTitle>일잘러들의 생각, 글로 남겼어요</SectionTitle>
             <SectionSubtitle>
-              트렌드 분석, 실무 인사이트, 커리어 고민까지. DDD 멤버들이 직접 쓴 아티클을 먼저 만나보세요.
+              트렌드 분석, 실무 인사이트, 커리어 고민까지. DDD 멤버들이 직접 쓴 아티클을 먼저
+              만나보세요.
             </SectionSubtitle>
           </TitleGroup>
         </TitleArea>

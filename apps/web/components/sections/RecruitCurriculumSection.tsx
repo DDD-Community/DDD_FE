@@ -1,112 +1,117 @@
-'use client';
+"use client";
 
-import styled from '@emotion/styled';
-import { assets } from '@/constants/assets';
-import { colors, fontWeights } from '@/constants/tokens';
-import { recruitCurriculum } from '@/constants/recruit';
+import styled from "@emotion/styled";
+import { assets } from "@/constants/assets";
+import { colors, fontWeights } from "@/constants/tokens";
+import { recruitCurriculum } from "@/constants/recruit";
 
 const Section = styled.section({
-  position: 'relative',
+  position: "relative",
   background: colors.background,
-  padding: '120px 320px',
-  overflow: 'hidden',
+  padding: "80px 80px",
+  maxWidth: "1280px",
+  margin: "0 auto",
+  overflow: "hidden",
 
-  '@media (max-width: 1024px)': { padding: '120px 80px' },
-  '@media (max-width: 768px)': { padding: '100px 48px' },
-  '@media (max-width: 375px)': { padding: '80px 20px' },
+  "@media (max-width: 1024px)": { padding: "80px 80px" },
+  "@media (max-width: 768px)": { padding: "80px 40px" },
+  "@media (max-width: 375px)": { padding: "40px 16px" },
 });
 
 const Title = styled.h2({
   margin: 0,
-  textAlign: 'center',
+  textAlign: "center",
   color: colors.textInverse,
-  fontSize: '40px',
-  lineHeight: '50px',
+  fontSize: "40px",
+  lineHeight: "50px",
   fontWeight: fontWeights.bold,
 
-  '@media (max-width: 768px)': { fontSize: '36px', lineHeight: '45px' },
-  '@media (max-width: 375px)': { fontSize: '28px', lineHeight: '32px' },
+  "@media (max-width: 768px)": { fontSize: "36px", lineHeight: "45px" },
+  "@media (max-width: 375px)": { fontSize: "28px", lineHeight: "32px" },
 });
 
 const Grid = styled.div({
-  marginTop: '40px',
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-  gap: '24px',
+  marginTop: "40px",
+  display: "grid",
+  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  gap: "24px",
 
-  '@media (max-width: 768px)': { gridTemplateColumns: '1fr' },
+  "@media (max-width: 768px)": { gridTemplateColumns: "1fr" },
+  "@media (max-width: 375px)": { marginTop: "20px", gap: "8px" },
 });
 
 const Item = styled.article({
-  borderBottom: '1px solid #90a1b9',
-  minHeight: '268px',
-  padding: '32px 0 62px',
-  display: 'grid',
-  gridTemplateColumns: '84px 1fr',
-  gap: '32px',
-  position: 'relative',
+  borderBottom: "1px solid #90a1b9",
+  minHeight: "268px",
+  padding: "32px 0 62px",
+  display: "grid",
+  gridTemplateColumns: "84px 1fr",
+  gap: "32px",
+  position: "relative",
   zIndex: 1,
 
-  '@media (max-width: 375px)': {
-    minHeight: 'auto',
-    gridTemplateColumns: '60px 1fr',
-    gap: '16px',
-    padding: '22px 0 28px',
+  "@media (max-width: 375px)": {
+    width: "337px",
+    minHeight: "187px",
+    gridTemplateColumns: "60px 1fr",
+    gap: "12px",
+    padding: "20px 0",
+    margin: "0 auto",
   },
 });
 
 const Week = styled.p({
   margin: 0,
-  color: '#90a1b9',
-  fontSize: '20px',
-  lineHeight: '25px',
+  color: "#90a1b9",
+  fontSize: "20px",
+  lineHeight: "25px",
   fontWeight: fontWeights.medium,
 
-  '@media (max-width: 375px)': { fontSize: '14px', lineHeight: '18px' },
+  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
 const DateText = styled.p({
   margin: 0,
-  color: '#90a1b9',
-  fontSize: '24px',
-  lineHeight: '30px',
+  color: "#90a1b9",
+  fontSize: "24px",
+  lineHeight: "30px",
   fontWeight: fontWeights.medium,
 
-  '@media (max-width: 375px)': { fontSize: '16px', lineHeight: '20px' },
+  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
 const ItemTitle = styled.h3({
-  margin: '16px 0 0',
+  margin: "16px 0 0",
   color: colors.textInverse,
-  fontSize: '40px',
-  lineHeight: '50px',
+  fontSize: "40px",
+  lineHeight: "50px",
   fontWeight: fontWeights.bold,
 
-  '@media (max-width: 768px)': { fontSize: '34px', lineHeight: '42px' },
-  '@media (max-width: 375px)': { fontSize: '22px', lineHeight: '28px', marginTop: '8px' },
+  "@media (max-width: 768px)": { fontSize: "34px", lineHeight: "42px" },
+  "@media (max-width: 375px)": { fontSize: "20px", lineHeight: "25px", marginTop: "8px" },
 });
 
 const Description = styled.p({
-  margin: '16px 0 0',
+  margin: "16px 0 0",
   color: colors.textInverse,
-  fontSize: '24px',
-  lineHeight: '30px',
+  fontSize: "24px",
+  lineHeight: "30px",
   fontWeight: fontWeights.medium,
 
-  '@media (max-width: 375px)': { fontSize: '14px', lineHeight: '18px', marginTop: '10px' },
+  "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "16px", marginTop: "8px" },
 });
 
 const Floating3D = styled.img({
-  position: 'absolute',
-  left: '50%',
-  top: '38%',
-  width: '610px',
-  transform: 'translateX(-50%) rotate(6deg)',
+  position: "absolute",
+  left: "50%",
+  top: "38%",
+  width: "610px",
+  transform: "translateX(-50%) rotate(6deg)",
   opacity: 0.4,
-  pointerEvents: 'none',
+  pointerEvents: "none",
 
-  '@media (max-width: 768px)': { width: '420px', top: '46%' },
-  '@media (max-width: 375px)': { width: '250px', top: '50%' },
+  "@media (max-width: 768px)": { width: "420px", top: "46%" },
+  "@media (max-width: 375px)": { width: "220px", top: "56%" },
 });
 
 export const RecruitCurriculumSection = () => {

@@ -1,100 +1,102 @@
-'use client';
+"use client";
 
-import styled from '@emotion/styled';
-import { colors, fontWeights } from '@/constants/tokens';
-import { recruitParts } from '@/constants/recruit';
+import styled from "@emotion/styled";
+import { colors, fontWeights } from "@/constants/tokens";
+import { recruitParts } from "@/constants/recruit";
 
 const Section = styled.section({
   background: colors.background,
-  padding: '120px 320px',
+  width: "100%",
+  maxWidth: "1280px",
+  margin: "0 auto",
 
-  '@media (max-width: 1024px)': { padding: '120px 80px' },
-  '@media (max-width: 768px)': { padding: '100px 48px' },
-  '@media (max-width: 375px)': { padding: '80px 20px' },
+  "@media (max-width: 1024px)": { padding: "80px 80px" },
+  "@media (max-width: 768px)": { padding: "80px 40px" },
+  "@media (max-width: 375px)": { padding: "40px 16px" },
 });
 
 const Title = styled.h2({
   margin: 0,
-  textAlign: 'center',
+  textAlign: "center",
   color: colors.textInverse,
-  fontSize: '40px',
-  lineHeight: '50px',
+  fontSize: "40px",
+  lineHeight: "50px",
   fontWeight: fontWeights.bold,
 
-  '@media (max-width: 768px)': { fontSize: '36px', lineHeight: '45px' },
-  '@media (max-width: 375px)': { fontSize: '28px', lineHeight: '32px' },
+  "@media (max-width: 768px)": { fontSize: "36px", lineHeight: "45px" },
+  "@media (max-width: 375px)": { fontSize: "28px", lineHeight: "32px" },
 });
 
 const Grid = styled.div({
-  marginTop: '40px',
-  display: 'grid',
-  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-  gap: '24px',
+  marginTop: "40px",
+  display: "grid",
+  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+  gap: "24px",
 
-  '@media (max-width: 768px)': {
-    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+  "@media (max-width: 768px)": {
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
   },
-  '@media (max-width: 375px)': {
-    gridTemplateColumns: '1fr',
-    gap: '16px',
+  "@media (max-width: 375px)": {
+    gridTemplateColumns: "1fr",
+    gap: "12px",
   },
 });
 
 const Card = styled.article<{ featured?: boolean }>(({ featured }) => ({
-  minHeight: featured ? '360px' : '224px',
-  borderRadius: '30px',
-  padding: '40px',
+  minHeight: featured ? "360px" : "224px",
+  borderRadius: "30px",
+  padding: "40px",
   background: featured ? colors.primary : colors.backgroundDark,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: '20px',
-  textAlign: 'center',
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "20px",
+  textAlign: "center",
 
-  '@media (max-width: 375px)': {
-    minHeight: featured ? '300px' : '190px',
-    padding: '24px',
-    borderRadius: '24px',
+  "@media (max-width: 375px)": {
+    minHeight: featured ? "300px" : "185px",
+    padding: "20px",
+    borderRadius: "24px",
   },
 }));
 
 const RoleName = styled.h3({
   margin: 0,
   color: colors.textInverse,
-  fontSize: '28px',
-  lineHeight: '32px',
+  fontSize: "28px",
+  lineHeight: "32px",
   fontWeight: fontWeights.semiBold,
 
-  '@media (max-width: 375px)': { fontSize: '24px', lineHeight: '28px' },
+  "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "28px" },
 });
 
 const RoleDescription = styled.p({
   margin: 0,
   color: colors.mainLight,
-  fontSize: '20px',
-  lineHeight: '25px',
+  fontSize: "20px",
+  lineHeight: "25px",
   fontWeight: fontWeights.medium,
 
-  '@media (max-width: 375px)': { fontSize: '14px', lineHeight: '18px' },
+  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
 const ApplyButton = styled.button<{ featured?: boolean }>(({ featured }) => ({
-  border: 'none',
-  width: '100%',
-  height: '65px',
-  borderRadius: '100px',
-  background: featured ? '#0a62bb' : '#62748e',
+  border: "none",
+  width: "100%",
+  height: "65px",
+  borderRadius: "100px",
+  background: featured ? "#0a62bb" : "#62748e",
   color: colors.textInverse,
-  fontSize: '20px',
-  lineHeight: '25px',
+  fontSize: "20px",
+  lineHeight: "25px",
   fontWeight: fontWeights.medium,
-  cursor: 'pointer',
+  cursor: "pointer",
 
-  '@media (max-width: 375px)': {
-    height: '52px',
-    fontSize: '14px',
-    lineHeight: '18px',
+  "@media (max-width: 375px)": {
+    height: "40px",
+    fontSize: "14px",
+    lineHeight: "18px",
   },
 }));
 
@@ -105,7 +107,7 @@ export const RecruitRolesSection = () => {
       <Grid>
         {recruitParts.map((part) => (
           <Card key={part.name} featured={part.featured}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
               <RoleName>{part.name}</RoleName>
               {part.description ? <RoleDescription>{part.description}</RoleDescription> : null}
             </div>
