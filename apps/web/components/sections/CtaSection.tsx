@@ -11,9 +11,13 @@ const Section = styled.section({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '120px 40px',
+  padding: '120px 320px',
   gap: '24px',
   textAlign: 'center',
+
+  '@media (max-width: 1024px)': { padding: '120px 80px' },
+  '@media (max-width: 768px)': { padding: '100px 40px' },
+  '@media (max-width: 375px)': { padding: '80px 16px' },
 });
 
 const Inner = styled.div({
@@ -21,6 +25,10 @@ const Inner = styled.div({
   flexDirection: 'column',
   alignItems: 'center',
   gap: '24px',
+
+  '@media (max-width: 375px)': {
+    gap: '16px',
+  },
 });
 
 const Headline = styled.h2({
@@ -29,6 +37,15 @@ const Headline = styled.h2({
   fontWeight: fontWeights.bold,
   lineHeight: lineHeights.headingXl,
   color: colors.textInverse,
+
+  '@media (max-width: 768px)': {
+    fontSize: '30px',
+    lineHeight: '36px',
+  },
+  '@media (max-width: 375px)': {
+    fontSize: '28px',
+    lineHeight: '32px',
+  },
 });
 
 const HeadlineHighlight = styled.span({
@@ -55,6 +72,19 @@ const CtaButton = styled(Link)({
 
   '&:hover': {
     background: '#1f5fe0',
+  },
+
+  '@media (max-width: 768px)': {
+    height: '68px',
+    padding: '16px 36px',
+    fontSize: '18px',
+    lineHeight: '24px',
+  },
+  '@media (max-width: 375px)': {
+    height: '56px',
+    padding: '14px 24px',
+    fontSize: '14px',
+    lineHeight: '18px',
   },
 });
 

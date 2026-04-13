@@ -17,13 +17,17 @@ const Section = styled.section({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  padding: '120px 40px',
+  padding: '120px 320px',
   gap: '24px',
+
+  '@media (max-width: 1024px)': { padding: '120px 80px' },
+  '@media (max-width: 768px)': { padding: '100px 40px' },
+  '@media (max-width: 375px)': { padding: '80px 16px' },
 });
 
 const Inner = styled.div({
   width: '100%',
-  maxWidth: '1280px',
+  maxWidth: '1920px',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -43,6 +47,11 @@ const SectionLabel = styled.p({
   fontWeight: fontWeights.medium,
   lineHeight: lineHeights.paragraphLarge,
   color: colors.textInverse,
+
+  '@media (max-width: 375px)': {
+    fontSize: '20px',
+    lineHeight: '28px',
+  },
 });
 
 const SectionTitle = styled.h2({
@@ -51,6 +60,11 @@ const SectionTitle = styled.h2({
   fontWeight: fontWeights.semiBold,
   lineHeight: lineHeights.headingLarge,
   color: colors.textInverse,
+
+  '@media (max-width: 375px)': {
+    fontSize: '28px',
+    lineHeight: '32px',
+  },
 });
 
 const LogoGrid = styled.div({
@@ -98,6 +112,13 @@ const ContactButton = styled(Link)({
 
   '&:hover': {
     background: '#1f5fe0',
+  },
+
+  '@media (max-width: 375px)': {
+    height: '56px',
+    padding: '30px 40px',
+    fontSize: '14px',
+    lineHeight: '18px',
   },
 });
 

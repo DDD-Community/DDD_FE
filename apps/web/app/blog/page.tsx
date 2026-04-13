@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { Navigation } from '@/components/layout/Navigation';
+import { Footer } from '@/components/layout/Footer';
+import { ArticleListPageSection } from '@/components/sections/ArticleListPageSection';
 
 export const metadata: Metadata = {
   title: "DDD 블로그 - 사이드 프로젝트 인사이트",
@@ -6,5 +9,13 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
-  return <></>;
+  return (
+    <>
+      <Navigation />
+      <main>
+        <ArticleListPageSection />
+      </main>
+      <Footer />
+    </>
+  );
 }

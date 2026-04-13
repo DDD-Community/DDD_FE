@@ -1,4 +1,9 @@
 import type { Metadata } from "next";
+import { notFound } from 'next/navigation';
+import { Navigation } from '@/components/layout/Navigation';
+import { Footer } from '@/components/layout/Footer';
+import { ProjectDetailSection } from '@/components/sections/ProjectDetailSection';
+import { projects } from '@/constants/projects';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -6,9 +11,8 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-
-  // TODO: fetch project name by id
-  const projectName = id;
+  const project = projects.find((item) => item.id === id);
+  const projectName = project?.title ?? id;
 
   return {
     title: projectName,
@@ -16,6 +20,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function ProjectDetailPage() {
-  return <></>;
+export default async function ProjectDetailPage({ params }: Props) {
+  const { id } = await params;
+  const project = projects.find((item) => item.id === id);
+
+  if (!project) {
+    notFound();
+  }
+
+  return (
+    <>
+      <Navigation />
+      <main>
+        <ProjectDetailSection project={project} />
+      </main>
+      <Footer />
+    </>
+  );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import styled from '@emotion/styled';
+import { Fragment } from 'react';
 import { assets } from '@/constants/assets';
 import { colors, fontSizes, fontWeights, lineHeights } from '@/constants/tokens';
 
@@ -16,13 +17,24 @@ const FooterWrapper = styled.footer({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: '100px 40px',
+  padding: '80px 320px',
   gap: '40px',
+
+  '@media (max-width: 1024px)': {
+    padding: '80px',
+  },
+  '@media (max-width: 768px)': {
+    padding: '56px 40px',
+  },
+  '@media (max-width: 375px)': {
+    padding: '40px 16px',
+    gap: '24px',
+  },
 });
 
 const FooterInner = styled.div({
   width: '100%',
-  maxWidth: '1280px',
+  maxWidth: '1920px',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -35,6 +47,11 @@ const FooterTop = styled.div({
   flexWrap: 'wrap',
   gap: '80px',
   justifyContent: 'center',
+
+  '@media (max-width: 375px)': {
+    gap: '24px',
+    justifyContent: 'flex-start',
+  },
 });
 
 const FooterSection = styled.div({
@@ -57,6 +74,11 @@ const FooterEmail = styled.p({
   fontWeight: fontWeights.semiBold,
   lineHeight: lineHeights.headingLarge,
   color: colors.textInverse,
+
+  '@media (max-width: 375px)': {
+    fontSize: '20px',
+    lineHeight: '25px',
+  },
 });
 
 const SocialLinks = styled.div({
@@ -79,6 +101,11 @@ const SocialLink = styled.a({
 
   '&:hover': {
     opacity: 0.8,
+  },
+
+  '@media (max-width: 375px)': {
+    fontSize: '20px',
+    lineHeight: '25px',
   },
 });
 
@@ -111,13 +138,13 @@ export const Footer = () => {
             <FooterLabel>Follow us</FooterLabel>
             <SocialLinks>
               {SOCIAL_LINKS.map(({ label, icon, href }, index) => (
-                <>
-                  {index > 0 && <Divider key={`divider-${label}`} />}
-                  <SocialLink key={label} href={href} target="_blank" rel="noopener noreferrer">
+                <Fragment key={label}>
+                  {index > 0 && <Divider />}
+                  <SocialLink href={href} target="_blank" rel="noopener noreferrer">
                     <img src={icon} alt="" width={24} height={24} />
                     {label}
                   </SocialLink>
-                </>
+                </Fragment>
               ))}
             </SocialLinks>
           </FooterSection>

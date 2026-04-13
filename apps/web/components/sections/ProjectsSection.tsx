@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import styled from '@emotion/styled';
 import { ProjectCard } from '@/components/ui/ProjectCard';
@@ -67,13 +67,17 @@ const Section = styled.section({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',
-  padding: '120px 40px',
+  padding: '120px 320px',
   gap: '24px',
+
+  '@media (max-width: 1024px)': { padding: '120px 80px' },
+  '@media (max-width: 768px)': { padding: '100px 40px' },
+  '@media (max-width: 375px)': { padding: '80px 16px' },
 });
 
 const Inner = styled.div({
   width: '100%',
-  maxWidth: '1280px',
+  maxWidth: '1920px',
   margin: '0 auto',
   display: 'flex',
   flexDirection: 'column',
@@ -92,6 +96,11 @@ const SectionLabel = styled.p({
   fontWeight: fontWeights.medium,
   lineHeight: lineHeights.paragraphLarge,
   color: colors.textInverse,
+
+  '@media (max-width: 375px)': {
+    fontSize: fontSizes.small,
+    lineHeight: lineHeights.small,
+  },
 });
 
 const SectionTitle = styled.h2({
@@ -100,6 +109,15 @@ const SectionTitle = styled.h2({
   fontWeight: fontWeights.semiBold,
   lineHeight: lineHeights.headingLarge,
   color: colors.textInverse,
+
+  '@media (max-width: 768px)': {
+    fontSize: '24px',
+    lineHeight: '30px',
+  },
+  '@media (max-width: 375px)': {
+    fontSize: '20px',
+    lineHeight: '25px',
+  },
 });
 
 const TabsAndCards = styled.div({
@@ -107,13 +125,17 @@ const TabsAndCards = styled.div({
   flexDirection: 'column',
   alignItems: 'center',
   gap: '40px',
+  width: '100%',
 });
 
 const TabList = styled.div({
   display: 'flex',
   gap: '40px',
+  justifyContent: 'center',
   width: '100%',
   role: 'tablist',
+
+  '@media (max-width: 375px)': { gap: '12px', overflowX: 'auto', justifyContent: 'flex-start' },
 });
 
 interface TabButtonProps {
@@ -136,14 +158,65 @@ const TabButton = styled.button<TabButtonProps>(({ isActive }) => ({
   cursor: 'pointer',
   whiteSpace: 'nowrap',
   transition: 'color 0.15s, border-color 0.15s',
+
+  '@media (max-width: 375px)': {
+    padding: '6px 12px',
+    fontSize: '16px',
+    lineHeight: '20px',
+  },
 }));
 
 const CardGrid = styled.div({
-  display: 'flex',
-  flexWrap: 'wrap',
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
   gap: '24px',
   width: '100%',
+
+  '@media (max-width: 1024px)': {
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+  },
+  '@media (max-width: 768px)': {
+    display: 'flex',
+    overflowX: 'auto',
+    scrollSnapType: 'x mandatory',
+    gap: '12px',
+    WebkitOverflowScrolling: 'touch',
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
+
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
+
+    '& > *': {
+      flex: '0 0 100%',
+      minWidth: '100%',
+      scrollSnapAlign: 'start',
+    },
+  },
 });
+
+const MobileBulletRow = styled.div({
+  display: 'none',
+
+  '@media (max-width: 768px)': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
+  },
+});
+
+const MobileBullet = styled.button<{ active: boolean }>(({ active }) => ({
+  width: '10px',
+  height: '10px',
+  borderRadius: '50%',
+  background: active ? colors.slate500 : colors.slate200,
+  opacity: active ? 1 : 0.9,
+  border: 'none',
+  padding: 0,
+  cursor: 'pointer',
+}));
 
 const MoreButton = styled(Link)({
   display: 'flex',
@@ -166,13 +239,86 @@ const MoreButton = styled(Link)({
   '&:hover': {
     background: '#1f5fe0',
   },
+
+  '@media (max-width: 768px)': {
+    height: '68px',
+    padding: '16px 36px',
+    fontSize: '18px',
+    lineHeight: '24px',
+  },
+  '@media (max-width: 375px)': {
+    height: '56px',
+    padding: '30px 40px',
+    fontSize: '14px',
+    lineHeight: '18px',
+  },
 });
 
 export const ProjectsSection = () => {
   const [activeTab, setActiveTab] = useState<ProjectCategory>('전체');
+  const [activeSlide, setActiveSlide] = useState(0);
+  const cardGridRef = useRef<HTMLDivElement | null>(null);
 
   const filteredProjects =
     activeTab === '전체' ? PROJECTS : PROJECTS.filter((project) => project.category === activeTab);
+
+  const updateActiveSlide = useCallback(() => {
+    const container = cardGridRef.current;
+    if (!container) return;
+
+    const slides = Array.from(container.children) as HTMLElement[];
+    if (slides.length === 0) return;
+
+    const scrollLeft = container.scrollLeft;
+    let nearestIndex = 0;
+    let nearestDistance = Number.POSITIVE_INFINITY;
+
+    slides.forEach((slide, index) => {
+      const distance = Math.abs(slide.offsetLeft - scrollLeft);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestIndex = index;
+      }
+    });
+
+    setActiveSlide(nearestIndex);
+  }, []);
+
+  const handleBulletClick = useCallback((index: number) => {
+    const container = cardGridRef.current;
+    if (!container) return;
+
+    const target = container.children[index] as HTMLElement | undefined;
+    if (!target) return;
+
+    container.scrollTo({ left: target.offsetLeft, behavior: 'smooth' });
+    setActiveSlide(index);
+  }, []);
+
+  useEffect(() => {
+    const container = cardGridRef.current;
+    if (!container) return;
+
+    const onScroll = () => updateActiveSlide();
+    container.addEventListener('scroll', onScroll, { passive: true });
+    let raf = 0;
+    raf = requestAnimationFrame(() => updateActiveSlide());
+
+    return () => {
+      container.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [updateActiveSlide, filteredProjects]);
+
+  useEffect(() => {
+    const container = cardGridRef.current;
+    if (!container) return;
+    container.scrollTo({ left: 0, behavior: 'auto' });
+    let raf = 0;
+    raf = requestAnimationFrame(() => setActiveSlide(0));
+
+    return () => cancelAnimationFrame(raf);
+  }, [activeTab]);
 
   return (
     <Section>
@@ -195,7 +341,7 @@ export const ProjectsSection = () => {
               </TabButton>
             ))}
           </TabList>
-          <CardGrid>
+          <CardGrid ref={cardGridRef}>
             {filteredProjects.map((project) => (
               <ProjectCard
                 key={project.id}
@@ -207,6 +353,16 @@ export const ProjectsSection = () => {
               />
             ))}
           </CardGrid>
+          <MobileBulletRow>
+            {filteredProjects.map((project, index) => (
+              <MobileBullet
+                key={project.id}
+                active={activeSlide === index}
+                aria-label={`${index + 1}번 프로젝트로 이동`}
+                onClick={() => handleBulletClick(index)}
+              />
+            ))}
+          </MobileBulletRow>
           <MoreButton href="/project">
             더 알아보기
             <img src={assets.arrowLeft} alt="" width={24} height={24} />

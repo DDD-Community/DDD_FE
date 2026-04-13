@@ -31,6 +31,19 @@ const StyledButton = styled.button({
   '&:hover': {
     background: '#1f5fe0',
   },
+
+  '@media (max-width: 768px)': {
+    height: '68px',
+    padding: '16px 36px',
+    fontSize: '18px',
+    lineHeight: '24px',
+  },
+  '@media (max-width: 375px)': {
+    height: '56px',
+    padding: '14px 24px',
+    fontSize: '14px',
+    lineHeight: '18px',
+  },
 });
 
 export const Button = ({ children, onClick, type = 'button' }: ButtonProps) => {

@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { Navigation } from '@/components/layout/Navigation';
+import { Footer } from '@/components/layout/Footer';
+import { ProjectListPageSection } from '@/components/sections/ProjectListPageSection';
 
 export const metadata: Metadata = {
   title: "DDD 프로젝트 - 사이드 프로젝트 결과물 모음",
@@ -6,5 +9,13 @@ export const metadata: Metadata = {
 };
 
 export default function ProjectPage() {
-  return <></>;
+  return (
+    <>
+      <Navigation />
+      <main>
+        <ProjectListPageSection />
+      </main>
+      <Footer />
+    </>
+  );
 }

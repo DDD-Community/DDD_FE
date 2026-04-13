@@ -1,0 +1,40 @@
+export type ArticleItem = {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+};
+
+export const articleBanner = {
+  desktop: 'https://www.figma.com/api/mcp/asset/97cc47c7-6f8b-4140-9e52-362328107d95',
+  tablet: 'https://www.figma.com/api/mcp/asset/57579943-54a5-4125-9567-a17f8d7291bd',
+} as const;
+
+export const articles: ArticleItem[] = [
+  {
+    id: 'xr-ai',
+    title: '픽셀을 넘어 공간으로: AI 시대, 디자이너가 XR에 주목해야 하는 이유',
+    description:
+      "오늘은 요즘 디자이너들 사이에서 가장 뜨거운 화두인 'AI', 그리고 그 너머의 'Next Generation'에 대해 이야기해 보려 합니다.",
+    thumbnail: 'https://www.figma.com/api/mcp/asset/93707a9a-dac3-4ead-b87e-b6f727f30d0d',
+  },
+  {
+    id: 'pm-books',
+    title: '주니어 PM 성장 속도를 바꿔준 책 4권',
+    description: 'PM으로 성장하고 싶다면, 기능이 아니라 사고방식부터 바꿔야 합니다.',
+    thumbnail: 'https://www.figma.com/api/mcp/asset/46c25f80-7e03-444c-84f1-1561a5eb4549',
+  },
+  {
+    id: 'claude-cowork',
+    title: '클로드 코워크로 나만의 AI 비서를 개발하는 방법',
+    description: '코딩을 1도 모르는 사람도 자동화할 수 있는 방법? 여기에 있습니다.',
+    thumbnail: 'https://www.figma.com/api/mcp/asset/b2b0c4f0-d513-461c-9111-d9a33b133ee8',
+  },
+  {
+    id: 'mcp-productivity',
+    title: '요즘 일잘러들은 MCP써서 시간을 아낍니다!',
+    description:
+      '슬랙 알림 999+, 노션 회의록 밀림, 문서 탭 10개... AI에 외부 도구를 꽂아주는 MCP로 업무를 자동화해요.',
+    thumbnail: 'https://www.figma.com/api/mcp/asset/6e0420b2-1991-451b-915a-5a4f329037dd',
+  },
+] as const;

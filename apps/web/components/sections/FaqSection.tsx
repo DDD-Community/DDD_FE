@@ -35,17 +35,21 @@ const FAQ_ITEMS: FaqItem[] = [
 
 const Section = styled.section({
   width: '100%',
-  padding: '120px 40px',
+  padding: '120px 320px',
   background:
     "url(\"data:image/svg+xml;utf8,<svg viewBox='0 0 1920 842' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)' opacity='1'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(3.7533e-14 60.653 -138.31 3.1761e-13 960 -407.6)'><stop stop-color='rgba(46,113,255,0.4)' offset='0'/><stop stop-color='rgba(38,88,195,0.55)' offset='0.25'/><stop stop-color='rgba(29,64,135,0.7)' offset='0.5'/><stop stop-color='rgba(21,39,75,0.85)' offset='0.75'/><stop stop-color='rgba(16,26,45,0.925)' offset='0.875'/><stop stop-color='rgba(12,14,15,1)' offset='1'/></radialGradient></defs></svg>\"), linear-gradient(90deg, rgb(12, 14, 15) 0%, rgb(12, 14, 15) 100%)",
   backgroundSize: 'cover',
   display: 'flex',
   justifyContent: 'center',
+
+  '@media (max-width: 1024px)': { padding: '120px 80px' },
+  '@media (max-width: 768px)': { padding: '100px 40px' },
+  '@media (max-width: 375px)': { padding: '80px 16px' },
 });
 
 const Inner = styled.div({
   width: '100%',
-  maxWidth: '1280px',
+  maxWidth: '1920px',
   display: 'flex',
   flexDirection: 'column',
   gap: '56px',
@@ -63,6 +67,11 @@ const SectionLabel = styled.p({
   fontWeight: fontWeights.medium,
   lineHeight: lineHeights.paragraphLarge,
   color: colors.textInverse,
+
+  '@media (max-width: 375px)': {
+    fontSize: '20px',
+    lineHeight: '28px',
+  },
 });
 
 const SectionTitle = styled.h2({
@@ -71,6 +80,11 @@ const SectionTitle = styled.h2({
   fontWeight: fontWeights.semiBold,
   lineHeight: lineHeights.headingLarge,
   color: colors.textInverse,
+
+  '@media (max-width: 375px)': {
+    fontSize: '28px',
+    lineHeight: '32px',
+  },
 });
 
 const AccordionList = styled.dl({
@@ -108,6 +122,11 @@ const AccordionQuestion = styled.dt({
   lineHeight: lineHeights.headingMedium,
   color: colors.textInverse,
   flex: '1 0 0',
+
+  '@media (max-width: 375px)': {
+    fontSize: '16px',
+    lineHeight: '20px',
+  },
 });
 
 const ChevronIcon = styled.img<{ isOpen: boolean }>(({ isOpen }) => ({
@@ -131,6 +150,11 @@ const AccordionAnswer = styled.p({
   fontWeight: fontWeights.regular,
   lineHeight: lineHeights.paragraphMedium,
   color: colors.slate300,
+
+  '@media (max-width: 375px)': {
+    fontSize: '16px',
+    lineHeight: '20px',
+  },
 });
 
 export const FaqSection = () => {
