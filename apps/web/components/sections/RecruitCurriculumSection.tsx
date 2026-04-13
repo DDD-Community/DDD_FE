@@ -6,16 +6,20 @@ import { colors, fontWeights } from "@/constants/tokens";
 import { recruitCurriculum } from "@/constants/recruit";
 
 const Section = styled.section({
-  position: "relative",
   background: colors.background,
   padding: "80px 80px",
-  maxWidth: "1280px",
-  margin: "0 auto",
   overflow: "hidden",
 
   "@media (max-width: 1024px)": { padding: "80px 80px" },
   "@media (max-width: 768px)": { padding: "80px 40px" },
   "@media (max-width: 375px)": { padding: "40px 16px" },
+});
+
+const Inner = styled.div({
+  position: "relative",
+  width: "100%",
+  maxWidth: "1280px",
+  margin: "0 auto",
 });
 
 const Title = styled.h2({
@@ -117,20 +121,22 @@ const Floating3D = styled.img({
 export const RecruitCurriculumSection = () => {
   return (
     <Section>
-      <Title>13기 커리큘럼</Title>
-      <Floating3D src={assets.recruit3d} alt="" />
-      <Grid>
-        {recruitCurriculum.map((item) => (
-          <Item key={`${item.week}-${item.title}`}>
-            <Week>{item.week}</Week>
-            <div>
-              <DateText>{item.date}</DateText>
-              <ItemTitle>{item.title}</ItemTitle>
-              <Description>{item.description}</Description>
-            </div>
-          </Item>
-        ))}
-      </Grid>
+      <Inner>
+        <Title>13기 커리큘럼</Title>
+        <Floating3D src={assets.recruit3d} alt="" />
+        <Grid>
+          {recruitCurriculum.map((item) => (
+            <Item key={`${item.week}-${item.title}`}>
+              <Week>{item.week}</Week>
+              <div>
+                <DateText>{item.date}</DateText>
+                <ItemTitle>{item.title}</ItemTitle>
+                <Description>{item.description}</Description>
+              </div>
+            </Item>
+          ))}
+        </Grid>
+      </Inner>
     </Section>
   );
 };

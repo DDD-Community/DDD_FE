@@ -6,13 +6,17 @@ import { recruitParts } from "@/constants/recruit";
 
 const Section = styled.section({
   background: colors.background,
-  width: "100%",
-  maxWidth: "1280px",
-  margin: "0 auto",
+  padding: "80px 80px",
 
   "@media (max-width: 1024px)": { padding: "80px 80px" },
   "@media (max-width: 768px)": { padding: "80px 40px" },
   "@media (max-width: 375px)": { padding: "40px 16px" },
+});
+
+const Inner = styled.div({
+  width: "100%",
+  maxWidth: "1280px",
+  margin: "0 auto",
 });
 
 const Title = styled.h2({
@@ -103,20 +107,27 @@ const ApplyButton = styled.button<{ featured?: boolean }>(({ featured }) => ({
 export const RecruitRolesSection = () => {
   return (
     <Section>
-      <Title>6개의 직군을 모집하고있어요.</Title>
-      <Grid>
-        {recruitParts.map((part) => (
-          <Card key={part.name} featured={part.featured}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
-              <RoleName>{part.name}</RoleName>
-              {part.description ? <RoleDescription>{part.description}</RoleDescription> : null}
-            </div>
-            <ApplyButton type="button" featured={part.featured}>
-              지원하기 →
-            </ApplyButton>
-          </Card>
-        ))}
-      </Grid>
+      <Inner>
+        <Title>6개의 직군을 모집하고있어요.</Title>
+        <Grid>
+          {recruitParts.map((part) => {
+            const featured = "featured" in part ? part.featured : false;
+            const description = "description" in part ? part.description : undefined;
+
+            return (
+            <Card key={part.name} featured={featured}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
+                <RoleName>{part.name}</RoleName>
+                {description ? <RoleDescription>{description}</RoleDescription> : null}
+              </div>
+              <ApplyButton type="button" featured={featured}>
+                지원하기 →
+              </ApplyButton>
+            </Card>
+            );
+          })}
+        </Grid>
+      </Inner>
     </Section>
   );
 };

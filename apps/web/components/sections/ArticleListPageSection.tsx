@@ -8,6 +8,13 @@ const Section = styled.section({
   background: "#fff",
 });
 
+const ContentSection = styled.div({
+  padding: "80px 80px",
+  "@media (max-width: 1024px)": { padding: "80px" },
+  "@media (max-width: 768px)": { padding: "48px 40px" },
+  "@media (max-width: 375px)": { padding: "40px 16px" },
+});
+
 const Banner = styled.div({
   minHeight: "330px",
   padding: "160px 320px 80px",
@@ -56,10 +63,6 @@ const BannerTitle = styled.h1({
 const Body = styled.div({
   maxWidth: "1280px",
   margin: "0 auto",
-  padding: "80px",
-  "@media (max-width: 1024px)": { padding: "80px" },
-  "@media (max-width: 768px)": { padding: "48px 40px" },
-  "@media (max-width: 375px)": { padding: "40px 16px" },
 });
 
 const List = styled.div({
@@ -175,28 +178,30 @@ export const ArticleListPageSection = () => {
           <BannerTitle>일잘러들의 생각, 글로 남겼어요.</BannerTitle>
         </div>
       </Banner>
-      <Body>
-        <List>
-          {articles.map((article) => (
-            <Row key={article.id}>
-              <Thumbnail src={article.thumbnail} alt={article.title} />
-              <TextWrap>
-                <Title>{article.title}</Title>
-                <Description>{article.description}</Description>
-              </TextWrap>
-            </Row>
-          ))}
-        </List>
-        <Pagination>
-          <Arrow>‹</Arrow>
-          <span style={{ color: "#525252" }}>1</span>
-          <span>2</span>
-          <span>3</span>
-          <span>4</span>
-          <span>5</span>
-          <Arrow>›</Arrow>
-        </Pagination>
-      </Body>
+      <ContentSection>
+        <Body>
+          <List>
+            {articles.map((article) => (
+              <Row key={article.id}>
+                <Thumbnail src={article.thumbnail} alt={article.title} />
+                <TextWrap>
+                  <Title>{article.title}</Title>
+                  <Description>{article.description}</Description>
+                </TextWrap>
+              </Row>
+            ))}
+          </List>
+          <Pagination>
+            <Arrow>‹</Arrow>
+            <span style={{ color: "#525252" }}>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+            <Arrow>›</Arrow>
+          </Pagination>
+        </Body>
+      </ContentSection>
     </Section>
   );
 };

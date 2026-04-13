@@ -11,6 +11,13 @@ const Section = styled.section({
   background: "#ffffff",
 });
 
+const ContentSection = styled.div({
+  padding: "80px 80px",
+  "@media (max-width: 1024px)": { padding: "80px" },
+  "@media (max-width: 768px)": { padding: "40px" },
+  "@media (max-width: 375px)": { padding: "40px 16px" },
+});
+
 const Banner = styled.div({
   position: "relative",
   overflow: "hidden",
@@ -35,10 +42,6 @@ const Heading = styled.div({
 const Body = styled.div({
   maxWidth: "1280px",
   margin: "0 auto",
-  padding: "80px",
-  "@media (max-width: 1024px)": { padding: "80px" },
-  "@media (max-width: 768px)": { padding: "40px" },
-  "@media (max-width: 375px)": { padding: "40px 16px" },
 });
 
 const Label = styled.p({
@@ -235,49 +238,51 @@ export const ProjectListPageSection = () => {
           <Title>DDD 멤버들이 만든 다양한 프로젝트를 확인해보세요.</Title>
         </Heading>
       </Banner>
-      <Body>
-        <TabList role="tablist" aria-label="프로젝트 카테고리">
-          {tabs.map((tab) => (
-            <Tab
-              key={tab}
-              role="tab"
-              active={activeTab === tab}
-              aria-selected={activeTab === tab}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </Tab>
-          ))}
-        </TabList>
-        <Grid>
-          {filtered.map((project) => (
-            <CardLink key={project.id} href={`/project/${project.id}`}>
-              <Card>
-                <CardThumbnail>
-                  <img src={project.thumbnail} alt={project.title} />
-                </CardThumbnail>
-                <CardBody>
-                  <CardTitle>{project.title}</CardTitle>
-                  <CardDescription>{project.description}</CardDescription>
-                </CardBody>
-                <BadgeRow>
-                  <Badge kind="primary">{project.category}</Badge>
-                  <Badge kind="gray">{project.generation}</Badge>
-                </BadgeRow>
-              </Card>
-            </CardLink>
-          ))}
-        </Grid>
-        <Pagination aria-label="프로젝트 페이지네이션">
-          <Arrow>‹</Arrow>
-          <span style={{ color: "#525252" }}>1</span>
-          <span>2</span>
-          <span>3</span>
-          <span>4</span>
-          <span>5</span>
-          <Arrow>›</Arrow>
-        </Pagination>
-      </Body>
+      <ContentSection>
+        <Body>
+          <TabList role="tablist" aria-label="프로젝트 카테고리">
+            {tabs.map((tab) => (
+              <Tab
+                key={tab}
+                role="tab"
+                active={activeTab === tab}
+                aria-selected={activeTab === tab}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </Tab>
+            ))}
+          </TabList>
+          <Grid>
+            {filtered.map((project) => (
+              <CardLink key={project.id} href={`/project/${project.id}`}>
+                <Card>
+                  <CardThumbnail>
+                    <img src={project.thumbnail} alt={project.title} />
+                  </CardThumbnail>
+                  <CardBody>
+                    <CardTitle>{project.title}</CardTitle>
+                    <CardDescription>{project.description}</CardDescription>
+                  </CardBody>
+                  <BadgeRow>
+                    <Badge kind="primary">{project.category}</Badge>
+                    <Badge kind="gray">{project.generation}</Badge>
+                  </BadgeRow>
+                </Card>
+              </CardLink>
+            ))}
+          </Grid>
+          <Pagination aria-label="프로젝트 페이지네이션">
+            <Arrow>‹</Arrow>
+            <span style={{ color: "#525252" }}>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+            <Arrow>›</Arrow>
+          </Pagination>
+        </Body>
+      </ContentSection>
     </Section>
   );
 };

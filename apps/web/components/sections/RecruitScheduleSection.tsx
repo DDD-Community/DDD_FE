@@ -13,6 +13,12 @@ const Section = styled.section({
   "@media (max-width: 375px)": { padding: "40px 16px" },
 });
 
+const Inner = styled.div({
+  width: "100%",
+  maxWidth: "1280px",
+  margin: "0 auto",
+});
+
 const Title = styled.h2({
   margin: 0,
   color: colors.textInverse,
@@ -93,18 +99,20 @@ const DateText = styled.p({
 export const RecruitScheduleSection = () => {
   return (
     <Section>
-      <Title>13기 모집 일정</Title>
-      <List>
-        {recruitSchedules.map((item) => (
-          <Item key={item.step}>
-            <Step>{item.step}</Step>
-            <div>
-              <Label>{item.label}</Label>
-              <DateText>{item.date}</DateText>
-            </div>
-          </Item>
-        ))}
-      </List>
+      <Inner>
+        <Title>13기 모집 일정</Title>
+        <List>
+          {recruitSchedules.map((item) => (
+            <Item key={item.step}>
+              <Step>{item.step}</Step>
+              <div>
+                <Label>{item.label}</Label>
+                <DateText>{item.date}</DateText>
+              </div>
+            </Item>
+          ))}
+        </List>
+      </Inner>
     </Section>
   );
 };

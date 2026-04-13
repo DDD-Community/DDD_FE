@@ -8,6 +8,13 @@ const Section = styled.section({
   background: '#ffffff',
 });
 
+const ContentSection = styled.div({
+  padding: '80px 80px',
+  '@media (max-width: 1024px)': { padding: '40px 80px' },
+  '@media (max-width: 768px)': { padding: '40px' },
+  '@media (max-width: 375px)': { padding: '40px 16px' },
+});
+
 const Banner = styled.div<{ src: string }>(({ src }) => ({
   minHeight: '330px',
   padding: '160px 320px 80px',
@@ -46,11 +53,8 @@ const BannerTitle = styled.h1({
 });
 
 const Container = styled.div({
-  padding: '80px 320px',
-
-  '@media (max-width: 1024px)': { padding: '40px 80px' },
-  '@media (max-width: 768px)': { padding: '40px' },
-  '@media (max-width: 375px)': { padding: '40px 16px' },
+  maxWidth: '1280px',
+  margin: '0 auto',
 });
 
 const BadgeRow = styled.div({
@@ -163,26 +167,28 @@ export const ProjectDetailSection = ({ project }: Props) => {
           <BannerTitle>DDD 멤버들이 만든 다양한 프로젝트를 확인해보세요.</BannerTitle>
         </div>
       </Banner>
-      <Container>
-        <BadgeRow>
-          <Badge kind="primary">{project.category}</Badge>
-          <Badge kind="gray">{project.generation}</Badge>
-        </BadgeRow>
-        <Title>{project.detailTitle}</Title>
-        <LongDescription>{project.longDescription}</LongDescription>
+      <ContentSection>
+        <Container>
+          <BadgeRow>
+            <Badge kind="primary">{project.category}</Badge>
+            <Badge kind="gray">{project.generation}</Badge>
+          </BadgeRow>
+          <Title>{project.detailTitle}</Title>
+          <LongDescription>{project.longDescription}</LongDescription>
 
-        <TeamTitle>팀원</TeamTitle>
-        <MemberGrid>
-          {project.participants.map((member) => (
-            <Member key={`${member.name}-${member.role}`}>
-              <MemberName>{member.name}</MemberName>
-              <MemberRole>{member.role}</MemberRole>
-            </Member>
-          ))}
-        </MemberGrid>
+          <TeamTitle>팀원</TeamTitle>
+          <MemberGrid>
+            {project.participants.map((member) => (
+              <Member key={`${member.name}-${member.role}`}>
+                <MemberName>{member.name}</MemberName>
+                <MemberRole>{member.role}</MemberRole>
+              </Member>
+            ))}
+          </MemberGrid>
 
-        <Pdf src={project.pdf} alt={`${project.title} 상세 소개`} />
-      </Container>
+          <Pdf src={project.pdf} alt={`${project.title} 상세 소개`} />
+        </Container>
+      </ContentSection>
     </Section>
   );
 };
