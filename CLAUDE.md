@@ -10,7 +10,11 @@ IT 사이드 프로젝트 동아리(DDD) 운영을 위한 프론트엔드 모노
 
 - `apps/admin` — 동아리 운영진용 어드민 페이지 (현재 개발 중)
 - `apps/web` — 홈/블로그/프로젝트/모집안내 랜딩페이지 (개발 중)
-- `packages/api` — 공통 API 클라이언트 SDK, 타입, Zod 스키마 (Hey API 코드 생성 포함)
+- `packages/api` — 공통 API 클라이언트 SDK, 타입, Zod 스키마 (orval 코드 생성 포함)
+
+> 기능 명세 대비 구현 체크리스트는 **[tasks/checklist.md](./tasks/checklist.md)** 를 참조한다.
+>
+> UI 컴포넌트를 생성 / 수정 / 삭제하는 작업 전에는 **[docs/hero-ui.txt](./docs/hero-ui.txt)** 를 먼저 참조하여 사용 가능한 HeroUI v3 컴포넌트와 사용법을 확인한다.
 
 백엔드는 별도 레포지토리에서 관리. 이 레포는 프론트엔드 전용.
 
@@ -35,9 +39,9 @@ IT 사이드 프로젝트 동아리(DDD) 운영을 위한 프론트엔드 모노
 
 | 앱             | 프레임워크              | 스타일링       | 상태    | 비고                    |
 | -------------- | ----------------------- | -------------- | ------- | ----------------------- |
-| `apps/admin`   | Vite + React 19         | Tailwind CSS 4 | 개발 중 | shadcn/ui, React Router |
+| `apps/admin`   | Vite + React 19         | Tailwind CSS 4 | 개발 중 | HeroUI v3, React Router Data Mode |
 | `apps/web`     | Next.js 16 (App Router) | -              | 개발 중 | 홈/블로그/프로젝트/모집안내 |
-| `packages/api` | -                       | -              | 개발 중 | Hey API, Zod            |
+| `packages/api` | -                       | -              | 개발 중 | orval, TanStack Query, Zod |
 
 ---
 
@@ -51,7 +55,7 @@ pnpm build:admin        # 어드민 빌드
 pnpm dev:web            # 웹 개발 서버 (추후)
 pnpm build:web          # 웹 빌드 (추후)
 
-pnpm gen:api            # Hey API로 OpenAPI 스키마 → 타입/SDK 코드 생성
+pnpm gen:api            # orval로 OpenAPI 스키마 → 타입/SDK 코드 생성
 
 pnpm lint               # 전체 린트
 pnpm lint:fix           # 전체 린트 자동 수정
@@ -67,24 +71,22 @@ pnpm --filter @ddd/api generate
 
 ## apps/web 라우트 구조
 
+현재는 App Router 스켈레톤만 구성되어 있다. `components/`, `hooks/` 폴더는 아직 없으며 UI/섹션 작업이 시작되면 추가한다.
+
 ```
 apps/web/
-├── app/
-│   ├── layout.tsx                  # 루트 레이아웃
-│   ├── page.tsx                    # / 홈
-│   ├── blog/
-│   │   └── page.tsx                # /blog
-│   ├── project/
-│   │   ├── page.tsx                # /project 목록
-│   │   └── [id]/
-│   │       └── page.tsx            # /project/{id} 상세 풀 페이지
-│   └── recruit/
-│       └── page.tsx                # /recruit 모집안내
-├── components/
-│   ├── ui/                         # 재사용 단위 컴포넌트 (Button, Tab, Pagination 등)
-│   ├── sections/                   # 페이지 섹션 단위 컴포넌트
-│   └── layout/                     # Header, Footer 등 공통 레이아웃
-└── hooks/                          # web 전용 커스텀 훅
+└── app/
+    ├── layout.tsx                  # 루트 레이아웃
+    ├── page.tsx                    # / 홈
+    ├── globals.css
+    ├── blog/
+    │   └── page.tsx                # /blog
+    ├── project/
+    │   ├── page.tsx                # /project 목록
+    │   └── [id]/
+    │       └── page.tsx            # /project/{id} 상세 풀 페이지
+    └── recruit/
+        └── page.tsx                # /recruit 모집안내
 ```
 
 ### 페이지별 메타데이터

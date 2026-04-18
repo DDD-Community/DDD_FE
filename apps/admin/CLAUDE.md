@@ -1,6 +1,8 @@
 # apps/admin — 어드민 앱 개발 가이드
 
-DDD 동아리 운영진용 어드민 페이지. Vite + React 19, Tailwind CSS 4, React Router(Data Mode) 기반.
+DDD 동아리 운영진용 어드민 페이지. Vite + React 19, Tailwind CSS 4, React Router(Data Mode), HeroUI v3 기반.
+
+> 기능 명세 대비 구현 체크리스트는 루트의 **[tasks/checklist.md](../../tasks/checklist.md)** 를 참조한다.
 
 ---
 
@@ -10,11 +12,13 @@ DDD 동아리 운영진용 어드민 페이지. Vite + React 19, Tailwind CSS 4,
 src/
 ├── app/                        # 앱 초기화 레이어
 │   └── providers/
+│       ├── QueryProvider.tsx   # TanStack Query Provider
 │       └── ThemeProvider.tsx   # 전역 테마 Provider + useTheme 훅
 │
 ├── pages/                      # 페이지 레이어 (라우트 1:1 대응, 주요 feature 단위)
 │   ├── index.tsx               # 라우터 설정 (createBrowserRouter)
 │   ├── login/
+│   ├── sign-up/
 │   ├── applications/
 │   ├── semesters/
 │   ├── reminders/
@@ -23,14 +27,22 @@ src/
 │   └── error/
 │
 ├── widgets/                    # 복합 UI 블록 레이어 (페이지 간 공유)
-│   ├── sidebar/
-│   │   ├── SideBar.tsx
-│   │   └── constants.ts        # 메뉴 아이템 정의
+│   ├── navigation/
+│   │   ├── SideBar.tsx         # 데스크톱 사이드바
+│   │   ├── MobileHeader.tsx    # 모바일 상단 헤더
+│   │   ├── constants.ts        # 메뉴 아이템 정의
+│   │   └── types.d.ts
+│   ├── heading/
+│   │   └── index.tsx           # 페이지 헤딩 블록
 │   └── admin-layout/
-│       └── AdminLayout.tsx     # SideBar + Outlet 레이아웃
+│       └── AdminLayout.tsx     # 뷰포트에 따라 SideBar/MobileHeader + Outlet 구성
+│
+├── mocks/                      # MSW 목업 환경
+│   ├── browser.ts
+│   └── handlers.ts
 │
 └── shared/                     # 순수 공유 자원 레이어
-    ├── ui/                     # UI 컴포넌트 (shadcn/base-ui 기반 primitives)
+    ├── ui/                     # UI 컴포넌트 (HeroUI 외 커스텀 프리미티브)
     ├── hooks/                  # 범용 훅 (useIsMobile 등)
     └── lib/                    # 유틸 함수 및 상수 (cn, paths, auth)
 ```
@@ -58,27 +70,24 @@ app   → pages
 2. 페이지 컴포넌트 작성 (`{페이지명}Page.tsx`)
 3. `src/pages/index.tsx` 라우터에 경로 추가
 4. `src/shared/lib/paths.ts`에 경로 상수 추가
-5. `src/widgets/sidebar/constants.ts`에 메뉴 아이템 추가 (사이드바에 노출 시)
+5. `src/widgets/navigation/constants.ts`에 메뉴 아이템 추가 (사이드바/모바일 헤더에 노출 시)
 
 ### 페이지 slice 내부 구조
 
-파일이 하나면 세그먼트 폴더 없이 바로 배치한다.
+현재 어드민 페이지들은 **feature 단위 평탄 구조**를 사용한다. 한 페이지가 다음 파일들로 구성된다.
 
 ```
 pages/applications/
-├── ApplicationsPage.tsx        # 단순할 때: 그냥 파일
-└── ...
-
-pages/applications/             # 복잡해질 때: 세그먼트로 분리
-├── ui/
-│   ├── ApplicationsPage.tsx
-│   └── ApplicationTable.tsx
-├── model/
-│   ├── useApplications.ts
-│   └── applicationSchema.ts
-└── api/
-    └── applicationsApi.ts
+├── ApplicationsPage.tsx        # 최상위 페이지 컴포넌트
+├── index.tsx                   # 외부 노출 배럴
+├── components/                 # 이 페이지 전용 하위 컴포넌트 (예: Sections.tsx)
+├── constants.ts                # 컬럼/필터/상태 라벨 등 상수
+├── mockApi.ts                  # MSW 또는 임시 목업용 fetcher
+└── types.d.ts                  # 임시 타입 (추후 `@ddd/api` 생성 타입으로 대체)
 ```
+
+- 파일이 하나뿐인 단순 페이지(`login`, `error`, `sign-up`)는 `{Feature}Page.tsx`만 두고 세부 폴더를 만들지 않는다.
+- 페이지 전용 Drawer/Modal 등 큰 서브 컴포넌트는 페이지 루트(`SemesterRegisterDrawer.tsx`) 또는 `components/` 하위에 둔다.
 
 ---
 
@@ -86,12 +95,15 @@ pages/applications/             # 복잡해질 때: 세그먼트로 분리
 
 **기본 원칙**: 새로운 컴포넌트는 **HeroUI v3을 직접 import하여 사용**한다.
 
+> UI 컴포넌트를 **생성 / 수정 / 삭제 / 교체**하는 작업을 수행하기 전에는 반드시 루트의 **[docs/hero-ui.txt](../../docs/hero-ui.txt)** 를 먼저 참조하여, 사용 가능한 컴포넌트·props·패턴을 확인한다. (본 문서의 요약 목록은 참고용이며, 세부 API는 `docs/hero-ui.txt` 를 단일 출처로 삼는다.)
+
 ### shared/ui에만 배치하는 컴포넌트
 
 | 경로                         | 용도                       | 비고                             |
 | ---------------------------- | -------------------------- | -------------------------------- |
 | `shared/ui/FlexBox.tsx`      | flex 레이아웃 유틸         | Tailwind 직접 사용으로 대체 가능 |
 | `shared/ui/GridBox.tsx`      | grid 레이아웃 유틸         | Tailwind 직접 사용으로 대체 가능 |
+| `shared/ui/DDDLogo.tsx`      | DDD 정적 로고              | 커스텀 구현                      |
 | `shared/ui/DDDAnimated.tsx`  | DDD 브랜드 로고 애니메이션 | 커스텀 구현                      |
 | `shared/ui/GoogleButton.tsx` | Google 로그인 버튼         | 커스텀 구현                      |
 
@@ -143,12 +155,12 @@ import { Button, Input, Card, Drawer, Table, Tabs } from "@heroui/react"
 
 ## HeroUI v3 개발 가이드
 
-새로운 컴포넌트나 UI 작업을 할 때 **HeroUI MCP를 활용하여 공식 문서를 참고**한다.
+새로운 컴포넌트나 UI 작업을 할 때는 로컬의 **[docs/hero-ui.txt](../../docs/hero-ui.txt)** 를 우선 참조한다. (이전에 사용하던 HeroUI MCP 대신 이 파일을 단일 출처로 삼는다.)
 
 ### 작업 순서
 
-1. **컴포넌트 확인**: 필요한 HeroUI v3 컴포넌트가 있는지 MCP로 확인
-2. **문서 조회**: HeroUI MCP의 `get_component_docs` 도구로 사용 방법 학습
+1. **컴포넌트 확인**: 필요한 HeroUI v3 컴포넌트가 있는지 `docs/hero-ui.txt` 에서 검색
+2. **문서 조회**: 해당 컴포넌트의 props·slots·compound 구조를 `docs/hero-ui.txt` 에서 확인
 3. **구현**: HeroUI의 compound component 패턴 및 props 활용
 4. **스타일링**: Tailwind CSS + `cn()` 유틸로 커스터마이징
 
@@ -204,103 +216,6 @@ import { Form, Fieldset, TextField, Label } from "@heroui/react"
 </Form>
 ```
 
-## 기능 개발 현황 체크리스트
+## 기능 개발 현황
 
-> 기준: [어드민 기능 명세서 3.x] (2026-04-11 기준)
->
-> - ✅ 완료 / 🔧 부분 구현 (UI만 있고 실제 기능 미연결) / ⬜ 미구현
-
----
-
-### 공통 인프라
-
-- ✅ Vite + React 19 + TypeScript 환경 구성
-- ✅ Tailwind CSS 4 + shadcn/ui 설정
-- ✅ React Router Data Mode 설정 (`createBrowserRouter`)
-- ✅ TanStack Query 설정 (`QueryProvider`)
-- ✅ MSW(Mock Service Worker) 목업 환경 구성
-- ✅ ESLint + Prettier + Lefthook (코드 품질 체크)
-- ✅ FSD 기반 디렉터리 구조 (`app / pages / widgets / shared`)
-- ✅ AdminLayout (SideBar + MobileHeader + Outlet)
-- ⬜ Google OAuth 실제 연결 (현재 LoginPage UI만 존재)
-- ⬜ 인증 보호 라우트 (`shared/lib/auth.ts` TODO 상태)
-
----
-
-### 3.1 기수 관리 (`/semesters`)
-
-- ✅ 기수 목록 조회 (테이블: 기수, 상태, 모집기간, 지원자수, 멤버수, 등록일)
-- ✅ 상태별 필터 (모집예정 / 모집중 / 활동중 / 활동종료)
-- ✅ 기수 검색
-- ✅ 통계 카드 (전체 기수, 현재 상태, 누적 지원자, 누적 활동 멤버)
-- 🔧 수동 상태 변경 버튼 UI ("모집중 전환") — 실제 API 미연결
-- 🔧 기수 수정 버튼 UI — 실제 수정 폼/모달 미구현
-- 🔧 새 기수 등록 폼 (기수번호, 상태, 모집기간 날짜 범위) — Drawer + DatePicker + Select UI 구현, 실제 API 미연결
-- 🔧 프로세스 일정 등록/수정 (서류발표일, 온라인 인터뷰일, 최종발표일) — DatePicker UI 구현, 실제 API 미연결
-- 🔧 커리큘럼 등록/수정 (9주차 JSON 배열 편집 UI) — DatePicker + Input UI 구현, 실제 API 미연결
-- 🔧 파트별 지원서 양식 관리 (질문 추가/수정/삭제) — Tabs + TextArea + 버튼 UI 구현, 실제 API 미연결
-- ⬜ 모집 종료일 경과 시 자동 "활동중" 전환 처리
-
----
-
-### 3.2 사전 알림 신청 관리 (`/reminders`)
-
-- ✅ 알림 신청자 목록 조회 (테이블: 이름, 이메일, 직군, 관심기수, 신청일, 상태)
-- ✅ 상태별 필터 (대기 / 발송완료)
-- ✅ 이름/이메일 검색
-- ✅ 통계 카드 (전체 신청, 대기, 발송완료, 취소)
-- 🔧 이메일 개별 발송 버튼 UI — 실제 API 미연결
-- ⬜ 기수별 필터
-- ⬜ 이메일 목록 엑셀 다운로드
-- ⬜ 전체 일괄 발송 기능 (어드민 수동 트리거)
-
----
-
-### 3.3 지원자 및 지원서 관리 (`/applications`)
-
-- ✅ 지원자 목록 조회 (테이블: 이름, 이메일, 직군, 지원기수, 지원일, 상태)
-- ✅ 상태별 필터
-- ✅ 이름/이메일 검색
-- ✅ 통계 카드 (전체 지원, 대기, 면접 대기, 면접 합격, 활동중)
-- 🔧 지원자 상태 변경 버튼 UI ("합격처리", "수정") — 실제 API 미연결
-- ⬜ 파트별 필터 (PM / PD / BE / FE / IOS / AOS)
-- ⬜ 기수별 필터
-- ⬜ 지원자 상태 enum 정확히 반영 (서류대기 / 서류합격 / 서류불합격 / 최종합격 / 최종불합격 / 활동중 / 활동완료 / 활동중단)
-- ⬜ 지원자 상세 페이지 (`/applications/:id`) — 이름 클릭 시 이동
-- ⬜ 지원자 상세: 지원 파트, 이름, 휴대폰번호(가운데번호 마스킹), 생년월일, 거주지역
-- ⬜ 지원자 상세: 파트별 질문+답변 표시
-- ⬜ 지원자 상세: 개인정보 동의 여부 + 동의 일시
-- ⬜ 지원자 상세에서 상태 변경 기능
-
----
-
-### 3.4 프로젝트 DB 관리 (`/projects`)
-
-- ✅ 프로젝트 목록 조회 (테이블: 프로젝트명, 설명, 기수, 팀원수, 상태, 등록일)
-- ✅ 상태별 필터 / 프로젝트명 검색
-- 🔧 수정/삭제 버튼 UI — 실제 폼/API 미연결
-- ⬜ 새 프로젝트 등록 폼 (썸네일 이미지 업로드, 플랫폼, 서비스명, 한줄 설명, 기수, PDF, 참여자)
-- ⬜ 썸네일 이미지 업로드 (S3/R2 연동)
-- ⬜ PDF 업로드 (최종발표 PDF)
-- ⬜ 플랫폼 다중 선택 (iOS / AOS / WEB)
-- ⬜ 참여자 텍스트 입력
-- ⬜ 등록 시 `/projects/[id]` URL 자동 생성 (웹 연동)
-
----
-
-### 3.5 블로그 DB 관리 (`/blog-posts`)
-
-- ✅ 블로그 목록 조회 (테이블: 제목, 작성자, 카테고리, 상태, 게시일, 등록일)
-- ✅ 상태별 필터 / 제목·작성자 검색
-- 🔧 수정/삭제 버튼 UI — 실제 폼/API 미연결
-- ⬜ 새 블로그 등록 폼 (썸네일 업로드, 제목, 본문 일부, 외부 URL)
-- ⬜ 썸네일 이미지 업로드
-- ⬜ 등록 시 `/blog/[id]` URL 자동 생성 (웹 연동)
-
----
-
-### API 연동
-
-- ✅ MSW 목업 핸들러 구성 (semester / application / reminder / project / blog-post)
-- ⬜ 실제 백엔드 API 연동 (orval 코드 생성 → `@ddd/api` 패키지 활용)
-- ⬜ 각 페이지 타입 정의 실제 API 명세 기반으로 업데이트 (현재 "임시 타입" 주석)
+기수 관리 / 사전 알림 / 지원자 / 프로젝트 / 블로그 / SEO 등 영역별 구현 상태는 루트의 **[tasks/checklist.md](../../tasks/checklist.md)** 에서 관리한다. 본 문서에는 중복 기재하지 않는다.
