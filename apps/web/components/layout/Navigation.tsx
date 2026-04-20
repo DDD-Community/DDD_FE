@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
+import { recruitButtonLabels } from "@/constants/recruit";
 import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
 
 const NAV_LINKS = [
@@ -227,7 +228,7 @@ export const Navigation = () => {
             ≡
           </MobileMenuButton>
         </MobileBar>
-        <CtaButton href="/recruit">사전 알림 신청</CtaButton>
+        <CtaButton href="/recruit">{recruitButtonLabels.navigation}</CtaButton>
         <MobileDrawer open={open}>
           {NAV_LINKS.map(({ label, href }) => (
             <MobileItem key={href} href={href} onClick={() => setOpen(false)}>
@@ -235,7 +236,7 @@ export const Navigation = () => {
             </MobileItem>
           ))}
           <MobileCta href="/recruit" onClick={() => setOpen(false)}>
-            사전 알림 신청
+            {recruitButtonLabels.navigation}
           </MobileCta>
         </MobileDrawer>
       </Inner>

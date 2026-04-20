@@ -5,11 +5,21 @@ import { Fragment } from "react";
 import { assets } from "@/constants/assets";
 import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
 
-const SOCIAL_LINKS = [
-  { label: "Tistory", icon: assets.social.tistory, href: "https://ddd.tistory.com" },
-  { label: "Medium", icon: assets.social.medium, href: "https://medium.com/ddd-club" },
-  { label: "Brunch", icon: assets.social.brunch, href: "https://brunch.co.kr/@ddd" },
-] as const;
+type SocialLinkItem = {
+  label: string;
+  href: string;
+  icon?: string;
+};
+
+const SOCIAL_LINKS: SocialLinkItem[] = [
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/dynamic_ddd?igsh=MTF1Mm42eW8xZTZ4YQ==",
+  },
+  { label: "Tistory", icon: assets.social.tistory, href: "https://dynamic-ddd.tistory.com/" },
+  { label: "Medium", icon: assets.social.medium, href: "https://dddstudy.medium.com/" },
+  { label: "Brunch", icon: assets.social.brunch, href: "https://brunch.co.kr/@6d3076805b994b9" },
+];
 
 const FooterWrapper = styled.footer({
   background: colors.background,
@@ -154,7 +164,7 @@ export const Footer = () => {
                 <Fragment key={label}>
                   {index > 0 && <Divider />}
                   <SocialLink href={href} target="_blank" rel="noopener noreferrer">
-                    <img src={icon} alt="" width={24} height={24} />
+                    {icon ? <img src={icon} alt="" width={24} height={24} /> : null}
                     {label}
                   </SocialLink>
                 </Fragment>

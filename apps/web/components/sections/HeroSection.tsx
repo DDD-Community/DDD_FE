@@ -47,7 +47,7 @@ const Hero3D = styled.picture({
   left: "50%",
   top: "50%",
   transform: "translate(-50%, -55%)",
-  opacity: 0.4,
+  opacity: 0.6,
   pointerEvents: "none",
 });
 
@@ -111,12 +111,12 @@ const GradientHeadline = styled.h1({
   fontSize: fontSizes.headingXxl,
   fontWeight: fontWeights.bold,
   lineHeight: lineHeights.headingXxl,
-  backgroundImage: `url('${assets.heroTextBg}')`,
+  // 이미지 텍스처 대신 타이포/그라데이션으로 헤드 타이틀 구현
+  background: "linear-gradient(180deg, #FFF -3.04%, rgba(255, 255, 255, 0.00) 95.35%)",
   backgroundClip: "text",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
-  backgroundSize: "cover",
-  backgroundPosition: "center",
+  letterSpacing: "-0.02em",
 
   "@media (max-width: 1024px)": {
     fontSize: "80px",

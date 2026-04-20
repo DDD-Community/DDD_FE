@@ -1,3 +1,25 @@
+export type RecruitStatus = "open" | "closed";
+
+export const recruitStatus: RecruitStatus = "open";
+
+const recruitButtonLabelsByStatus: Record<
+  RecruitStatus,
+  { navigation: string; hero: string; role: string }
+> = {
+  open: {
+    navigation: "지원 신청",
+    hero: "지원하기",
+    role: "지원하기",
+  },
+  closed: {
+    navigation: "사전 알림 신청",
+    hero: "사전 알림 신청하기",
+    role: "지원마감",
+  },
+};
+
+export const recruitButtonLabels = recruitButtonLabelsByStatus[recruitStatus];
+
 export const recruitParts = [
   { name: "Product Manager" },
   {

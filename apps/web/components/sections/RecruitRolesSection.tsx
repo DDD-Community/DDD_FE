@@ -2,7 +2,7 @@
 
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
-import { recruitParts } from "@/constants/recruit";
+import { recruitButtonLabels, recruitParts } from "@/constants/recruit";
 
 const Section = styled.section({
   background: colors.background,
@@ -115,15 +115,17 @@ export const RecruitRolesSection = () => {
             const description = "description" in part ? part.description : undefined;
 
             return (
-            <Card key={part.name} featured={featured}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
-                <RoleName>{part.name}</RoleName>
-                {description ? <RoleDescription>{description}</RoleDescription> : null}
-              </div>
-              <ApplyButton type="button" featured={featured}>
-                지원하기 →
-              </ApplyButton>
-            </Card>
+              <Card key={part.name} featured={featured}>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}
+                >
+                  <RoleName>{part.name}</RoleName>
+                  {description ? <RoleDescription>{description}</RoleDescription> : null}
+                </div>
+                <ApplyButton type="button" featured={featured}>
+                  {recruitButtonLabels.role}
+                </ApplyButton>
+              </Card>
             );
           })}
         </Grid>

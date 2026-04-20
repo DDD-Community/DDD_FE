@@ -3,6 +3,7 @@
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
+import { recruitButtonLabels, recruitStatus } from "@/constants/recruit";
 import { colors, fontWeights } from "@/constants/tokens";
 
 const Section = styled.section({
@@ -82,12 +83,12 @@ const Title = styled.h1({
   fontSize: "120px",
   lineHeight: "140px",
   fontWeight: fontWeights.bold,
-  backgroundImage: `url('${assets.recruitHeroTextBg}')`,
+  // Figma 헤드 타이틀 느낌을 이미지가 아닌 타이포/그라데이션으로 구현
+  backgroundImage: "linear-gradient(180deg, #ffffff 0%, #cad5e2 42%, #0f1f38 100%)",
   backgroundClip: "text",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
-  backgroundSize: "cover",
-  backgroundPosition: "center",
+  letterSpacing: "-0.02em",
   whiteSpace: "pre-line",
 
   "@media (max-width: 1024px)": { fontSize: "84px", lineHeight: "102px" },
@@ -150,6 +151,8 @@ const Arrow = styled.span({
 });
 
 export const RecruitHeroSection = () => {
+  const heroTitle = recruitStatus === "open" ? "Now\nRecruiting" : "Currently Under\nRenewal";
+
   return (
     <Section>
       <Bg>{/* background image */}</Bg>
@@ -157,7 +160,7 @@ export const RecruitHeroSection = () => {
       <Inner>
         <Label>Recruitment</Label>
         <div style={{ display: "flex", flexDirection: "column", gap: "40px", width: "100%" }}>
-          <Title>{"Currently Under\nRenewal"}</Title>
+          <Title>{heroTitle}</Title>
           <Description>
             {
               "다음 크루원 모집을 위해 DDD 운영진들이 열심히 준비 중이에요.\n크루원 모집 준비가 끝나면 그 누구보다 빠르게 연락 드릴게요!"
@@ -165,8 +168,21 @@ export const RecruitHeroSection = () => {
           </Description>
         </div>
         <CtaButton href="/recruit">
-          사전 알림 신청하기
-          <Arrow aria-hidden>→</Arrow>
+          {recruitButtonLabels.hero}
+          <Arrow aria-hidden>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M16.0032 9.41421L7.39663 18.0208L5.98242 16.6066L14.589 8H7.00324V6H18.0032V17H16.0032V9.41421Z"
+                fill="white"
+              />
+            </svg>
+          </Arrow>
         </CtaButton>
       </Inner>
     </Section>
