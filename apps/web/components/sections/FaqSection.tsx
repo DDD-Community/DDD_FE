@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import styled from "@emotion/styled";
-import { assets } from "@/constants/assets";
 import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
 
 interface FaqItem {
@@ -99,6 +98,7 @@ const AccordionList = styled.dl({
 
 const AccordionItem = styled.div({
   borderBottom: `1px solid ${colors.border}`,
+  contain: "layout paint",
 });
 
 interface AccordionTriggerProps {
@@ -133,19 +133,27 @@ const AccordionQuestion = styled.dt({
   },
 });
 
-const ChevronIcon = styled.img<{ isOpen: boolean }>(({ isOpen }) => ({
+const ChevronIcon = styled.svg({
   width: "24px",
   height: "24px",
   flexShrink: 0,
-  transition: "transform 0.2s",
-  transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-}));
+  display: "block",
+});
 
 const AccordionBody = styled.dd<{ isOpen: boolean }>(({ isOpen }) => ({
+  display: "grid",
+  gridTemplateRows: isOpen ? "1fr" : "0fr",
+  opacity: isOpen ? 1 : 0,
+  padding: "0 24px",
+  transition: "grid-template-rows 0.2s ease, opacity 0.15s ease",
+  pointerEvents: isOpen ? "auto" : "none",
+}));
+
+const AccordionBodyInner = styled.div<{ isOpen: boolean }>(({ isOpen }) => ({
   overflow: "hidden",
-  maxHeight: isOpen ? "200px" : "0",
-  transition: "max-height 0.3s ease",
-  padding: isOpen ? "4px 24px 24px" : "0 24px",
+  minHeight: 0,
+  paddingTop: isOpen ? "4px" : "0",
+  paddingBottom: isOpen ? "24px" : "0",
 }));
 
 const AccordionAnswer = styled.p({
@@ -186,10 +194,25 @@ export const FaqSection = () => {
                   isOpen={isOpen}
                 >
                   <AccordionQuestion>Q. {question}</AccordionQuestion>
-                  <ChevronIcon src={assets.chevronDown} alt="" isOpen={isOpen} />
+                  <ChevronIcon
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden
+                  >
+                    {isOpen ? (
+                      <path d="M12 7.5L2 17.5H22L12 7.5Z" fill="white" />
+                    ) : (
+                      <path d="M12 17.5L2 7.5H22L12 17.5Z" fill="white" />
+                    )}
+                  </ChevronIcon>
                 </AccordionTrigger>
                 <AccordionBody isOpen={isOpen}>
-                  <AccordionAnswer>A. {answer}</AccordionAnswer>
+                  <AccordionBodyInner isOpen={isOpen}>
+                    <AccordionAnswer>A. {answer}</AccordionAnswer>
+                  </AccordionBodyInner>
                 </AccordionBody>
               </AccordionItem>
             );

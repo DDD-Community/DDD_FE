@@ -40,5 +40,5 @@ export const lineHeights = {
   headingLarge: "32px",
   headingXl: "50px",
   paragraphXxxl: "75px",
-  headingXxl: "140px",
+  headingXxl: "130px",
 } as const;

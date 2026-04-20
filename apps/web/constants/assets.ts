@@ -1,5 +1,5 @@
 export const assets = {
-  logo: "https://www.figma.com/api/mcp/asset/5d3a78dd-c166-4a1e-99b1-1bcd284d3728",
+  logo: "/images/logo.png",
   heroBg: "https://www.figma.com/api/mcp/asset/368a3885-c833-4a97-bae3-923bf3c60070",
   heroTextBg: "https://www.figma.com/api/mcp/asset/b0a8d8db-c55b-4d71-9a03-7bba5fbcd1a6",
   recruitHeroBg: "https://www.figma.com/api/mcp/asset/d893df99-d978-48ed-b6d8-f83490db30b8",
@@ -22,14 +22,14 @@ export const assets = {
     "https://www.figma.com/api/mcp/asset/9ddc3915-9f67-4398-b6c9-b2557b3f73a9",
   ],
   sponsors: {
-    elice: "https://www.figma.com/api/mcp/asset/7fa10d1c-02d9-403a-924e-2c0cd29c749c",
-    ictcoc: "https://www.figma.com/api/mcp/asset/01168546-a4dd-4f98-9713-f43698881e94",
-    asanNanum: "https://www.figma.com/api/mcp/asset/b34d37af-6c61-41d7-a0ae-c218c8467624",
-    hanbit: "https://www.figma.com/api/mcp/asset/4bbe9d3f-b4ab-4ae9-9c42-eafda0e2e11d",
+    elice: "/images/imag_elice.png",
+    ictcoc: "/images/image_ictcoc.png",
+    asanNanum: "/images/image_asan-nanum.png",
+    hanbit: "/images/image_hanbit.png",
   },
   social: {
-    tistory: "https://www.figma.com/api/mcp/asset/a11c3405-5264-4e14-a222-0822b8e42e7a",
-    medium: "https://www.figma.com/api/mcp/asset/ff3cc3fd-4372-4cf8-94e3-631676d76d37",
-    brunch: "https://www.figma.com/api/mcp/asset/592c7725-2a88-4a18-906e-5740037a0900",
+    tistory: "/images/Tistory.png",
+    medium: "/images/Medium.png",
+    brunch: "/images/Brunch.png",
   },
 } as const;
