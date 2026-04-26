@@ -4,7 +4,7 @@ import { api } from "@ddd/api"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
-import { Button, Input, Table, Select, ListBox } from "@heroui/react"
+import { Button, Input, Table, Select, ListBox, toast } from "@heroui/react"
 
 import { GridBox } from "@/shared/ui/GridBox"
 import { FlexBox } from "@/shared/ui/FlexBox"
@@ -50,7 +50,7 @@ export default function RemindersPage() {
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection />
+      <TitleSection total={reminders?.length ?? 0} />
       <CardSection total={reminders?.length ?? 0} />
 
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
@@ -130,14 +130,22 @@ export default function RemindersPage() {
   )
 }
 
-const TitleSection = () => {
+type TitleSectionProps = { total: number }
+
+const TitleSection = ({ total }: TitleSectionProps) => {
+  const handleBulkSend = () => {
+    toast.success("전체 알림 발송 완료", {
+      description: `신청자 ${total}명에게 알림을 보냈습니다.`,
+    })
+  }
+
   return (
     <FlexBox className="justify-between">
       <header className="space-y-2">
         <Title title="사전 알림 신청" />
         <Description title="모집 시작 전 알림을 신청한 사용자 목록을 관리합니다." />
       </header>
-      <Button size="lg">
+      <Button size="lg" onPress={handleBulkSend}>
         <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
         알림 발송
       </Button>
