@@ -58,3 +58,10 @@ yarn-error.log*
 .agent/
 .agents/
 .claude/
+
+# playwright-mcp screenshots / snapshots
+.playwright-mcp/
+**/.playwright-mcp/
+/*.png
+/*.jpg
+/*.jpeg
