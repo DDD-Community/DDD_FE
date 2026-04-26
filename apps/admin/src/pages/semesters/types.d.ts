@@ -14,9 +14,11 @@ export type SemesterInfo = {
 export type SemesterPart = "PM" | "PD" | "Server" | "Web" | "iOS" | "Android"
 
 export type ProcessSchedule = {
-  documentAcceptDate: string
+  documentAcceptStartDate: string
+  documentAcceptEndDate: string
   documentResultDate: string
-  interviewDate: string
+  interviewStartDate: string
+  interviewEndDate: string
   finalResultDate: string
 }
 
