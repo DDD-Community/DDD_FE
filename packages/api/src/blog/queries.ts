@@ -1,9 +1,14 @@
-import { queryOptions, mutationOptions } from "@tanstack/react-query";
+import {
+  queryOptions,
+  mutationOptions,
+  infiniteQueryOptions,
+} from "@tanstack/react-query";
 import { blogAPI } from "./api";
 import { blogKeys } from "./queryKeys";
 import type {
   GetBlogPostsParams,
   GetBlogPostParams,
+  GetInfiniteBlogPostsParams,
   PostCreateBlogPostRequest,
   PutUpdateBlogPostParams,
   PutUpdateBlogPostRequest,
@@ -27,6 +32,30 @@ export const blogQueries = {
     queryOptions({
       queryKey: blogKeys.list(params),
       queryFn: () => blogAPI.getBlogPosts({ params }),
+    }),
+
+  /**
+   * 블로그 무한 스크롤 목록 조회 쿼리
+   *
+   * cursor는 useInfiniteQuery의 pageParam으로 자동 관리되므로
+   * params에 cursor를 직접 전달하지 않는다.
+   *
+   * @param {GetInfiniteBlogPostsParams} params - 조회 파라미터 (cursor 제외)
+   * @param {number} [params.limit] - 페이지 크기 (1-100, 선택)
+   *
+   * @returns {InfiniteQueryOptions} TanStack Query Infinite 옵션 객체
+   *
+   * @example
+   * const query = useInfiniteQuery(blogQueries.getInfiniteBlogPosts({ params: { limit: 20 } }))
+   */
+  getInfiniteBlogPosts: ({ params }: { params: GetInfiniteBlogPostsParams }) =>
+    infiniteQueryOptions({
+      queryKey: blogKeys.infiniteList(params),
+      queryFn: ({ pageParam }) =>
+        blogAPI.getBlogPosts({ params: { ...params, cursor: pageParam } }),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (last) =>
+        last.hasMore ? last.nextCursor : undefined,
     }),
 
   /**

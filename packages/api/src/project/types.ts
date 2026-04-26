@@ -13,6 +13,9 @@ import type {
 export type GetProjectsParams = ProjectGetPublicListParams;
 export type GetProjectsResponse = ProjectListDto;
 
+// 무한 스크롤용 파라미터 (cursor는 useInfiniteQuery의 pageParam이 관리)
+export type GetInfiniteProjectsParams = Omit<GetProjectsParams, "cursor">;
+
 // GET /api/v1/project/{id} - 프로젝트 단일 조회
 export type GetProjectParams = { id: number };
 export type GetProjectResponse = ProjectDto;

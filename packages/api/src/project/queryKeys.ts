@@ -1,4 +1,8 @@
-import type { GetProjectsParams, GetProjectParams } from "./types";
+import type {
+  GetProjectsParams,
+  GetProjectParams,
+  GetInfiniteProjectsParams,
+} from "./types";
 
 export const projectKeys = {
   /** 프로젝트 base key */
@@ -17,6 +21,19 @@ export const projectKeys = {
    */
   list: (params: GetProjectsParams) =>
     [...projectKeys.lists(), params] as const,
+
+  /** 프로젝트 무한 스크롤 목록 key */
+  infiniteLists: () => [...projectKeys.all, "infinite-list"] as const,
+
+  /**
+   * 프로젝트 무한 스크롤 필터 key
+   *
+   * @param {GetInfiniteProjectsParams} params - 조회 파라미터 (cursor 제외)
+   * @param {ProjectPlatform} [params.platform] - 플랫폼 필터 (선택)
+   * @param {number} [params.limit] - 페이지 크기 (선택)
+   */
+  infiniteList: (params: GetInfiniteProjectsParams) =>
+    [...projectKeys.infiniteLists(), params] as const,
 
   /**
    * 프로젝트 단일 key

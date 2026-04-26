@@ -1,8 +1,13 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 import { projectQueries, projectMutations } from "./queries";
 import type {
   GetProjectsParams,
   GetProjectParams,
+  GetInfiniteProjectsParams,
   PostCreateProjectRequest,
   PutUpdateProjectParams,
   PutUpdateProjectRequest,
@@ -24,6 +29,24 @@ import type {
  */
 export const useProjects = ({ params }: { params: GetProjectsParams }) =>
   useQuery(projectQueries.getProjects({ params }));
+
+/**
+ * 프로젝트 무한 스크롤 목록 조회 훅
+ *
+ * @param {GetInfiniteProjectsParams} params - 조회 파라미터 (cursor 제외)
+ * @param {ProjectPlatform} [params.platform] - 플랫폼 필터 (선택)
+ * @param {number} [params.limit] - 페이지 크기 (1-100, 선택)
+ *
+ * @example
+ * const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+ *   useInfiniteProjects({ params: { limit: 20 } })
+ * const items = data?.pages.flatMap((p) => p.items) ?? []
+ */
+export const useInfiniteProjects = ({
+  params,
+}: {
+  params: GetInfiniteProjectsParams;
+}) => useInfiniteQuery(projectQueries.getInfiniteProjects({ params }));
 
 /**
  * 프로젝트 단일 조회 훅

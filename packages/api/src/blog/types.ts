@@ -8,6 +8,9 @@ import type {
 export type GetBlogPostsParams = BlogGetPublicListParams;
 export type GetBlogPostsResponse = BlogPostListDto;
 
+// 무한 스크롤용 파라미터 (cursor는 useInfiniteQuery의 pageParam이 관리)
+export type GetInfiniteBlogPostsParams = Omit<GetBlogPostsParams, "cursor">;
+
 // GET /api/v1/blog/{id} - 블로그 단일 조회
 export type GetBlogPostParams = { id: number };
 export type GetBlogPostResponse = BlogPostDto;

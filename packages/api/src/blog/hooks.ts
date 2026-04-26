@@ -1,8 +1,13 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 import { blogQueries, blogMutations } from "./queries";
 import type {
   GetBlogPostsParams,
   GetBlogPostParams,
+  GetInfiniteBlogPostsParams,
   PostCreateBlogPostRequest,
   PutUpdateBlogPostParams,
   PutUpdateBlogPostRequest,
@@ -21,6 +26,23 @@ import type {
  */
 export const useBlogPosts = ({ params }: { params: GetBlogPostsParams }) =>
   useQuery(blogQueries.getBlogPosts({ params }));
+
+/**
+ * 블로그 무한 스크롤 목록 조회 훅
+ *
+ * @param {GetInfiniteBlogPostsParams} params - 조회 파라미터 (cursor 제외)
+ * @param {number} [params.limit] - 페이지 크기 (1-100, 선택)
+ *
+ * @example
+ * const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+ *   useInfiniteBlogPosts({ params: { limit: 20 } })
+ * const items = data?.pages.flatMap((p) => p.items) ?? []
+ */
+export const useInfiniteBlogPosts = ({
+  params,
+}: {
+  params: GetInfiniteBlogPostsParams;
+}) => useInfiniteQuery(blogQueries.getInfiniteBlogPosts({ params }));
 
 /**
  * 블로그 단일 조회 훅

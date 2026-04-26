@@ -1,4 +1,8 @@
-import type { GetBlogPostsParams, GetBlogPostParams } from "./types";
+import type {
+  GetBlogPostsParams,
+  GetBlogPostParams,
+  GetInfiniteBlogPostsParams,
+} from "./types";
 
 export const blogKeys = {
   /** 블로그 base key */
@@ -16,6 +20,18 @@ export const blogKeys = {
    */
   list: (params: GetBlogPostsParams) =>
     [...blogKeys.lists(), params] as const,
+
+  /** 블로그 무한 스크롤 목록 key */
+  infiniteLists: () => [...blogKeys.all, "infinite-list"] as const,
+
+  /**
+   * 블로그 무한 스크롤 필터 key
+   *
+   * @param {GetInfiniteBlogPostsParams} params - 조회 파라미터 (cursor 제외)
+   * @param {number} [params.limit] - 페이지 크기 (선택)
+   */
+  infiniteList: (params: GetInfiniteBlogPostsParams) =>
+    [...blogKeys.infiniteLists(), params] as const,
 
   /**
    * 블로그 단일 key
