@@ -8,12 +8,19 @@ import type { ProjectDto } from "@ddd/api"
 import { FlexBox } from "@/shared/ui/FlexBox"
 import { Title, Description } from "@/widgets/heading"
 
+import { DeleteProjectDialog } from "./components/DeleteProjectDialog"
+import { ProjectFormDrawer } from "./components/ProjectFormDrawer"
 import {
   ProjectsToolbar,
   type CohortFilterValue,
   type PlatformFilterValue,
 } from "./components/ProjectsToolbar"
 import { ProjectsTable } from "./components/ProjectsTable"
+
+type DrawerState =
+  | { mode: "closed" }
+  | { mode: "create" }
+  | { mode: "edit"; project: ProjectDto }
 
 const PAGE_LIMIT = 20
 
@@ -22,6 +29,10 @@ export default function ProjectsPage() {
   const [searchText, setSearchText] = useState("")
   const [platform, setPlatform] = useState<PlatformFilterValue>("ALL")
   const [cohortId, setCohortId] = useState<CohortFilterValue>("ALL")
+  const [drawerState, setDrawerState] = useState<DrawerState>({
+    mode: "closed",
+  })
+  const [deleteTarget, setDeleteTarget] = useState<ProjectDto | null>(null)
 
   const {
     data: projectsData,
@@ -58,16 +69,19 @@ export default function ProjectsPage() {
     })
   }, [allProjects, searchText, cohortId])
 
-  const handleCreate = () => {
-    // Phase 6에서 ProjectFormDrawer 연결
+  const handleCreate = () => setDrawerState({ mode: "create" })
+
+  const handleEdit = (project: ProjectDto) =>
+    setDrawerState({ mode: "edit", project })
+
+  const handleDelete = (project: ProjectDto) => setDeleteTarget(project)
+
+  const handleDrawerOpenChange = (open: boolean) => {
+    if (!open) setDrawerState({ mode: "closed" })
   }
 
-  const handleEdit = (_project: ProjectDto) => {
-    // Phase 6에서 ProjectFormDrawer 연결
-  }
-
-  const handleDelete = (_project: ProjectDto) => {
-    // Phase 7에서 DeleteProjectDialog 연결
+  const handleDeleteOpenChange = (open: boolean) => {
+    if (!open) setDeleteTarget(null)
   }
 
   return (
@@ -125,6 +139,20 @@ export default function ProjectsPage() {
           </>
         )}
       </div>
+
+      <ProjectFormDrawer
+        isOpen={drawerState.mode !== "closed"}
+        onOpenChange={handleDrawerOpenChange}
+        mode={drawerState.mode === "edit" ? "edit" : "create"}
+        project={drawerState.mode === "edit" ? drawerState.project : undefined}
+        cohorts={cohorts}
+      />
+
+      <DeleteProjectDialog
+        isOpen={deleteTarget !== null}
+        onOpenChange={handleDeleteOpenChange}
+        project={deleteTarget}
+      />
     </div>
   )
 }
