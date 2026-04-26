@@ -3,6 +3,8 @@
 DDD 동아리 운영진용 어드민 페이지. Vite + React 19, Tailwind CSS 4, React Router(Data Mode), HeroUI v3 기반.
 
 > 기능 명세 대비 구현 체크리스트는 루트의 **[tasks/checklist.md](../../tasks/checklist.md)** 를 참조한다.
+>
+> 토스트(`toast.success/error/info/warning`) 사용 패턴은 **[docs/admin-toast.md](../../docs/admin-toast.md)** 를 단일 출처로 삼는다. 새 컴포넌트에서 알림이 필요하면 이 문서의 표준 패턴을 따른다.
 
 ---
 
