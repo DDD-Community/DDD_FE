@@ -1,136 +1,166 @@
 import { useMemo, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { api } from "@ddd/api"
+import { Button } from "@heroui/react"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-
-import { Button, Input, Table, Select, ListBox } from "@heroui/react"
+import { useCohorts, useInfiniteProjects } from "@ddd/api"
+import type { ProjectDto } from "@ddd/api"
 
 import { FlexBox } from "@/shared/ui/FlexBox"
 import { Title, Description } from "@/widgets/heading"
 
-import type { ProjectInfo } from "./types"
 import {
-  STATUS_LABEL,
-  STATUS_FILTER_OPTIONS,
-  STATUS_FILTER_MAP,
-} from "./constants"
+  ProjectsToolbar,
+  type CohortFilterValue,
+  type PlatformFilterValue,
+} from "./components/ProjectsToolbar"
+import { ProjectsTable } from "./components/ProjectsTable"
 
-const getProjectData = async () => {
-  try {
-    const data = await api.get<ProjectInfo[]>("/project")
-    return data
-  } catch (error) {
-    console.error("Failed to fetch project data:", error)
-  }
-}
+const PAGE_LIMIT = 20
 
 /** 프로젝트 관리 페이지 */
 export default function ProjectsPage() {
   const [searchText, setSearchText] = useState("")
-  const [statusFilter, setStatusFilter] = useState("전체")
+  const [platform, setPlatform] = useState<PlatformFilterValue>("ALL")
+  const [cohortId, setCohortId] = useState<CohortFilterValue>("ALL")
 
-  const { data: projects } = useQuery({
-    queryKey: ["projects"],
-    queryFn: getProjectData,
+  const {
+    data: projectsData,
+    isLoading: isProjectsLoading,
+    isError: isProjectsError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteProjects({
+    params: {
+      platform: platform === "ALL" ? undefined : platform,
+      limit: PAGE_LIMIT,
+    },
   })
 
+  const { data: cohorts = [] } = useCohorts()
+
+  const cohortById = useMemo(
+    () => new Map(cohorts.map((c) => [c.id, c])),
+    [cohorts]
+  )
+
+  const allProjects = useMemo<ProjectDto[]>(
+    () => projectsData?.pages.flatMap((page) => page.items) ?? [],
+    [projectsData]
+  )
+
   const filteredProjects = useMemo(() => {
-    const source = projects ?? []
-    const targetStatus = STATUS_FILTER_MAP[statusFilter]
-    return source
-      .filter((item) => item.name.includes(searchText))
-      .filter((item) => targetStatus === null || item.status === targetStatus)
-  }, [projects, searchText, statusFilter])
+    return allProjects.filter((project) => {
+      const matchesSearch =
+        searchText.length === 0 || project.name.includes(searchText)
+      const matchesCohort = cohortId === "ALL" || project.cohortId === cohortId
+      return matchesSearch && matchesCohort
+    })
+  }, [allProjects, searchText, cohortId])
+
+  const handleCreate = () => {
+    // Phase 6에서 ProjectFormDrawer 연결
+  }
+
+  const handleEdit = (_project: ProjectDto) => {
+    // Phase 6에서 ProjectFormDrawer 연결
+  }
+
+  const handleDelete = (_project: ProjectDto) => {
+    // Phase 7에서 DeleteProjectDialog 연결
+  }
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection />
+      <TitleSection onCreate={handleCreate} />
 
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
-        <FlexBox className="justify-between">
-          <Input
-            variant="secondary"
-            placeholder="프로젝트명 검색..."
-            className="max-w-xs"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <Select variant="secondary" className="max-w-36" aria-label="상태 필터">
-            <Select.Trigger>
-              <Select.Value>{statusFilter}</Select.Value>
-              <Select.Indicator />
-            </Select.Trigger>
-            <Select.Popover>
-              <ListBox>
-                {STATUS_FILTER_OPTIONS.map((option) => (
-                  <ListBox.Item
-                    key={option}
-                    id={option}
-                    textValue={option}
-                    onClick={() => setStatusFilter(option)}
-                  >
-                    {option}
-                  </ListBox.Item>
-                ))}
-              </ListBox>
-            </Select.Popover>
-          </Select>
-        </FlexBox>
+        <ProjectsToolbar
+          searchText={searchText}
+          onSearchTextChange={setSearchText}
+          platform={platform}
+          onPlatformChange={setPlatform}
+          cohortId={cohortId}
+          onCohortChange={setCohortId}
+          cohorts={cohorts}
+        />
 
-        <Table>
-          <Table.ScrollContainer>
-            <Table.Content aria-label="프로젝트 목록" className="min-w-[900px]">
-              <Table.Header>
-                <Table.Column isRowHeader>프로젝트명</Table.Column>
-                <Table.Column>설명</Table.Column>
-                <Table.Column>기수</Table.Column>
-                <Table.Column>팀원 수</Table.Column>
-                <Table.Column>상태</Table.Column>
-                <Table.Column>등록일</Table.Column>
-                <Table.Column>액션</Table.Column>
-              </Table.Header>
+        {isProjectsLoading ? (
+          <EmptyState>불러오는 중...</EmptyState>
+        ) : isProjectsError ? (
+          <EmptyState tone="danger">
+            프로젝트 목록을 불러오지 못했습니다.
+          </EmptyState>
+        ) : filteredProjects.length === 0 ? (
+          <EmptyState>
+            {allProjects.length === 0
+              ? "등록된 프로젝트가 없습니다."
+              : "조건에 맞는 프로젝트가 없습니다."}
+          </EmptyState>
+        ) : (
+          <>
+            <ProjectsTable
+              projects={filteredProjects}
+              cohortById={cohortById}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
 
-              <Table.Body>
-                {filteredProjects.map((project) => (
-                  <Table.Row key={project.id}>
-                    <Table.Cell>{project.name}</Table.Cell>
-                    <Table.Cell>{project.description}</Table.Cell>
-                    <Table.Cell>{project.semester}</Table.Cell>
-                    <Table.Cell>{project.memberCount}</Table.Cell>
-                    <Table.Cell>{STATUS_LABEL[project.status]}</Table.Cell>
-                    <Table.Cell>
-                      {new Date(project.createdAt).toLocaleDateString("ko-KR")}
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Button size="sm" variant="outline" className="mr-2">
-                        수정
-                      </Button>
-                      <Button size="sm" variant="danger">
-                        삭제
-                      </Button>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table.Content>
-          </Table.ScrollContainer>
-        </Table>
+            <FlexBox className="justify-between pt-2">
+              <span className="text-muted-foreground text-xs">
+                현재 {filteredProjects.length}개 표시
+                {hasNextPage ? " · 더 있음" : ""}
+              </span>
+              {hasNextPage && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onPress={() => fetchNextPage()}
+                  isDisabled={isFetchingNextPage}
+                >
+                  {isFetchingNextPage ? "불러오는 중..." : "더 보기"}
+                </Button>
+              )}
+            </FlexBox>
+          </>
+        )}
       </div>
     </div>
   )
 }
 
-const TitleSection = () => {
+type TitleSectionProps = { onCreate: () => void }
+
+const TitleSection = ({ onCreate }: TitleSectionProps) => {
   return (
     <FlexBox className="justify-between">
       <header className="space-y-2">
         <Title title="프로젝트 관리" />
-        <Description title="DDD 활동 프로젝트를 등록하고 상태를 관리합니다." />
+        <Description title="홈페이지에 노출되는 프로젝트를 등록하고 관리합니다." />
       </header>
-      <Button size="lg">
-        <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />새 프로젝트 등록
+      <Button size="lg" onPress={onCreate}>
+        <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
+        프로젝트 등록
       </Button>
     </FlexBox>
+  )
+}
+
+type EmptyStateProps = {
+  children: React.ReactNode
+  tone?: "default" | "danger"
+}
+
+const EmptyState = ({ children, tone = "default" }: EmptyStateProps) => {
+  return (
+    <div
+      className={
+        tone === "danger"
+          ? "py-12 text-center text-sm text-red-500"
+          : "text-muted-foreground py-12 text-center text-sm"
+      }
+    >
+      {children}
+    </div>
   )
 }
