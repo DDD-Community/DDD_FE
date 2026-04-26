@@ -14,18 +14,24 @@ export const TitleSection = () => {
   )
 }
 
-export const CardSection = () => {
+type CardSectionProps = {
+  total: number
+  pending: number
+  notified: number
+}
+
+export const CardSection = ({ total, pending, notified }: CardSectionProps) => {
   return (
-    <GridBox className="grid-cols-4 gap-5">
+    <GridBox className="grid-cols-3 gap-5">
       <Card>
         <Card.Header>
           <Card.Title className="text-xs font-bold">전체 신청</Card.Title>
         </Card.Header>
         <Card.Content>
-          <p className="text-xl font-semibold">324명</p>
+          <p className="text-xl font-semibold">{total}명</p>
         </Card.Content>
         <Card.Footer>
-          <span className="text-xs text-muted-foreground">누적</span>
+          <span className="text-muted-foreground text-xs">누적</span>
         </Card.Footer>
       </Card>
       <Card>
@@ -33,32 +39,21 @@ export const CardSection = () => {
           <Card.Title className="text-xs font-bold">대기</Card.Title>
         </Card.Header>
         <Card.Content>
-          <p className="text-xl font-semibold">145명</p>
+          <p className="text-xl font-semibold">{pending}명</p>
         </Card.Content>
         <Card.Footer>
-          <span className="text-xs text-muted-foreground">미발송</span>
+          <span className="text-muted-foreground text-xs">미발송</span>
         </Card.Footer>
       </Card>
       <Card>
         <Card.Header>
-          <Card.Title className="text-xs font-bold">발송완료</Card.Title>
+          <Card.Title className="text-xs font-bold">발송 완료</Card.Title>
         </Card.Header>
         <Card.Content>
-          <p className="text-xl font-semibold">179명</p>
+          <p className="text-xl font-semibold">{notified}명</p>
         </Card.Content>
         <Card.Footer>
-          <span className="text-xs text-muted-foreground">완료</span>
-        </Card.Footer>
-      </Card>
-      <Card>
-        <Card.Header>
-          <Card.Title className="text-xs font-bold">취소</Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <p className="text-xl font-semibold">0명</p>
-        </Card.Content>
-        <Card.Footer>
-          <span className="text-xs text-muted-foreground">해제</span>
+          <span className="text-muted-foreground text-xs">완료</span>
         </Card.Footer>
       </Card>
     </GridBox>

@@ -1,183 +1,121 @@
 import { useMemo, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { api } from "@ddd/api"
-import { PlusSignIcon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
 
-import { Button, Input, Table, Select, ListBox, toast } from "@heroui/react"
-
-import { GridBox } from "@/shared/ui/GridBox"
-import { FlexBox } from "@/shared/ui/FlexBox"
-import { Title, Description } from "@/widgets/heading"
-
-import type { ReminderInfo } from "./types"
 import {
-  ROLE_LABEL,
-  STATUS_LABEL,
-  STATUS_FILTER_OPTIONS,
-  STATUS_FILTER_MAP,
+  useAdminEarlyNotifications,
+  useCohorts,
+  type CohortDto,
+} from "@ddd/api"
+
+import { CardSection, TitleSection } from "./components/Sections"
+import { RemindersBulkSendDrawer } from "./components/RemindersBulkSendDrawer"
+import { RemindersTable } from "./components/RemindersTable"
+import { RemindersToolbar } from "./components/RemindersToolbar"
+import {
+  STATUS_FILTER_PREDICATE,
+  type StatusFilterOption,
 } from "./constants"
 
-const getReminderData = async () => {
-  try {
-    const data = await api.get<ReminderInfo[]>("/reminder")
-    return data
-  } catch (error) {
-    console.error("Failed to fetch reminder data:", error)
-  }
+const pickActiveCohortId = (cohorts: CohortDto[] | undefined): number | null => {
+  if (!cohorts || cohorts.length === 0) return null
+  const open = cohorts.find((c) => c.status === "RECRUITING")
+  if (open) return open.id
+  const sorted = [...cohorts].sort(
+    (a, b) =>
+      new Date(b.recruitStartAt).getTime() -
+      new Date(a.recruitStartAt).getTime(),
+  )
+  return sorted[0]?.id ?? null
 }
 
-/** 사전 알림 신청 페이지 */
 export default function RemindersPage() {
   const [searchText, setSearchText] = useState("")
-  const [statusFilter, setStatusFilter] = useState("전체")
+  const [statusFilter, setStatusFilter] =
+    useState<StatusFilterOption>("전체")
+  const [overrideCohortId, setOverrideCohortId] = useState<number | null>(null)
+  const [isBulkSendOpen, setIsBulkSendOpen] = useState(false)
 
-  const { data: reminders } = useQuery({
-    queryKey: ["reminders"],
-    queryFn: getReminderData,
+  const { data: cohorts } = useCohorts()
+  const cohortList = useMemo(() => cohorts ?? [], [cohorts])
+  const defaultCohortId = useMemo(
+    () => pickActiveCohortId(cohortList),
+    [cohortList],
+  )
+  const effectiveCohortId = overrideCohortId ?? defaultCohortId
+
+  const { data: reminders } = useAdminEarlyNotifications({
+    params: {
+      cohortId: effectiveCohortId ?? 0,
+    },
   })
 
+  const remindersList = useMemo(() => reminders ?? [], [reminders])
+
   const filteredReminders = useMemo(() => {
-    const source = reminders ?? []
-    const targetStatus = STATUS_FILTER_MAP[statusFilter]
-    return source
-      .filter(
-        (item) =>
-          item.name.includes(searchText) || item.email.includes(searchText)
+    const statusPredicate = STATUS_FILTER_PREDICATE[statusFilter]
+    return remindersList
+      .filter((item) =>
+        searchText.trim() === ""
+          ? true
+          : item.email
+              .toLowerCase()
+              .includes(searchText.trim().toLowerCase()),
       )
-      .filter((item) => targetStatus === null || item.status === targetStatus)
-  }, [reminders, searchText, statusFilter])
+      .filter((item) =>
+        statusPredicate === null ? true : statusPredicate(item.notifiedAt),
+      )
+  }, [remindersList, searchText, statusFilter])
+
+  const stats = useMemo(() => {
+    const total = remindersList.length
+    const notified = remindersList.filter((r) => !!r.notifiedAt).length
+    return { total, notified, pending: total - notified }
+  }, [remindersList])
+
+  const selectedCohort = cohortList.find((c) => c.id === effectiveCohortId)
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection total={reminders?.length ?? 0} />
-      <CardSection total={reminders?.length ?? 0} />
+      <TitleSection />
+      <CardSection
+        total={stats.total}
+        pending={stats.pending}
+        notified={stats.notified}
+      />
 
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
-        <FlexBox className="justify-between">
-          <Input
-            variant="secondary"
-            placeholder="이름 또는 이메일 검색..."
-            className="max-w-xs"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <Select variant="secondary" className="max-w-36" aria-label="상태 필터">
-            <Select.Trigger>
-              <Select.Value>{statusFilter}</Select.Value>
-              <Select.Indicator />
-            </Select.Trigger>
-            <Select.Popover>
-              <ListBox>
-                {STATUS_FILTER_OPTIONS.map((option) => (
-                  <ListBox.Item
-                    key={option}
-                    id={option}
-                    textValue={option}
-                    onClick={() => setStatusFilter(option)}
-                  >
-                    {option}
-                  </ListBox.Item>
-                ))}
-              </ListBox>
-            </Select.Popover>
-          </Select>
-        </FlexBox>
-
-        <Table>
-          <Table.ScrollContainer>
-            <Table.Content
-              aria-label="알림 신청 목록"
-              className="min-w-[800px]"
-            >
-              <Table.Header>
-                <Table.Column isRowHeader>이름</Table.Column>
-                <Table.Column>이메일</Table.Column>
-                <Table.Column>직군</Table.Column>
-                <Table.Column>관심 기수</Table.Column>
-                <Table.Column>신청일</Table.Column>
-                <Table.Column>상태</Table.Column>
-                <Table.Column>액션</Table.Column>
-              </Table.Header>
-
-              <Table.Body>
-                {filteredReminders.map((reminder) => (
-                  <Table.Row key={reminder.id}>
-                    <Table.Cell>{reminder.name}</Table.Cell>
-                    <Table.Cell>{reminder.email}</Table.Cell>
-                    <Table.Cell>{ROLE_LABEL[reminder.role]}</Table.Cell>
-                    <Table.Cell>{reminder.semester}</Table.Cell>
-                    <Table.Cell>
-                      {new Date(reminder.appliedAt).toLocaleDateString("ko-KR")}
-                    </Table.Cell>
-                    <Table.Cell>{STATUS_LABEL[reminder.status]}</Table.Cell>
-                    <Table.Cell>
-                      <Button size="sm" variant="outline" className="mr-2">
-                        발송
-                      </Button>
-                      <Button size="sm" variant="danger">
-                        취소
-                      </Button>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table.Content>
-          </Table.ScrollContainer>
-        </Table>
+        {effectiveCohortId === null ? (
+          <p className="py-12 text-center text-sm text-gray-500">
+            등록된 기수가 없습니다.
+          </p>
+        ) : (
+          <>
+            <RemindersToolbar
+              searchText={searchText}
+              onSearchChange={setSearchText}
+              cohorts={cohortList}
+              cohortId={effectiveCohortId}
+              onCohortChange={setOverrideCohortId}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              onOpenBulkSend={() => setIsBulkSendOpen(true)}
+              isBulkSendDisabled={remindersList.length === 0}
+            />
+            <RemindersTable
+              reminders={filteredReminders}
+              cohorts={cohortList}
+            />
+          </>
+        )}
       </div>
+
+      {effectiveCohortId !== null && selectedCohort && (
+        <RemindersBulkSendDrawer
+          isOpen={isBulkSendOpen}
+          onOpenChange={setIsBulkSendOpen}
+          cohortId={effectiveCohortId}
+          cohortName={selectedCohort.name}
+        />
+      )}
     </div>
-  )
-}
-
-type TitleSectionProps = { total: number }
-
-const TitleSection = ({ total }: TitleSectionProps) => {
-  const handleBulkSend = () => {
-    toast.success("전체 알림 발송 완료", {
-      description: `신청자 ${total}명에게 알림을 보냈습니다.`,
-    })
-  }
-
-  return (
-    <FlexBox className="justify-between">
-      <header className="space-y-2">
-        <Title title="사전 알림 신청" />
-        <Description title="모집 시작 전 알림을 신청한 사용자 목록을 관리합니다." />
-      </header>
-      <Button size="lg" onPress={handleBulkSend}>
-        <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
-        알림 발송
-      </Button>
-    </FlexBox>
-  )
-}
-
-type CardSectionProps = { total: number }
-
-const CardSection = ({ total }: CardSectionProps) => {
-  return (
-    <GridBox className="grid-cols-4 gap-5">
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
-        <h3 className="font-semibold text-gray-700">전체 신청</h3>
-        <p className="text-2xl font-bold">{total}명</p>
-        <p className="text-sm text-gray-500">누적 알림 신청 수</p>
-      </div>
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
-        <h3 className="font-semibold text-gray-700">대기</h3>
-        <p className="text-2xl font-bold">발송 예정</p>
-        <p className="text-sm text-gray-500">알림 미발송 신청</p>
-      </div>
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
-        <h3 className="font-semibold text-gray-700">발송 완료</h3>
-        <p className="text-2xl font-bold">알림 발송됨</p>
-        <p className="text-sm text-gray-500">모집 시작 알림 발송</p>
-      </div>
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
-        <h3 className="font-semibold text-gray-700">취소</h3>
-        <p className="text-2xl font-bold">신청 취소됨</p>
-        <p className="text-sm text-gray-500">사용자 취소 건수</p>
-      </div>
-    </GridBox>
   )
 }
