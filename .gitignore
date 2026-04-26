@@ -57,7 +57,7 @@ yarn-error.log*
 # agent
 .agent/
 .agents/
-.claude/
+# .claude/
 
 # playwright-mcp screenshots / snapshots
 .playwright-mcp/
@@ -65,3 +65,6 @@ yarn-error.log*
 /*.png
 /*.jpg
 /*.jpeg
+
+#docs/*
+!docs/hero-ui.txt
