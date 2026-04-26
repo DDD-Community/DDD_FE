@@ -3,8 +3,6 @@ import type { RequestHandler } from "msw"
 import { semesterHandlers } from "@/pages/semesters/mockApi"
 import { reminderHandlers } from "@/pages/reminders/mockApi"
 import { applicationHandlers } from "@/pages/applications/mockApi"
-import { projectHandlers } from "@/pages/projects/mockApi"
-import { blogPostHandlers } from "@/pages/blog-posts/mockApi"
 
 /**
  * MSW 핸들러 목록
@@ -17,6 +15,4 @@ export const handlers: RequestHandler[] = [
   ...semesterHandlers,
   ...reminderHandlers,
   ...applicationHandlers,
-  ...projectHandlers,
-  ...blogPostHandlers,
 ]
