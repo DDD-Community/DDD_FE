@@ -27,7 +27,12 @@ const bulkSendSchema = z.object({
     .string()
     .min(1, "버튼 라벨을 입력해 주세요.")
     .max(30, "30자 이하로 입력해 주세요."),
-  ctaUrl: z.string().url("URL 형식이 아닙니다."),
+  ctaUrl: z
+    .string()
+    .url("URL 형식이 아닙니다.")
+    .refine((u) => /^https?:\/\//i.test(u), {
+      message: "http(s) URL만 사용해 주세요.",
+    }),
 })
 
 type BulkSendFormValues = z.infer<typeof bulkSendSchema>
@@ -97,7 +102,7 @@ export const RemindersBulkSendDrawer = ({
       onOpenChange(false)
     } catch (error) {
       toast.error("발송에 실패했습니다", {
-        description: (error as Error).message,
+        description: (error as Error).message ?? "잠시 후 다시 시도해 주세요.",
       })
     }
   })
