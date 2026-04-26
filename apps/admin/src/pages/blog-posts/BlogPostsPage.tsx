@@ -8,8 +8,10 @@ import type { BlogPostDto } from "@ddd/api"
 import { FlexBox } from "@/shared/ui/FlexBox"
 import { Title, Description } from "@/widgets/heading"
 
+import { BlogPostFormDrawer } from "./components/BlogPostFormDrawer"
 import { BlogPostsToolbar } from "./components/BlogPostsToolbar"
 import { BlogPostsTable } from "./components/BlogPostsTable"
+import { DeleteBlogPostDialog } from "./components/DeleteBlogPostDialog"
 
 const PAGE_LIMIT = 20
 
@@ -52,9 +54,13 @@ export default function BlogPostsPage() {
 
   const handleDelete = (post: BlogPostDto) => setDeleteTarget(post)
 
-  // Phase 10에서 BlogPostFormDrawer / DeleteBlogPostDialog 연결 시 사용
-  void drawerState
-  void deleteTarget
+  const handleDrawerOpenChange = (open: boolean) => {
+    if (!open) setDrawerState({ mode: "closed" })
+  }
+
+  const handleDeleteOpenChange = (open: boolean) => {
+    if (!open) setDeleteTarget(null)
+  }
 
   return (
     <div className="w-full space-y-5 p-5">
@@ -105,6 +111,19 @@ export default function BlogPostsPage() {
           </>
         )}
       </div>
+
+      <BlogPostFormDrawer
+        isOpen={drawerState.mode !== "closed"}
+        onOpenChange={handleDrawerOpenChange}
+        mode={drawerState.mode === "edit" ? "edit" : "create"}
+        post={drawerState.mode === "edit" ? drawerState.post : undefined}
+      />
+
+      <DeleteBlogPostDialog
+        isOpen={deleteTarget !== null}
+        onOpenChange={handleDeleteOpenChange}
+        post={deleteTarget}
+      />
     </div>
   )
 }
