@@ -107,91 +107,81 @@ export const RemindersBulkSendDrawer = ({
     }
   })
 
+  const isBusy = isSubmitting || isPending
+
   return (
-    <Drawer
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      placement={isMobile ? "bottom" : "right"}
-      size={isMobile ? "full" : "md"}
-    >
-      <Drawer.Content>
-        <Drawer.Header>
-          <Drawer.Title>사전 알림 발송</Drawer.Title>
-          <Drawer.Description>
-            {cohortName}에 등록된 모든 신청자에게 일괄 발송됩니다.
-          </Drawer.Description>
-        </Drawer.Header>
-        <form onSubmit={onSubmit} className="flex flex-1 flex-col">
-          <Drawer.Body className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium">제목</label>
-              <Input
-                {...register("subject")}
-                placeholder="예: 14기 모집이 시작되었습니다"
-                isInvalid={!!errors.subject}
-              />
-              {errors.subject && (
-                <p className="text-xs text-red-500">{errors.subject.message}</p>
-              )}
-            </div>
+    <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Drawer.Backdrop>
+        <Drawer.Content placement={isMobile ? "bottom" : "right"}>
+          <Drawer.Dialog
+            className={!isMobile ? "w-full max-w-1/2 bg-gray-50" : ""}
+          >
+            <Drawer.Header>
+              <Drawer.Heading className="text-lg font-semibold">
+                사전 알림 발송
+              </Drawer.Heading>
+              <p className="text-muted-foreground text-sm">
+                {cohortName}에 등록된 모든 신청자에게 일괄 발송됩니다.
+              </p>
+            </Drawer.Header>
 
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium">본문</label>
-              <TextArea
-                {...register("message")}
-                rows={8}
-                placeholder="신청자에게 안내할 내용을 입력하세요. 줄바꿈은 그대로 적용됩니다."
-                isInvalid={!!errors.message}
-              />
-              {errors.message && (
-                <p className="text-xs text-red-500">{errors.message.message}</p>
-              )}
-            </div>
+            <Drawer.Body className="flex-1 space-y-6 overflow-y-auto">
+              <FormField label="제목" error={errors.subject?.message}>
+                <Input
+                  {...register("subject")}
+                  placeholder="예: 14기 모집이 시작되었습니다"
+                />
+              </FormField>
 
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium">버튼 라벨</label>
-              <Input
-                {...register("ctaLabel")}
-                placeholder="지원하기"
-                isInvalid={!!errors.ctaLabel}
-              />
-              {errors.ctaLabel && (
-                <p className="text-xs text-red-500">
-                  {errors.ctaLabel.message}
-                </p>
-              )}
-            </div>
+              <FormField label="본문" error={errors.message?.message}>
+                <TextArea
+                  {...register("message")}
+                  rows={8}
+                  placeholder="신청자에게 안내할 내용을 입력하세요. 줄바꿈은 그대로 적용됩니다."
+                  className="min-h-40"
+                />
+              </FormField>
 
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium">버튼 링크 (URL)</label>
-              <Input
-                {...register("ctaUrl")}
-                placeholder="https://dddstudy.com/recruit"
-                isInvalid={!!errors.ctaUrl}
-              />
-              {errors.ctaUrl && (
-                <p className="text-xs text-red-500">{errors.ctaUrl.message}</p>
-              )}
-            </div>
-          </Drawer.Body>
-          <Drawer.Footer>
-            <Button
-              variant="ghost"
-              onPress={() => onOpenChange(false)}
-              isDisabled={isSubmitting || isPending}
-            >
-              취소
-            </Button>
-            <Button
-              type="submit"
-              isDisabled={isSubmitting || isPending}
-              isLoading={isSubmitting || isPending}
-            >
-              발송
-            </Button>
-          </Drawer.Footer>
-        </form>
-      </Drawer.Content>
+              <FormField label="버튼 라벨" error={errors.ctaLabel?.message}>
+                <Input {...register("ctaLabel")} placeholder="지원하기" />
+              </FormField>
+
+              <FormField
+                label="버튼 링크 (URL)"
+                error={errors.ctaUrl?.message}
+              >
+                <Input
+                  {...register("ctaUrl")}
+                  placeholder="https://dddstudy.com/recruit"
+                />
+              </FormField>
+            </Drawer.Body>
+
+            <Drawer.Footer className="gap-2">
+              <Drawer.CloseTrigger />
+              <Button onPress={() => onSubmit()} isDisabled={isBusy}>
+                {isBusy ? "발송 중..." : "발송"}
+              </Button>
+            </Drawer.Footer>
+          </Drawer.Dialog>
+        </Drawer.Content>
+      </Drawer.Backdrop>
     </Drawer>
   )
 }
+
+const FormField = ({
+  label,
+  error,
+  children,
+}: {
+  label: string
+  error?: string
+  children: React.ReactNode
+}) => (
+  <div className="space-y-1.5">
+    <label className="text-xs font-medium text-gray-700">{label}</label>
+    {children}
+    {error && <p className="text-xs text-red-500">{error}</p>}
+  </div>
+)
