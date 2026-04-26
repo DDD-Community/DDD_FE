@@ -29,8 +29,8 @@
 | 3.1 기수 관리 | 🔧 | 등록/수정 폼 API 미연결 |
 | 3.2 사전 알림 | 🔧 | 발송 API · 엑셀 · 일괄 발송 |
 | 3.3 지원자 관리 | 🔧 | 상세 페이지 전체 미구현 |
-| 3.4 프로젝트 DB | 🔧 | 등록 폼 · S3/R2 업로드 |
-| 3.5 블로그 DB | 🔧 | 등록 폼 · 썸네일 업로드 |
+| 3.4 프로젝트 DB | ✅ | 코드 완료 (브라우저 회귀 테스트 미실시) — PDF 업로드는 후속 |
+| 3.5 블로그 DB | ✅ | 코드 완료 (브라우저 회귀 테스트 미실시) |
 | 3.6 FAQ | ✅ | MVP 제외 결정 (FE 하드코딩) |
 | 4. SEO (web) | ⬜ | 스켈레톤만, 거의 전부 미구현 |
 | 5. 데이터 모델 타입 반영 | ⬜ | `@ddd/api` 생성 코드로 대체 예정 |
@@ -134,16 +134,17 @@
 
 > 화면 레퍼런스: HTML 목업 `#page-projects` 영역. 컬럼/필터/Drawer 구성은 HTML을 따르되 `status` 필드는 백엔드 DTO에 없으므로 제거한다. 세부 계획은 [설계 문서](./docs/superpowers/specs/2026-04-26-blog-projects-admin-design.md) 참조.
 
-- 🔧 목록 조회 (썸네일 / 서비스명 / 플랫폼 / 기수 / 한줄설명 / 참여자수) — `useInfiniteProjects` 연동 예정
-- ⬜ 플랫폼 필터 (서버) + 기수 필터 (클라이언트, `useCohorts` 매핑) + 서비스명 검색
-- ⬜ "더 보기" 페이지네이션 (cursor 기반)
-- ⬜ 새 프로젝트 등록/수정 Drawer (썸네일, 플랫폼 다중, 서비스명, 한줄설명, 기수, 참여자 N명)
-- ⬜ 썸네일 이미지 업로드 (`useUploadFile({ category: 'project-thumbnail' })`)
-- ⬜ 참여자 입력 (`useFieldArray` — 이름/파트/후기)
-- ⬜ 삭제 확인 (HeroUI `AlertDialog`) + `useDeleteProject`
-- ⬜ 저장/삭제 토스트 (HeroUI v3 `toast`)
+- ✅ 목록 조회 (썸네일 / 서비스명 / 플랫폼 / 기수 / 한줄설명 / 참여자수) — `useInfiniteProjects` 연동
+- ✅ 플랫폼 필터 (서버) + 기수 필터 (클라이언트, `useCohorts` 매핑) + 서비스명 검색
+- ✅ "더 보기" 페이지네이션 (cursor 기반, `useInfiniteQuery`)
+- ✅ 새 프로젝트 등록/수정 Drawer (`ProjectFormDrawer.tsx`) — 썸네일 · 플랫폼 다중 · 서비스명 · 한줄설명 · 기수 · 참여자 N명, react-hook-form + Zod
+- ✅ 썸네일 이미지 업로드 (`useUploadFile({ category: 'project-thumbnail' })`)
+- ✅ 참여자 입력 (`useFieldArray` — 이름/파트/후기)
+- ✅ 삭제 확인 (`DeleteProjectDialog` — HeroUI `AlertDialog`) + `useDeleteProject`
+- ✅ 저장/삭제 토스트 (HeroUI v3 `toast`, [`docs/admin-toast.md`](./docs/admin-toast.md) 표준)
 - ⬜ PDF 업로드 (`useUploadFile({ category: 'project-pdf' })`) — 후속 스코프
 - ⬜ 등록 시 `/projects/[id]` URL 자동 생성 (웹 연동) — 후속 스코프
+- ⬜ 브라우저 회귀 테스트 (실제 백엔드/MSW 연동 후)
 
 ---
 
@@ -151,14 +152,15 @@
 
 > 화면 레퍼런스: HTML 목업 `#page-blog` 영역. 백엔드 DTO에 없는 `status` / `author` / `category` 필드는 제거한다. 세부 계획은 [설계 문서](./docs/superpowers/specs/2026-04-26-blog-projects-admin-design.md) 참조.
 
-- 🔧 목록 조회 (썸네일 / 제목 / 본문일부 / 외부 링크 / 등록일) — `useInfiniteBlogPosts` 연동 예정
-- ⬜ 제목 검색 (클라이언트)
-- ⬜ "더 보기" 페이지네이션 (cursor 기반)
-- ⬜ 새 블로그 등록/수정 Drawer (썸네일, 제목, 본문일부, 외부 URL)
-- ⬜ 썸네일 이미지 업로드 (`useUploadFile({ category: 'blog-thumbnail' })`)
-- ⬜ 삭제 확인 (HeroUI `AlertDialog`) + `useDeleteBlogPost`
-- ⬜ 저장/삭제 토스트 (HeroUI v3 `toast`)
+- ✅ 목록 조회 (썸네일 / 제목 / 본문일부 / 외부 링크 / 등록일) — `useInfiniteBlogPosts` 연동
+- ✅ 제목 검색 (클라이언트, 부분 일치)
+- ✅ "더 보기" 페이지네이션 (cursor 기반, `useInfiniteQuery`)
+- ✅ 새 블로그 등록/수정 Drawer (`BlogPostFormDrawer.tsx`) — 썸네일 · 제목 · 본문일부 · 외부 URL, react-hook-form + Zod
+- ✅ 썸네일 이미지 업로드 (`useUploadFile({ category: 'blog-thumbnail' })`)
+- ✅ 삭제 확인 (`DeleteBlogPostDialog` — HeroUI `AlertDialog`) + `useDeleteBlogPost`
+- ✅ 저장/삭제 토스트 (HeroUI v3 `toast`, [`docs/admin-toast.md`](./docs/admin-toast.md) 표준)
 - ⬜ 등록 시 `/blog/[id]` URL 자동 생성 (웹 연동) — 후속 스코프
+- ⬜ 브라우저 회귀 테스트 (실제 백엔드/MSW 연동 후)
 
 ---
 
@@ -230,7 +232,8 @@
 | 어드민 — 기수 관리 (상태 + 수동 변경) | 🔧 | 목록/필터 완료, 등록·수정 폼 API 미연결 |
 | 어드민 — 지원자 목록/상세/상태 변경 | 🔧 | 목록만 구현, 상세 페이지 미구현 |
 | 어드민 — 사전 알림 DB + 수동 이메일 발송 | 🔧 | 목록/통계 UI, 발송 API 미연결 |
-| 어드민 — 프로젝트 DB 등록/수정 | 🔧 | 목록/검색만, 등록 폼 미구현 |
+| 어드민 — 프로젝트 DB 등록/수정 | ✅ | 목록·필터·등록·수정·삭제 코드 완료 (브라우저 검증 미실시) |
+| 어드민 — 블로그 DB 등록/수정 | ✅ | 목록·검색·등록·수정·삭제 코드 완료 (브라우저 검증 미실시) |
 | SEO — sitemap/robots/OG/Schema.org/상세 URL | ⬜ | |
 
 ### 6.2 Phase 2
