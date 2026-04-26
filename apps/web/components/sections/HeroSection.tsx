@@ -3,6 +3,8 @@
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
+import { openPreAlertModal } from "@/components/modals/PreAlertModal";
+import { recruitButtonLabels, recruitStatus } from "@/constants/recruit";
 import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
 
 const Section = styled.section({
@@ -189,6 +191,8 @@ const CtaButton = styled(Link)({
 });
 
 export const HeroSection = () => {
+  const isRecruitOpen = recruitStatus === "open";
+
   return (
     <Section>
       <BgImage>
@@ -214,8 +218,15 @@ export const HeroSection = () => {
             퇴근 후에도 성장하고 싶은 사람들이 여기 모입니다.
           </Subtitle>
         </HeadlineWrapper>
-        <CtaButton href="/recruit">
-          사전 알림 신청하기
+        <CtaButton
+          href="/recruit"
+          onClick={(event) => {
+            if (isRecruitOpen) return;
+            event.preventDefault();
+            openPreAlertModal();
+          }}
+        >
+          {recruitButtonLabels.hero}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"

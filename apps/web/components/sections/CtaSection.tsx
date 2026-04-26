@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import styled from "@emotion/styled";
-import { assets } from "@/constants/assets";
+import { openPreAlertModal } from "@/components/modals/PreAlertModal";
+import { recruitButtonLabels, recruitStatus } from "@/constants/recruit";
 import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
 
 const Section = styled.section({
@@ -89,6 +90,8 @@ const CtaButton = styled(Link)({
 });
 
 export const CtaSection = () => {
+  const isRecruitOpen = recruitStatus === "open";
+
   return (
     <Section>
       <Inner>
@@ -98,8 +101,15 @@ export const CtaSection = () => {
           함께 만들고, 함께 성장할 동료를 <HeadlineHighlight>DDD</HeadlineHighlight>
           에서 만나보세요.
         </Headline>
-        <CtaButton href="/recruit">
-          사전 알림 신청하기
+        <CtaButton
+          href="/recruit"
+          onClick={(event) => {
+            if (isRecruitOpen) return;
+            event.preventDefault();
+            openPreAlertModal();
+          }}
+        >
+          {recruitButtonLabels.hero}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"

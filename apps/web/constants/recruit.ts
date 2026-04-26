@@ -1,6 +1,6 @@
 export type RecruitStatus = "open" | "closed";
 
-export const recruitStatus: RecruitStatus = "open";
+export const recruitStatus: RecruitStatus = "closed";
 
 const recruitButtonLabelsByStatus: Record<
   RecruitStatus,
@@ -26,12 +26,27 @@ export const recruitParts = [
     name: "Product Designer",
     description:
       "사용자의 니즈를 반영한 최상의 UI/UX를 만들어요. 여러 툴을 활용해 협업하며, 더 나은 사용자 경험을 고민해요.",
-    featured: true,
   },
-  { name: "Back-end" },
-  { name: "Front-end" },
-  { name: "iOS" },
-  { name: "Android" },
+  {
+    name: "Back-end",
+    description:
+      "서버와 데이터의 흐름을 설계해 서비스가 안정적으로 동작하도록 만들어요. 성능과 확장성을 고려해 빠르고 유연한 시스템을 구축해요.",
+  },
+  {
+    name: "Front-end",
+    description:
+      "사용자 중심의 직관적이고 빠른 웹 환경을 구축합니다. 최적화된 코드로 끊김 없는 사용자 경험을 제공합니다.",
+  },
+  {
+    name: "iOS",
+    description:
+      "Apple 생태계에 맞춰 안정적인 앱을 만들어요. 섬세한 디테일로 완성도 높은 경험을 설계해요.",
+  },
+  {
+    name: "Android",
+    description:
+      "다양한 환경에서 안정적으로 동작하는 앱을 만들어요. 지속 성장 가능한 서비스를 함께 개발해요.",
+  },
 ] as const;
 
 export const recruitSchedules = [

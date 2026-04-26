@@ -2,7 +2,7 @@
 
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
-import { recruitButtonLabels, recruitParts } from "@/constants/recruit";
+import { recruitButtonLabels, recruitParts, recruitStatus } from "@/constants/recruit";
 
 const Section = styled.section({
   background: colors.background,
@@ -46,20 +46,29 @@ const Grid = styled.div({
   },
 });
 
-const Card = styled.article<{ featured?: boolean }>(({ featured }) => ({
-  minHeight: featured ? "360px" : "224px",
+const Card = styled.article<{ isRecruitOpen: boolean }>(({ isRecruitOpen }) => ({
+  minHeight: "224px",
   borderRadius: "30px",
   padding: "40px",
-  background: featured ? colors.primary : colors.backgroundDark,
+  background: colors.backgroundDark,
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
   alignItems: "center",
   gap: "20px",
   textAlign: "center",
+  transition: "background 0.2s ease",
+
+  ...(isRecruitOpen
+    ? {
+        "&:hover, &:focus-within": {
+          background: colors.primary,
+        },
+      }
+    : {}),
 
   "@media (max-width: 375px)": {
-    minHeight: featured ? "300px" : "185px",
+    minHeight: "185px",
     padding: "20px",
     borderRadius: "24px",
   },
@@ -75,27 +84,60 @@ const RoleName = styled.h3({
   "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "28px" },
 });
 
-const RoleDescription = styled.p({
+const RoleDescription = styled.p<{ isRecruitOpen: boolean }>(({ isRecruitOpen }) => ({
   margin: 0,
   color: colors.mainLight,
   fontSize: "20px",
   lineHeight: "25px",
   fontWeight: fontWeights.medium,
+  maxHeight: 0,
+  opacity: 0,
+  overflow: "hidden",
+  transition: "max-height 0.2s ease, opacity 0.15s ease, margin-top 0.2s ease",
+  marginTop: 0,
+
+  ...(isRecruitOpen
+    ? {
+        ".role-card:hover &, .role-card:focus-within &": {
+          maxHeight: "120px",
+          opacity: 1,
+          marginTop: "4px",
+        },
+      }
+    : {}),
 
   "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
-});
+}));
 
-const ApplyButton = styled.button<{ featured?: boolean }>(({ featured }) => ({
+const ApplyButton = styled.button<{ isRecruitOpen: boolean }>(({ isRecruitOpen }) => ({
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
   border: "none",
   width: "100%",
   height: "65px",
   borderRadius: "100px",
-  background: featured ? "#0a62bb" : "#62748e",
+  background: "#62748e",
   color: colors.textInverse,
   fontSize: "20px",
   lineHeight: "25px",
   fontWeight: fontWeights.medium,
-  cursor: "pointer",
+  cursor: isRecruitOpen ? "pointer" : "default",
+  transition: "background 0.2s ease",
+
+  ...(isRecruitOpen
+    ? {
+        ".role-card:hover &, .role-card:focus-within &": {
+          background: "#0a62bb",
+        },
+
+        "& svg": {
+          width: "24px",
+          height: "24px",
+          flexShrink: 0,
+        },
+      }
+    : {}),
 
   "@media (max-width: 375px)": {
     height: "40px",
@@ -105,25 +147,43 @@ const ApplyButton = styled.button<{ featured?: boolean }>(({ featured }) => ({
 }));
 
 export const RecruitRolesSection = () => {
+  const isRecruitOpen = recruitStatus === "open";
+
   return (
     <Section>
       <Inner>
         <Title>6개의 직군을 모집하고있어요.</Title>
         <Grid>
           {recruitParts.map((part) => {
-            const featured = "featured" in part ? part.featured : false;
             const description = "description" in part ? part.description : undefined;
 
             return (
-              <Card key={part.name} featured={featured}>
+              <Card key={part.name} isRecruitOpen={isRecruitOpen} className="role-card">
                 <div
                   style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}
                 >
                   <RoleName>{part.name}</RoleName>
-                  {description ? <RoleDescription>{description}</RoleDescription> : null}
+                  {description ? (
+                    <RoleDescription isRecruitOpen={isRecruitOpen}>{description}</RoleDescription>
+                  ) : null}
                 </div>
-                <ApplyButton type="button" featured={featured}>
+                <ApplyButton type="button" isRecruitOpen={isRecruitOpen} disabled={!isRecruitOpen}>
                   {recruitButtonLabels.role}
+                  {isRecruitOpen ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      aria-hidden
+                    >
+                      <path
+                        d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z"
+                        fill="white"
+                      />
+                    </svg>
+                  ) : null}
                 </ApplyButton>
               </Card>
             );

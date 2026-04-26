@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
-import { recruitButtonLabels } from "@/constants/recruit";
+import { recruitButtonLabels, recruitStatus } from "@/constants/recruit";
+import { openPreAlertModal } from "@/components/modals/PreAlertModal";
 import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
 
 const NAV_LINKS = [
@@ -200,6 +201,7 @@ const MobileCta = styled(Link)({
 
 export const Navigation = () => {
   const [open, setOpen] = useState(false);
+  const isRecruitOpen = recruitStatus === "open";
 
   return (
     <Header>
@@ -228,14 +230,31 @@ export const Navigation = () => {
             ≡
           </MobileMenuButton>
         </MobileBar>
-        <CtaButton href="/recruit">{recruitButtonLabels.navigation}</CtaButton>
+        <CtaButton
+          href="/recruit"
+          onClick={(event) => {
+            if (isRecruitOpen) return;
+            event.preventDefault();
+            openPreAlertModal();
+          }}
+        >
+          {recruitButtonLabels.navigation}
+        </CtaButton>
         <MobileDrawer open={open}>
           {NAV_LINKS.map(({ label, href }) => (
             <MobileItem key={href} href={href} onClick={() => setOpen(false)}>
               {label}
             </MobileItem>
           ))}
-          <MobileCta href="/recruit" onClick={() => setOpen(false)}>
+          <MobileCta
+            href="/recruit"
+            onClick={(event) => {
+              setOpen(false);
+              if (isRecruitOpen) return;
+              event.preventDefault();
+              openPreAlertModal();
+            }}
+          >
             {recruitButtonLabels.navigation}
           </MobileCta>
         </MobileDrawer>

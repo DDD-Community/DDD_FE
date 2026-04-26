@@ -4,6 +4,7 @@ import Link from "next/link";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
 import { recruitButtonLabels, recruitStatus } from "@/constants/recruit";
+import { openPreAlertModal } from "@/components/modals/PreAlertModal";
 import { colors, fontWeights } from "@/constants/tokens";
 
 const Section = styled.section({
@@ -151,6 +152,7 @@ const Arrow = styled.span({
 });
 
 export const RecruitHeroSection = () => {
+  const isRecruitOpen = recruitStatus === "open";
   const heroTitle = recruitStatus === "open" ? "Now\nRecruiting" : "Currently Under\nRenewal";
 
   return (
@@ -167,7 +169,14 @@ export const RecruitHeroSection = () => {
             }
           </Description>
         </div>
-        <CtaButton href="/recruit">
+        <CtaButton
+          href="/recruit"
+          onClick={(event) => {
+            if (isRecruitOpen) return;
+            event.preventDefault();
+            openPreAlertModal();
+          }}
+        >
           {recruitButtonLabels.hero}
           <Arrow aria-hidden>
             <svg
