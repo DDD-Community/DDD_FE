@@ -1,21 +1,46 @@
 import { faker } from "@faker-js/faker/locale/ko"
 import { http, HttpResponse } from "msw"
 
-import type { ApplicationInfo, ApplicationRole, ApplicationStatus } from "./types"
+import type {
+  ApplicationCohort,
+  ApplicationInfo,
+  ApplicationPart,
+  ApplicationStatus,
+} from "./types"
 
-const createApplication = (overrides?: Partial<ApplicationInfo>): ApplicationInfo => ({
-  id: faker.string.uuid(),
-  name: faker.person.fullName(),
-  email: faker.internet.email(),
-  role: faker.helpers.arrayElement<ApplicationRole>(["developer", "designer", "planner"]),
-  semester: `${faker.number.int({ min: 1, max: 15 })}기`,
-  portfolioUrl: faker.internet.url(),
-  appliedAt: faker.date.past().toISOString(),
-  status: faker.helpers.arrayElement<ApplicationStatus>(["pending", "passed", "failed", "cancelled"]),
-  ...overrides,
-})
+const PARTS: ApplicationPart[] = ["pm", "pd", "web", "server", "ios", "android"]
+const COHORTS: ApplicationCohort[] = ["12", "13", "14"]
+const STATUSES: ApplicationStatus[] = [
+  "doc_pending",
+  "doc_passed",
+  "doc_failed",
+  "interview_pending",
+  "interview_passed",
+  "interview_failed",
+  "active",
+  "suspended",
+  "completed",
+]
 
-const createApplicationList = (count = 10): ApplicationInfo[] =>
+const createApplication = (
+  overrides?: Partial<ApplicationInfo>
+): ApplicationInfo => {
+  const cohort = faker.helpers.arrayElement<ApplicationCohort>(COHORTS)
+  return {
+    id: faker.string.uuid(),
+    name: faker.person.fullName(),
+    email: faker.internet.email(),
+    part: faker.helpers.arrayElement<ApplicationPart>(PARTS),
+    cohort,
+    semester: `${cohort}기`,
+    portfolioUrl: faker.internet.url(),
+    appliedAt: faker.date.past().toISOString(),
+    status: faker.helpers.arrayElement<ApplicationStatus>(STATUSES),
+    ...overrides,
+  }
+}
+
+const createApplicationList = (count = 30): ApplicationInfo[] =>
   Array.from({ length: count }, () => createApplication())
 
 export const applicationHandlers = [

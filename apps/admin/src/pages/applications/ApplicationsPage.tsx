@@ -8,11 +8,13 @@ import { GridBox } from "@/shared/ui/GridBox"
 import { FlexBox } from "@/shared/ui/FlexBox"
 
 import type { ApplicationInfo } from "./types"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { Email, PlusSignIcon } from "@hugeicons/core-free-icons"
 import {
-  ROLE_LABEL,
+  PART_LABEL,
   STATUS_LABEL,
+  COHORT_FILTER_OPTIONS,
+  COHORT_FILTER_MAP,
+  PART_FILTER_OPTIONS,
+  PART_FILTER_MAP,
   STATUS_FILTER_OPTIONS,
   STATUS_FILTER_MAP,
 } from "./constants"
@@ -29,7 +31,9 @@ const getApplicationData = async () => {
 /** 지원자 관리 페이지 */
 export default function ApplicationsPage() {
   const [searchText, setSearchText] = useState("")
-  const [statusFilter, setStatusFilter] = useState("전체")
+  const [cohortFilter, setCohortFilter] = useState<string>("전체 기수")
+  const [partFilter, setPartFilter] = useState<string>("전체 파트")
+  const [statusFilter, setStatusFilter] = useState<string>("전체 상태")
 
   const { data: applications } = useQuery({
     queryKey: ["applications"],
@@ -38,14 +42,19 @@ export default function ApplicationsPage() {
 
   const filteredApplications = useMemo(() => {
     const source = applications ?? []
+    const targetCohort = COHORT_FILTER_MAP[cohortFilter]
+    const targetPart = PART_FILTER_MAP[partFilter]
     const targetStatus = STATUS_FILTER_MAP[statusFilter]
+
     return source
       .filter(
         (item) =>
           item.name.includes(searchText) || item.email.includes(searchText)
       )
+      .filter((item) => targetCohort === null || item.cohort === targetCohort)
+      .filter((item) => targetPart === null || item.part === targetPart)
       .filter((item) => targetStatus === null || item.status === targetStatus)
-  }, [applications, searchText, statusFilter])
+  }, [applications, searchText, cohortFilter, partFilter, statusFilter])
 
   return (
     <div className="w-full space-y-5 p-5">
@@ -64,30 +73,80 @@ export default function ApplicationsPage() {
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <Select
-            variant="secondary"
-            className="max-w-36"
-            aria-label="상태 필터"
-          >
-            <Select.Trigger>
-              <Select.Value>{statusFilter}</Select.Value>
-              <Select.Indicator />
-            </Select.Trigger>
-            <Select.Popover>
-              <ListBox>
-                {STATUS_FILTER_OPTIONS.map((option) => (
-                  <ListBox.Item
-                    key={option}
-                    id={option}
-                    textValue={option}
-                    onClick={() => setStatusFilter(option)}
-                  >
-                    {option}
-                  </ListBox.Item>
-                ))}
-              </ListBox>
-            </Select.Popover>
-          </Select>
+          <FlexBox className="gap-2">
+            <Select
+              variant="secondary"
+              className="max-w-36"
+              aria-label="기수 필터"
+            >
+              <Select.Trigger>
+                <Select.Value>{cohortFilter}</Select.Value>
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  {COHORT_FILTER_OPTIONS.map((option) => (
+                    <ListBox.Item
+                      key={option}
+                      id={option}
+                      textValue={option}
+                      onClick={() => setCohortFilter(option)}
+                    >
+                      {option}
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
+            </Select>
+            <Select
+              variant="secondary"
+              className="max-w-36"
+              aria-label="파트 필터"
+            >
+              <Select.Trigger>
+                <Select.Value>{partFilter}</Select.Value>
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  {PART_FILTER_OPTIONS.map((option) => (
+                    <ListBox.Item
+                      key={option}
+                      id={option}
+                      textValue={option}
+                      onClick={() => setPartFilter(option)}
+                    >
+                      {option}
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
+            </Select>
+            <Select
+              variant="secondary"
+              className="max-w-36"
+              aria-label="상태 필터"
+            >
+              <Select.Trigger>
+                <Select.Value>{statusFilter}</Select.Value>
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  {STATUS_FILTER_OPTIONS.map((option) => (
+                    <ListBox.Item
+                      key={option}
+                      id={option}
+                      textValue={option}
+                      onClick={() => setStatusFilter(option)}
+                    >
+                      {option}
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
+            </Select>
+          </FlexBox>
         </FlexBox>
 
         <Table>
@@ -96,7 +155,7 @@ export default function ApplicationsPage() {
               <Table.Header>
                 <Table.Column isRowHeader>이름</Table.Column>
                 <Table.Column>이메일</Table.Column>
-                <Table.Column>직군</Table.Column>
+                <Table.Column>파트</Table.Column>
                 <Table.Column>지원 기수</Table.Column>
                 <Table.Column>지원일</Table.Column>
                 <Table.Column>상태</Table.Column>
@@ -107,7 +166,7 @@ export default function ApplicationsPage() {
                   <Table.Row key={application.id}>
                     <Table.Cell>{application.name}</Table.Cell>
                     <Table.Cell>{application.email}</Table.Cell>
-                    <Table.Cell>{ROLE_LABEL[application.role]}</Table.Cell>
+                    <Table.Cell>{PART_LABEL[application.part]}</Table.Cell>
                     <Table.Cell>{application.semester}</Table.Cell>
                     <Table.Cell>
                       {new Date(application.appliedAt).toLocaleDateString(
