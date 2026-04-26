@@ -9,7 +9,7 @@ import { FlexBox } from "@/shared/ui/FlexBox"
 
 import type { ApplicationInfo } from "./types"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { PlusSignIcon } from "@hugeicons/core-free-icons"
+import { Email, PlusSignIcon } from "@hugeicons/core-free-icons"
 import {
   ROLE_LABEL,
   STATUS_LABEL,
@@ -49,7 +49,10 @@ export default function ApplicationsPage() {
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection />
+      <header className="space-y-2">
+        <Title title="지원자 관리" />
+        <Description title="지원서를 검토하고 상태를 변경합니다." />
+      </header>
       <CardSection total={applications?.length ?? 0} />
 
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
@@ -126,21 +129,6 @@ export default function ApplicationsPage() {
         </Table>
       </div>
     </div>
-  )
-}
-
-const TitleSection = () => {
-  return (
-    <FlexBox className="justify-between">
-      <header className="space-y-2">
-        <Title title="지원자 관리" />
-        <Description title="지원서를 검토하고 상태를 변경합니다." />
-      </header>
-      <Button size="lg">
-        <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
-        알림 발송
-      </Button>
-    </FlexBox>
   )
 }
 

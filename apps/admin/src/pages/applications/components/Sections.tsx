@@ -1,24 +1,5 @@
-import { Button, Card } from "@heroui/react"
-import { FlexBox } from "@/shared/ui/FlexBox"
 import { GridBox } from "@/shared/ui/GridBox"
-import { Title, Description } from "@/widgets/heading"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { PlusSignIcon } from "@hugeicons/core-free-icons"
-
-export const TitleSection = () => {
-  return (
-    <FlexBox className="justify-between">
-      <header className="space-y-2">
-        <Title title="지원자 관리" />
-        <Description title="지원서를 검토하고 상태를 변경합니다." />
-      </header>
-      <Button variant="primary" size="lg">
-        <HugeiconsIcon icon={PlusSignIcon} />
-        알림 발송
-      </Button>
-    </FlexBox>
-  )
-}
+import { Card } from "@heroui/react"
 
 type CardSectionProps = { total: number }
 
