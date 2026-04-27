@@ -1,13 +1,20 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { configureApi } from "@ddd/api"
+import { Toast } from "@heroui/react"
 
 import "./index.css"
 import Router from "./pages/index.tsx"
 import { QueryProvider } from "@/app/providers/QueryProvider.tsx"
 import { ThemeProvider } from "@/app/providers/ThemeProvider.tsx"
 
-configureApi(import.meta.env.VITE_API_URL)
+const apiUrl = import.meta.env.VITE_API_URL
+if (!apiUrl) throw new Error("VITE_API_URL is not set")
+configureApi(apiUrl, {
+  onUnauthorized: () => {
+    window.location.replace("/");
+  },
+})
 
 async function enableMocking() {
   if (import.meta.env.DEV && import.meta.env.VITE_MSW_ENABLED === "true") {
@@ -22,6 +29,7 @@ enableMocking().then(() => {
       <QueryProvider>
         <ThemeProvider>
           <Router />
+          <Toast.Provider placement="top end" />
         </ThemeProvider>
       </QueryProvider>
     </StrictMode>

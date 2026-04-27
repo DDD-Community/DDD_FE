@@ -1,143 +1,165 @@
 import { useMemo, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { api } from "@ddd/api"
+import { Button } from "@heroui/react"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { useInfiniteBlogPosts } from "@ddd/api"
+import type { BlogPostDto } from "@ddd/api"
 
 import { FlexBox } from "@/shared/ui/FlexBox"
-import { Button } from "@/shared/ui/button"
-import { Input } from "@/shared/ui/input"
-import { Select } from "@/shared/ui/Select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-} from "@/shared/ui/Table"
 import { Title, Description } from "@/widgets/heading"
 
-import type { BlogPostInfo, BlogPostStatus } from "./types"
+import { BlogPostFormDrawer } from "./components/BlogPostFormDrawer"
+import { BlogPostsToolbar } from "./components/BlogPostsToolbar"
+import { BlogPostsTable } from "./components/BlogPostsTable"
+import { DeleteBlogPostDialog } from "./components/DeleteBlogPostDialog"
 
-const STATUS_LABEL: Record<BlogPostStatus, string> = {
-  published: "게시됨",
-  draft: "임시저장",
-  archived: "보관됨",
-}
+const PAGE_LIMIT = 20
 
-const STATUS_FILTER_OPTIONS = ["전체", "게시됨", "임시저장", "보관됨"]
-
-const STATUS_FILTER_MAP: Record<string, BlogPostStatus | null> = {
-  전체: null,
-  게시됨: "published",
-  임시저장: "draft",
-  보관됨: "archived",
-}
-
-const getBlogPostData = async () => {
-  try {
-    const data = await api.get<BlogPostInfo[]>("/blog-post")
-    return data
-  } catch (error) {
-    console.error("Failed to fetch blog post data:", error)
-  }
-}
+type DrawerState =
+  | { mode: "closed" }
+  | { mode: "create" }
+  | { mode: "edit"; post: BlogPostDto }
 
 /** 블로그 관리 페이지 */
 export default function BlogPostsPage() {
   const [searchText, setSearchText] = useState("")
-  const [statusFilter, setStatusFilter] = useState("전체")
-
-  const { data: blogPosts } = useQuery({
-    queryKey: ["blog-posts"],
-    queryFn: getBlogPostData,
+  const [drawerState, setDrawerState] = useState<DrawerState>({
+    mode: "closed",
   })
+  const [deleteTarget, setDeleteTarget] = useState<BlogPostDto | null>(null)
 
-  const filteredBlogPosts = useMemo(() => {
-    const source = blogPosts ?? []
-    const targetStatus = STATUS_FILTER_MAP[statusFilter]
-    return source
-      .filter(
-        (item) =>
-          item.title.includes(searchText) || item.author.includes(searchText)
-      )
-      .filter((item) => targetStatus === null || item.status === targetStatus)
-  }, [blogPosts, searchText, statusFilter])
+  const {
+    data: postsData,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteBlogPosts({ params: { limit: PAGE_LIMIT } })
+
+  const allPosts = useMemo<BlogPostDto[]>(
+    () => postsData?.pages.flatMap((page) => page.items) ?? [],
+    [postsData]
+  )
+
+  const filteredPosts = useMemo(() => {
+    if (searchText.length === 0) return allPosts
+    return allPosts.filter((post) => post.title.includes(searchText))
+  }, [allPosts, searchText])
+
+  const handleCreate = () => setDrawerState({ mode: "create" })
+
+  const handleEdit = (post: BlogPostDto) =>
+    setDrawerState({ mode: "edit", post })
+
+  const handleDelete = (post: BlogPostDto) => setDeleteTarget(post)
+
+  const handleDrawerOpenChange = (open: boolean) => {
+    if (!open) setDrawerState({ mode: "closed" })
+  }
+
+  const handleDeleteOpenChange = (open: boolean) => {
+    if (!open) setDeleteTarget(null)
+  }
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection />
+      <TitleSection onCreate={handleCreate} />
 
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
-        <FlexBox className="justify-between">
-          <Input
-            placeholder="제목 또는 작성자 검색..."
-            className="max-w-xs"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <Select
-            items={STATUS_FILTER_OPTIONS}
-            className="max-w-36"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          />
-        </FlexBox>
+        <BlogPostsToolbar
+          searchText={searchText}
+          onSearchTextChange={setSearchText}
+        />
 
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>제목</TableHeaderCell>
-              <TableHeaderCell>작성자</TableHeaderCell>
-              <TableHeaderCell>카테고리</TableHeaderCell>
-              <TableHeaderCell>상태</TableHeaderCell>
-              <TableHeaderCell>게시일</TableHeaderCell>
-              <TableHeaderCell>등록일</TableHeaderCell>
-              <TableHeaderCell>액션</TableHeaderCell>
-            </TableRow>
-          </TableHead>
+        {isLoading ? (
+          <EmptyState>불러오는 중...</EmptyState>
+        ) : isError ? (
+          <EmptyState tone="danger">
+            블로그 목록을 불러오지 못했습니다.
+          </EmptyState>
+        ) : filteredPosts.length === 0 ? (
+          <EmptyState>
+            {allPosts.length === 0
+              ? "등록된 블로그가 없습니다."
+              : "조건에 맞는 블로그가 없습니다."}
+          </EmptyState>
+        ) : (
+          <>
+            <BlogPostsTable
+              posts={filteredPosts}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
 
-          <TableBody>
-            {filteredBlogPosts.map((blogPost) => (
-              <TableRow key={blogPost.id}>
-                <TableCell>{blogPost.title}</TableCell>
-                <TableCell>{blogPost.author}</TableCell>
-                <TableCell>{blogPost.category}</TableCell>
-                <TableCell>{STATUS_LABEL[blogPost.status]}</TableCell>
-                <TableCell>
-                  {new Date(blogPost.publishedAt).toLocaleDateString("ko-KR")}
-                </TableCell>
-                <TableCell>
-                  {new Date(blogPost.createdAt).toLocaleDateString("ko-KR")}
-                </TableCell>
-                <TableCell>
-                  <Button size="sm" variant="outline" className="mr-2">
-                    수정
-                  </Button>
-                  <Button size="sm" variant="destructive">
-                    삭제
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            <FlexBox className="justify-between pt-2">
+              <span className="text-muted-foreground text-xs">
+                현재 {filteredPosts.length}개 표시
+                {hasNextPage ? " · 더 있음" : ""}
+              </span>
+              {hasNextPage && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onPress={() => fetchNextPage()}
+                  isDisabled={isFetchingNextPage}
+                >
+                  {isFetchingNextPage ? "불러오는 중..." : "더 보기"}
+                </Button>
+              )}
+            </FlexBox>
+          </>
+        )}
       </div>
+
+      <BlogPostFormDrawer
+        isOpen={drawerState.mode !== "closed"}
+        onOpenChange={handleDrawerOpenChange}
+        mode={drawerState.mode === "edit" ? "edit" : "create"}
+        post={drawerState.mode === "edit" ? drawerState.post : undefined}
+      />
+
+      <DeleteBlogPostDialog
+        isOpen={deleteTarget !== null}
+        onOpenChange={handleDeleteOpenChange}
+        post={deleteTarget}
+      />
     </div>
   )
 }
 
-const TitleSection = () => {
+type TitleSectionProps = { onCreate: () => void }
+
+const TitleSection = ({ onCreate }: TitleSectionProps) => {
   return (
     <FlexBox className="justify-between">
       <header className="space-y-2">
         <Title title="블로그 관리" />
-        <Description title="DDD 블로그 포스트를 등록하고 상태를 관리합니다." />
+        <Description title="홈페이지에 노출되는 블로그 포스트를 등록하고 관리합니다." />
       </header>
-      <Button size="lg">
-        <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />새 포스트 등록
+      <Button size="lg" onPress={onCreate}>
+        <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
+        블로그 등록
       </Button>
     </FlexBox>
+  )
+}
+
+type EmptyStateProps = {
+  children: React.ReactNode
+  tone?: "default" | "danger"
+}
+
+const EmptyState = ({ children, tone = "default" }: EmptyStateProps) => {
+  return (
+    <div
+      className={
+        tone === "danger"
+          ? "py-12 text-center text-sm text-red-500"
+          : "text-muted-foreground py-12 text-center text-sm"
+      }
+    >
+      {children}
+    </div>
   )
 }

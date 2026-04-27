@@ -1,187 +1,126 @@
 import { useMemo, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { api } from "@ddd/api"
-import { Title, Description } from "@/widgets/heading"
-import { Card } from "@/shared/ui/Card"
-import { GridBox } from "@/shared/ui/GridBox"
-import { FlexBox } from "@/shared/ui/FlexBox"
-import { Button } from "@/shared/ui/button"
-import { Input } from "@/shared/ui/input"
-import { Select } from "@/shared/ui/Select"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-} from "@/shared/ui/Table"
+  useAdminApplications,
+  useCohorts,
+  type CohortDto,
+  type ApplicationDto,
+} from "@ddd/api"
+import { Title, Description } from "@/widgets/heading"
+import { CardSection } from "./components/Sections"
+import { ApplicationFilters } from "./components/ApplicationFilters"
+import { ApplicationTable } from "./components/ApplicationTable"
+import type { ApplicationStatus } from "./constants"
 
-import type {
-  ApplicationInfo,
-  ApplicationRole,
-  ApplicationStatus,
-} from "./types"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { PlusSignIcon } from "@hugeicons/core-free-icons"
-
-const ROLE_LABEL: Record<ApplicationRole, string> = {
-  developer: "개발자",
-  designer: "디자이너",
-  planner: "기획자",
+const pickLatestCohortId = (cohorts: CohortDto[]): number | undefined => {
+  if (cohorts.length === 0) return undefined
+  return [...cohorts].sort(
+    (a, b) =>
+      new Date(b.recruitStartAt).getTime() - new Date(a.recruitStartAt).getTime() ||
+      b.id - a.id
+  )[0].id
 }
 
-const STATUS_LABEL: Record<ApplicationStatus, string> = {
-  pending: "검토 중",
-  passed: "합격",
-  failed: "불합격",
-  cancelled: "취소",
-}
-
-const STATUS_FILTER_OPTIONS = ["전체", "검토 중", "합격", "불합격", "취소"]
-
-const STATUS_FILTER_MAP: Record<string, ApplicationStatus | null> = {
-  전체: null,
-  "검토 중": "pending",
-  합격: "passed",
-  불합격: "failed",
-  취소: "cancelled",
-}
-
-const getApplicationData = async () => {
-  try {
-    const data = await api.get<ApplicationInfo[]>("/application")
-    return data
-  } catch (error) {
-    console.error("Failed to fetch application data:", error)
-  }
-}
-
-/** 지원자 관리 페이지 */
+/**
+ * undefined = "아직 사용자가 선택하지 않음(→ 최신 기수 자동 적용)"
+ * null      = 사용자가 명시적으로 "전체 기수" 선택
+ */
 export default function ApplicationsPage() {
   const [searchText, setSearchText] = useState("")
-  const [statusFilter, setStatusFilter] = useState("전체")
+  const [selectedCohortId, setSelectedCohortId] = useState<number | null | undefined>(undefined)
+  const [selectedCohortPartId, setSelectedCohortPartId] = useState<number | undefined>(undefined)
+  const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus | undefined>(undefined)
 
-  const { data: applications } = useQuery({
-    queryKey: ["applications"],
-    queryFn: getApplicationData,
+  const { data: cohorts } = useCohorts()
+  const cohortList = useMemo(() => cohorts ?? [], [cohorts])
+
+  // undefined(미선택) → 최신 기수 자동 적용, null → 전체 기수
+  const effectiveCohortId = useMemo(
+    () => (selectedCohortId === undefined ? pickLatestCohortId(cohortList) : selectedCohortId ?? undefined),
+    [selectedCohortId, cohortList]
+  )
+
+  // 카드용 쿼리 — status 제외, 기수/파트만
+  const { data: cardApplications } = useAdminApplications({
+    params: {
+      ...(effectiveCohortId !== undefined && { cohortId: effectiveCohortId }),
+      ...(selectedCohortPartId !== undefined && { cohortPartId: selectedCohortPartId }),
+    },
   })
 
-  const filteredApplications = useMemo(() => {
-    const source = applications ?? []
-    const targetStatus = STATUS_FILTER_MAP[statusFilter]
-    return source
-      .filter(
-        (item) =>
-          item.name.includes(searchText) || item.email.includes(searchText)
-      )
-      .filter((item) => targetStatus === null || item.status === targetStatus)
-  }, [applications, searchText, statusFilter])
+  // 표용 쿼리 — 모든 필터 적용
+  const { data: tableApplications } = useAdminApplications({
+    params: {
+      ...(effectiveCohortId !== undefined && { cohortId: effectiveCohortId }),
+      ...(selectedCohortPartId !== undefined && { cohortPartId: selectedCohortPartId }),
+      ...(selectedStatus !== undefined && { status: selectedStatus as string }),
+    },
+  })
+
+  const cardList: ApplicationDto[] = useMemo(() => cardApplications ?? [], [cardApplications])
+  const tableList: ApplicationDto[] = useMemo(() => tableApplications ?? [], [tableApplications])
+
+  // 클라이언트 검색 필터 (이름 + 연락처)
+  const filteredApplications = useMemo(
+    () =>
+      searchText.trim() === ""
+        ? tableList
+        : tableList.filter(
+            (app) =>
+              app.applicantName.includes(searchText) ||
+              (app.applicantPhone?.includes(searchText) ?? false)
+          ),
+    [tableList, searchText]
+  )
+
+  // 카드 카운트 산출
+  const counts = useMemo(() => {
+    const acc: Partial<Record<ApplicationStatus, number>> = {}
+    for (const app of cardList) {
+      const s = app.status as ApplicationStatus
+      acc[s] = (acc[s] ?? 0) + 1
+    }
+    return acc
+  }, [cardList])
+
+  const selectedCohort = cohortList.find((c) => c.id === effectiveCohortId)
+  const contextLabel = selectedCohort ? `${selectedCohort.name} 기준` : "전체 기수 합산"
+
+  const handleCohortChange = (id: number | undefined) => {
+    // undefined → "전체 기수" 선택으로 null 저장
+    setSelectedCohortId(id ?? null)
+    setSelectedCohortPartId(undefined) // 기수 변경 시 파트 초기화
+  }
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection />
-      <CardSection total={applications?.length ?? 0} />
-
-      <div className="space-y-5 rounded-lg bg-white p-5 shadow">
-        <FlexBox className="justify-between">
-          <Input
-            placeholder="이름 또는 이메일 검색..."
-            className="max-w-xs"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <Select
-            items={STATUS_FILTER_OPTIONS}
-            className="max-w-36"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          />
-        </FlexBox>
-
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>이름</TableHeaderCell>
-              <TableHeaderCell>이메일</TableHeaderCell>
-              <TableHeaderCell>직군</TableHeaderCell>
-              <TableHeaderCell>지원 기수</TableHeaderCell>
-              <TableHeaderCell>지원일</TableHeaderCell>
-              <TableHeaderCell>상태</TableHeaderCell>
-              <TableHeaderCell>액션</TableHeaderCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredApplications.map((application) => (
-              <TableRow key={application.id}>
-                <TableCell>{application.name}</TableCell>
-                <TableCell>{application.email}</TableCell>
-                <TableCell>{ROLE_LABEL[application.role]}</TableCell>
-                <TableCell>{application.semester}</TableCell>
-                <TableCell>
-                  {new Date(application.appliedAt).toLocaleDateString("ko-KR")}
-                </TableCell>
-                <TableCell>{STATUS_LABEL[application.status]}</TableCell>
-                <TableCell>
-                  <Button size="sm" variant="outline" className="mr-2">
-                    수정
-                  </Button>
-                  <Button size="sm">합격 처리</Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
-  )
-}
-
-const TitleSection = () => {
-  return (
-    <FlexBox className="justify-between">
       <header className="space-y-2">
         <Title title="지원자 관리" />
         <Description title="지원서를 검토하고 상태를 변경합니다." />
       </header>
-      <Button size="lg">
-        <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
-        알림 발송
-      </Button>
-    </FlexBox>
-  )
-}
 
-type CardSectionProps = { total: number }
+      <CardSection
+        total={cardList.length}
+        counts={counts}
+        contextLabel={contextLabel}
+      />
 
-const CardSection = ({ total }: CardSectionProps) => {
-  return (
-    <GridBox className="lg:grid-cols-5">
-      <Card
-        renderTitle={() => "전체 지원"}
-        renderDescription={() => `${total}명`}
-        renderAdditionalInfo={() => "14기 기준"}
-      />
-      <Card
-        renderTitle={() => "대기"}
-        renderDescription={() => "서류 대기"}
-        renderAdditionalInfo={() => "검토 필요"}
-      />
-      <Card
-        renderTitle={() => "면접 대기"}
-        renderDescription={() => "18명"}
-        renderAdditionalInfo={() => "면접 대상자"}
-      />
-      <Card
-        renderTitle={() => "면접 합격"}
-        renderDescription={() => "18명"}
-        renderAdditionalInfo={() => "활동 예정"}
-      />
-      <Card
-        renderTitle={() => "활동중"}
-        renderDescription={() => "0명"}
-        renderAdditionalInfo={() => "현재 활동"}
-      />
-    </GridBox>
+      <div className="space-y-5 rounded-lg bg-white p-5 shadow">
+        <ApplicationFilters
+          searchText={searchText}
+          onSearchChange={setSearchText}
+          cohorts={cohortList}
+          selectedCohortId={effectiveCohortId}
+          onCohortChange={handleCohortChange}
+          selectedCohortPartId={selectedCohortPartId}
+          onCohortPartChange={setSelectedCohortPartId}
+          selectedStatus={selectedStatus}
+          onStatusChange={setSelectedStatus}
+        />
+        <ApplicationTable
+          applications={filteredApplications}
+          cohorts={cohortList}
+        />
+      </div>
+    </div>
   )
 }

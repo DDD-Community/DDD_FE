@@ -1,53 +1,26 @@
 import { useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { api } from "@ddd/api"
+import { getApiClient } from "@ddd/api"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
-import { Card } from "@/shared/ui/Card"
+import { Button, Input, Table, Select, ListBox, Drawer } from "@heroui/react"
+
 import { GridBox } from "@/shared/ui/GridBox"
 import { FlexBox } from "@/shared/ui/FlexBox"
-import { Button } from "@/shared/ui/button"
-import { Input } from "@/shared/ui/input"
-import { Select } from "@/shared/ui/Select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-} from "@/shared/ui/Table"
 import { Title, Description } from "@/widgets/heading"
 
-import type { SemesterInfo, SemesterStatus } from "./types"
-
-const STATUS_LABEL: Record<SemesterStatus, string> = {
-  active: "활동중",
-  inactive: "활동종료",
-  upcoming: "모집 예정",
-  recruiting: "모집중",
-}
-
-const STATUS_FILTER_OPTIONS = [
-  "전체",
-  "활동중",
-  "활동종료",
-  "모집 예정",
-  "모집중",
-]
-
-const STATUS_FILTER_MAP: Record<string, SemesterStatus | null> = {
-  전체: null,
-  "모집 예정": "upcoming",
-  모집중: "recruiting",
-  활동중: "active",
-  활동종료: "inactive",
-}
+import type { SemesterInfo } from "./types"
+import {
+  STATUS_LABEL,
+  STATUS_FILTER_OPTIONS,
+  STATUS_FILTER_MAP,
+} from "./constants"
+import { SemesterRegisterDrawer } from "./SemesterRegisterDrawer"
 
 const getSemesterData = async () => {
   try {
-    return await api.get<SemesterInfo[]>("/semester")
+    return await getApiClient().get<SemesterInfo[]>("/semester")
   } catch (error) {
     console.error("Failed to fetch semester data:", error)
   }
@@ -57,6 +30,7 @@ const getSemesterData = async () => {
 export default function SemestersPage() {
   const [searchText, setSearchText] = useState("")
   const [statusFilter, setStatusFilter] = useState("전체")
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   const { data: semesters } = useQuery({
     queryKey: ["semesters"],
@@ -73,57 +47,81 @@ export default function SemestersPage() {
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection />
-      <CardSection />
+      <Drawer>
+        <TitleSection />
+        <CardSection />
+        <SemesterRegisterDrawer />
+      </Drawer>
 
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
         <FlexBox className="justify-between">
           <Input
+            variant="secondary"
             placeholder="검색..."
             className="max-w-xs"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
           <Select
-            items={STATUS_FILTER_OPTIONS}
+            variant="secondary"
             className="max-w-36"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          />
+            aria-label="상태 필터"
+          >
+            <Select.Trigger>
+              <Select.Value>{statusFilter}</Select.Value>
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                {STATUS_FILTER_OPTIONS.map((option) => (
+                  <ListBox.Item
+                    key={option}
+                    id={option}
+                    textValue={option}
+                    onClick={() => setStatusFilter(option)}
+                  >
+                    {option}
+                  </ListBox.Item>
+                ))}
+              </ListBox>
+            </Select.Popover>
+          </Select>
         </FlexBox>
 
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>기수</TableHeaderCell>
-              <TableHeaderCell>상태</TableHeaderCell>
-              <TableHeaderCell>모집 기간</TableHeaderCell>
-              <TableHeaderCell>지원자 수</TableHeaderCell>
-              <TableHeaderCell>멤버 수</TableHeaderCell>
-              <TableHeaderCell>등록일</TableHeaderCell>
-              <TableHeaderCell>액션</TableHeaderCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredSemesters.map((semester) => (
-              <TableRow key={semester.semester}>
-                <TableCell>{semester.semester}</TableCell>
-                <TableCell>{STATUS_LABEL[semester.status]}</TableCell>
-                <TableCell>{semester.recruitmentPeriod}</TableCell>
-                <TableCell>{semester.applicants}</TableCell>
-                <TableCell>{semester.members}</TableCell>
-                <TableCell>
-                  {new Date(semester.createdAt).toLocaleDateString("ko-KR")}
-                </TableCell>
-                <TableCell>
-                  <Button size="sm" variant="outline" className="mr-2">
-                    수정
-                  </Button>
-                  <Button size="sm">모집중 전환</Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+          <Table.ScrollContainer>
+            <Table.Content aria-label="기수 목록">
+              <Table.Header>
+                <Table.Column isRowHeader>기수</Table.Column>
+                <Table.Column>상태</Table.Column>
+                <Table.Column>모집 기간</Table.Column>
+                <Table.Column>지원자 수</Table.Column>
+                <Table.Column>멤버 수</Table.Column>
+                <Table.Column>등록일</Table.Column>
+                <Table.Column>액션</Table.Column>
+              </Table.Header>
+              <Table.Body>
+                {filteredSemesters.map((semester) => (
+                  <Table.Row key={semester.semester}>
+                    <Table.Cell>{semester.semester}</Table.Cell>
+                    <Table.Cell>{STATUS_LABEL[semester.status]}</Table.Cell>
+                    <Table.Cell>{semester.recruitmentPeriod}</Table.Cell>
+                    <Table.Cell>{semester.applicants}</Table.Cell>
+                    <Table.Cell>{semester.members}</Table.Cell>
+                    <Table.Cell>
+                      {new Date(semester.createdAt).toLocaleDateString("ko-KR")}
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Button size="sm" variant="outline" className="mr-2">
+                        수정
+                      </Button>
+                      <Button size="sm">모집중 전환</Button>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Content>
+          </Table.ScrollContainer>
         </Table>
       </div>
     </div>
@@ -137,7 +135,7 @@ const TitleSection = () => {
         <Title title="기수 관리" />
         <Description title="DDD 활동 기수를 등록하고 상태를 관리합니다." />
       </header>
-      <Button size="lg">
+      <Button>
         <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />새 기수 등록
       </Button>
     </FlexBox>
@@ -146,27 +144,27 @@ const TitleSection = () => {
 
 const CardSection = () => {
   return (
-    <GridBox>
-      <Card
-        renderTitle={() => "전체 기수"}
-        renderDescription={() => "14"}
-        renderAdditionalInfo={() => "추가 정보 1"}
-      />
-      <Card
-        renderTitle={() => "현재 상태"}
-        renderDescription={() => "활동 중"}
-        renderAdditionalInfo={() => "13기"}
-      />
-      <Card
-        renderTitle={() => "누적 지원자"}
-        renderDescription={() => "1204명"}
-        renderAdditionalInfo={() => "전체 기수 합산"}
-      />
-      <Card
-        renderTitle={() => "누적 활동 멤버"}
-        renderDescription={() => "520명"}
-        renderAdditionalInfo={() => "전체 기수 합산"}
-      />
+    <GridBox className="grid-cols-4 gap-5">
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">전체 기수</h3>
+        <p className="text-2xl font-bold">14</p>
+        <p className="text-sm text-gray-500">추가 정보 1</p>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">현재 상태</h3>
+        <p className="text-2xl font-bold">활동 중</p>
+        <p className="text-sm text-gray-500">13기</p>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">누적 지원자</h3>
+        <p className="text-2xl font-bold">1204명</p>
+        <p className="text-sm text-gray-500">전체 기수 합산</p>
+      </div>
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
+        <h3 className="font-semibold text-gray-700">누적 활동 멤버</h3>
+        <p className="text-2xl font-bold">520명</p>
+        <p className="text-sm text-gray-500">전체 기수 합산</p>
+      </div>
     </GridBox>
   )
 }

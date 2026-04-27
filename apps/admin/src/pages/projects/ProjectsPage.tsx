@@ -1,138 +1,194 @@
 import { useMemo, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { api } from "@ddd/api"
+import { Button } from "@heroui/react"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { useCohorts, useInfiniteProjects } from "@ddd/api"
+import type { ProjectDto } from "@ddd/api"
 
 import { FlexBox } from "@/shared/ui/FlexBox"
-import { Button } from "@/shared/ui/button"
-import { Input } from "@/shared/ui/input"
-import { Select } from "@/shared/ui/Select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-} from "@/shared/ui/Table"
 import { Title, Description } from "@/widgets/heading"
 
-import type { ProjectInfo, ProjectStatus } from "./types"
+import { DeleteProjectDialog } from "./components/DeleteProjectDialog"
+import { ProjectFormDrawer } from "./components/ProjectFormDrawer"
+import {
+  ProjectsToolbar,
+  type CohortFilterValue,
+  type PlatformFilterValue,
+} from "./components/ProjectsToolbar"
+import { ProjectsTable } from "./components/ProjectsTable"
 
-const STATUS_LABEL: Record<ProjectStatus, string> = {
-  in_progress: "진행 중",
-  completed: "완료",
-  cancelled: "취소",
-}
+type DrawerState =
+  | { mode: "closed" }
+  | { mode: "create" }
+  | { mode: "edit"; project: ProjectDto }
 
-const STATUS_FILTER_OPTIONS = ["전체", "진행 중", "완료", "취소"]
-
-const STATUS_FILTER_MAP: Record<string, ProjectStatus | null> = {
-  전체: null,
-  "진행 중": "in_progress",
-  완료: "completed",
-  취소: "cancelled",
-}
-
-const getProjectData = async () => {
-  try {
-    const data = await api.get<ProjectInfo[]>("/project")
-    return data
-  } catch (error) {
-    console.error("Failed to fetch project data:", error)
-  }
-}
+const PAGE_LIMIT = 20
 
 /** 프로젝트 관리 페이지 */
 export default function ProjectsPage() {
   const [searchText, setSearchText] = useState("")
-  const [statusFilter, setStatusFilter] = useState("전체")
+  const [platform, setPlatform] = useState<PlatformFilterValue>("ALL")
+  const [cohortId, setCohortId] = useState<CohortFilterValue>("ALL")
+  const [drawerState, setDrawerState] = useState<DrawerState>({
+    mode: "closed",
+  })
+  const [deleteTarget, setDeleteTarget] = useState<ProjectDto | null>(null)
 
-  const { data: projects } = useQuery({
-    queryKey: ["projects"],
-    queryFn: getProjectData,
+  const {
+    data: projectsData,
+    isLoading: isProjectsLoading,
+    isError: isProjectsError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteProjects({
+    params: {
+      platform: platform === "ALL" ? undefined : platform,
+      limit: PAGE_LIMIT,
+    },
   })
 
+  const { data: cohorts = [] } = useCohorts()
+
+  const cohortById = useMemo(
+    () => new Map(cohorts.map((c) => [c.id, c])),
+    [cohorts]
+  )
+
+  const allProjects = useMemo<ProjectDto[]>(
+    () => projectsData?.pages.flatMap((page) => page.items) ?? [],
+    [projectsData]
+  )
+
   const filteredProjects = useMemo(() => {
-    const source = projects ?? []
-    const targetStatus = STATUS_FILTER_MAP[statusFilter]
-    return source
-      .filter((item) => item.name.includes(searchText))
-      .filter((item) => targetStatus === null || item.status === targetStatus)
-  }, [projects, searchText, statusFilter])
+    return allProjects.filter((project) => {
+      const matchesSearch =
+        searchText.length === 0 || project.name.includes(searchText)
+      const matchesCohort = cohortId === "ALL" || project.cohortId === cohortId
+      return matchesSearch && matchesCohort
+    })
+  }, [allProjects, searchText, cohortId])
+
+  const handleCreate = () => setDrawerState({ mode: "create" })
+
+  const handleEdit = (project: ProjectDto) =>
+    setDrawerState({ mode: "edit", project })
+
+  const handleDelete = (project: ProjectDto) => setDeleteTarget(project)
+
+  const handleDrawerOpenChange = (open: boolean) => {
+    if (!open) setDrawerState({ mode: "closed" })
+  }
+
+  const handleDeleteOpenChange = (open: boolean) => {
+    if (!open) setDeleteTarget(null)
+  }
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection />
+      <TitleSection onCreate={handleCreate} />
 
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
-        <FlexBox className="justify-between">
-          <Input
-            placeholder="프로젝트명 검색..."
-            className="max-w-xs"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <Select
-            items={STATUS_FILTER_OPTIONS}
-            className="max-w-36"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          />
-        </FlexBox>
+        <ProjectsToolbar
+          searchText={searchText}
+          onSearchTextChange={setSearchText}
+          platform={platform}
+          onPlatformChange={setPlatform}
+          cohortId={cohortId}
+          onCohortChange={setCohortId}
+          cohorts={cohorts}
+        />
 
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>프로젝트명</TableHeaderCell>
-              <TableHeaderCell>설명</TableHeaderCell>
-              <TableHeaderCell>기수</TableHeaderCell>
-              <TableHeaderCell>팀원 수</TableHeaderCell>
-              <TableHeaderCell>상태</TableHeaderCell>
-              <TableHeaderCell>등록일</TableHeaderCell>
-              <TableHeaderCell>액션</TableHeaderCell>
-            </TableRow>
-          </TableHead>
+        {isProjectsLoading ? (
+          <EmptyState>불러오는 중...</EmptyState>
+        ) : isProjectsError ? (
+          <EmptyState tone="danger">
+            프로젝트 목록을 불러오지 못했습니다.
+          </EmptyState>
+        ) : filteredProjects.length === 0 ? (
+          <EmptyState>
+            {allProjects.length === 0
+              ? "등록된 프로젝트가 없습니다."
+              : "조건에 맞는 프로젝트가 없습니다."}
+          </EmptyState>
+        ) : (
+          <>
+            <ProjectsTable
+              projects={filteredProjects}
+              cohortById={cohortById}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
 
-          <TableBody>
-            {filteredProjects.map((project) => (
-              <TableRow key={project.id}>
-                <TableCell>{project.name}</TableCell>
-                <TableCell>{project.description}</TableCell>
-                <TableCell>{project.semester}</TableCell>
-                <TableCell>{project.memberCount}</TableCell>
-                <TableCell>{STATUS_LABEL[project.status]}</TableCell>
-                <TableCell>
-                  {new Date(project.createdAt).toLocaleDateString("ko-KR")}
-                </TableCell>
-                <TableCell>
-                  <Button size="sm" variant="outline" className="mr-2">
-                    수정
-                  </Button>
-                  <Button size="sm" variant="destructive">
-                    삭제
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            <FlexBox className="justify-between pt-2">
+              <span className="text-muted-foreground text-xs">
+                현재 {filteredProjects.length}개 표시
+                {hasNextPage ? " · 더 있음" : ""}
+              </span>
+              {hasNextPage && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onPress={() => fetchNextPage()}
+                  isDisabled={isFetchingNextPage}
+                >
+                  {isFetchingNextPage ? "불러오는 중..." : "더 보기"}
+                </Button>
+              )}
+            </FlexBox>
+          </>
+        )}
       </div>
+
+      <ProjectFormDrawer
+        isOpen={drawerState.mode !== "closed"}
+        onOpenChange={handleDrawerOpenChange}
+        mode={drawerState.mode === "edit" ? "edit" : "create"}
+        project={drawerState.mode === "edit" ? drawerState.project : undefined}
+        cohorts={cohorts}
+      />
+
+      <DeleteProjectDialog
+        isOpen={deleteTarget !== null}
+        onOpenChange={handleDeleteOpenChange}
+        project={deleteTarget}
+      />
     </div>
   )
 }
 
-const TitleSection = () => {
+type TitleSectionProps = { onCreate: () => void }
+
+const TitleSection = ({ onCreate }: TitleSectionProps) => {
   return (
     <FlexBox className="justify-between">
       <header className="space-y-2">
         <Title title="프로젝트 관리" />
-        <Description title="DDD 활동 프로젝트를 등록하고 상태를 관리합니다." />
+        <Description title="홈페이지에 노출되는 프로젝트를 등록하고 관리합니다." />
       </header>
-      <Button size="lg">
-        <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />새 프로젝트 등록
+      <Button size="lg" onPress={onCreate}>
+        <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
+        프로젝트 등록
       </Button>
     </FlexBox>
+  )
+}
+
+type EmptyStateProps = {
+  children: React.ReactNode
+  tone?: "default" | "danger"
+}
+
+const EmptyState = ({ children, tone = "default" }: EmptyStateProps) => {
+  return (
+    <div
+      className={
+        tone === "danger"
+          ? "py-12 text-center text-sm text-red-500"
+          : "text-muted-foreground py-12 text-center text-sm"
+      }
+    >
+      {children}
+    </div>
   )
 }

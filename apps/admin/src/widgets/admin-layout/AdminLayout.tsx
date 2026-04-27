@@ -8,7 +8,7 @@ export const AdminLayout = () => {
   const isMobile = useIsMobile()
 
   return (
-    <div className={`flex h-screen w-screen ${isMobile ? "flex-col" : ""}`}>
+    <div className={`flex h-screen w-screen bg-gray-100 ${isMobile ? "flex-col" : ""}`}>
       {isMobile ? <MobileHeader /> : <SideBar />}
 
       <div className="flex flex-1 flex-col">

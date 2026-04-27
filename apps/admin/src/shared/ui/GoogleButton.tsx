@@ -1,5 +1,4 @@
 import { type ButtonHTMLAttributes } from "react"
-import { Button } from "@/shared/ui/button"
 
 const GoogleLogo = () => (
   <svg
@@ -35,15 +34,15 @@ export const GoogleButton = ({
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement>) => {
   return (
-    <Button
+    <button
       className={
-        "h-12 w-full bg-white text-base text-black hover:bg-gray-100 focus:ring-gray-300 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-500 " +
+        "flex h-12 w-full items-center justify-center gap-x-4 rounded-lg bg-white text-base text-black hover:bg-gray-100 focus:ring-gray-300 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-200 disabled:text-gray-500 " +
         className
       }
       {...rest}
     >
       <GoogleLogo />
       <span className="font-semibold">{children ?? "Google로 로그인"}</span>
-    </Button>
+    </button>
   )
 }

@@ -2,14 +2,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { SidebarLeft01Icon } from "@hugeicons/core-free-icons"
 import { Link, useLocation } from "react-router"
 import { useToggle } from "react-simplikit"
-import { Button } from "@/shared/ui/button"
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipProvider,
-  TooltipContent,
-} from "@/shared/ui/tooltip"
-import { Avatar } from "@/shared/ui/avatar"
+import { Button, Avatar } from "@heroui/react"
 import { OPERATIONS, CONTENTS } from "./constants"
 import { FlexBox } from "@/shared/ui/FlexBox"
 import type { MenuItemType } from "./types"
@@ -18,33 +11,31 @@ export const SideBar = () => {
   const [isOpen, toggle] = useToggle(true)
 
   return (
-    <TooltipProvider delay={200}>
-      <nav
-        aria-label="사이드바 네비게이션"
-        className={`overflow-hidden border-r py-2 transition-[width] duration-300 ease-in-out ${isOpen ? "w-56" : "w-18"}`}
+    <nav
+      aria-label="사이드바 네비게이션"
+      className={`overflow-hidden border-r py-2 transition-[width] duration-300 ease-in-out ${isOpen ? "w-56" : "w-18"}`}
+    >
+      <FlexBox
+        direction="column"
+        className="h-full w-full items-start justify-between"
       >
-        <FlexBox
-          direction="column"
-          className="h-full w-full items-start justify-between"
-        >
-          <section className="w-full">
-            <SideBarHeader isOpen={isOpen} toggle={toggle} />
-            <MenuList isOpen={isOpen} />
-          </section>
+        <section className="w-full">
+          <SideBarHeader isOpen={isOpen} toggle={toggle} />
+          <MenuList isOpen={isOpen} />
+        </section>
 
-          <footer className="flex w-full items-center gap-x-4 border-t px-4 pt-2 font-medium">
-            <Avatar className="inline-flex size-10 items-center justify-center rounded-full bg-green-400 align-middle text-base text-white select-none">
-              W
-            </Avatar>
-            <span
-              className={`overflow-hidden text-sm whitespace-nowrap text-gray-900 transition-all duration-300 ${isOpen ? "max-w-xs opacity-100" : "max-w-0 opacity-0"}`}
-            >
-              User Name
-            </span>
-          </footer>
-        </FlexBox>
-      </nav>
-    </TooltipProvider>
+        <footer className="flex w-full items-center gap-x-4 border-t px-4 pt-2 font-medium">
+          <Avatar className="inline-flex size-10 items-center justify-center rounded-full bg-green-400 align-middle text-base text-white select-none">
+            W
+          </Avatar>
+          <span
+            className={`overflow-hidden text-sm whitespace-nowrap text-gray-900 transition-all duration-300 ${isOpen ? "max-w-xs opacity-100" : "max-w-0 opacity-0"}`}
+          >
+            User Name
+          </span>
+        </footer>
+      </FlexBox>
+    </nav>
   )
 }
 
@@ -71,39 +62,30 @@ const SideBarHeader = ({ isOpen, toggle }: SideBarHeaderProps) => {
 
 const OpenSideBarButton = ({ toggle }: { toggle: () => void }) => {
   return (
-    <Tooltip>
-      <TooltipTrigger
-        className="absolute inset-0 opacity-0 group-hover:opacity-100"
-        render={
-          <Button onClick={toggle} variant="ghost" aria-label="사이드바 열기" />
-        }
-      >
-        <HugeiconsIcon aria-hidden="true" icon={SidebarLeft01Icon} />
-      </TooltipTrigger>
-      <TooltipContent side="right">사이드바 열기</TooltipContent>
-    </Tooltip>
+    <Button
+      isIconOnly
+      variant="outline"
+      onPress={toggle}
+      aria-label="사이드바 열기"
+      className="absolute inset-0 opacity-0 group-hover:opacity-100"
+    >
+      <HugeiconsIcon aria-hidden="true" icon={SidebarLeft01Icon} />
+    </Button>
   )
 }
 
 const CloseSideBarButton = ({ isOpen, toggle }: SideBarHeaderProps) => {
   return (
-    <Tooltip>
-      <TooltipTrigger
-        tabIndex={isOpen ? 0 : -1}
-        className={`shrink-0 ${isOpen ? "cursor-pointer opacity-100" : "pointer-events-none opacity-0"}`}
-        render={
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="사이드바 닫기"
-            onClick={toggle}
-          />
-        }
-      >
-        <HugeiconsIcon aria-hidden="true" icon={SidebarLeft01Icon} />
-      </TooltipTrigger>
-      <TooltipContent side="right">사이드바 닫기</TooltipContent>
-    </Tooltip>
+    <Button
+      isIconOnly
+      variant="outline"
+      aria-label="사이드바 닫기"
+      onPress={toggle}
+      isDisabled={!isOpen}
+      className={`shrink-0 ${isOpen ? "cursor-pointer opacity-100" : "pointer-events-none opacity-0"}`}
+    >
+      <HugeiconsIcon aria-hidden="true" icon={SidebarLeft01Icon} />
+    </Button>
   )
 }
 
@@ -144,29 +126,25 @@ type MenuItemProps = {
 const MenuItem = ({ item, isOpen, isActive }: MenuItemProps) => {
   return (
     <li>
-      <Tooltip disabled={isOpen}>
-        <TooltipTrigger
-          tabIndex={0}
-          aria-current={isActive ? "page" : undefined}
-          className="flex w-full items-center gap-x-2 rounded-lg px-2.5 py-2 hover:bg-muted"
-          render={<Link to={item.path} />}
+      <Link
+        to={item.path}
+        aria-current={isActive ? "page" : undefined}
+        className="flex w-full items-center gap-x-2 rounded-lg px-2.5 py-2 hover:bg-gray-200 data-[current=page]:bg-gray-300"
+      >
+        <HugeiconsIcon
+          icon={item.icon}
+          size={18}
+          aria-hidden="true"
+          className="shrink-0"
+        />
+        <span
+          className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
+            isOpen ? "max-w-xs opacity-100" : "max-w-0 opacity-0"
+          }`}
         >
-          <HugeiconsIcon
-            icon={item.icon}
-            size={18}
-            aria-hidden="true"
-            className="shrink-0"
-          />
-          <span
-            className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
-              isOpen ? "max-w-xs opacity-100" : "max-w-0 opacity-0"
-            }`}
-          >
-            {item.name}
-          </span>
-        </TooltipTrigger>
-        <TooltipContent side="right">{item.name}</TooltipContent>
-      </Tooltip>
+          {item.name}
+        </span>
+      </Link>
     </li>
   )
 }
