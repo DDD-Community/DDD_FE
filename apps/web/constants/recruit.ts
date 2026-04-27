@@ -2,7 +2,7 @@ export type RecruitStatus = "open" | "closed";
 
 export const recruitStatus: RecruitStatus = "closed";
 
-const recruitButtonLabelsByStatus: Record<
+export const recruitButtonLabelsByStatus: Record<
   RecruitStatus,
   { navigation: string; hero: string; role: string }
 > = {

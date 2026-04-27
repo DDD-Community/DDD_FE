@@ -4,7 +4,7 @@ import Link from "next/link";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
 import { openPreAlertModal } from "@/components/modals/PreAlertModal";
-import { recruitButtonLabels, recruitStatus } from "@/constants/recruit";
+import { useRecruitStatus } from "@/components/providers/RecruitStatusProvider";
 import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
 
 const Section = styled.section({
@@ -191,7 +191,7 @@ const CtaButton = styled(Link)({
 });
 
 export const HeroSection = () => {
-  const isRecruitOpen = recruitStatus === "open";
+  const { isRecruitOpen, recruitButtonLabels } = useRecruitStatus();
 
   return (
     <Section>

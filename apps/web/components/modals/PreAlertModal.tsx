@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
+import { ApiError } from "@ddd/api";
+import { subscribeEarlyNotificationWithActiveCohort } from "@/lib/web-api";
 
 export const PRE_ALERT_MODAL_OPEN_EVENT = "ddd:open-pre-alert-modal";
 
@@ -489,6 +491,7 @@ export const PreAlertModal = () => {
   const [step, setStep] = useState<ModalStep>("form");
   const [values, setValues] = useState<FormValues>(INITIAL_VALUES);
   const [showError, setShowError] = useState(false);
+  const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
 
   const hasAnyInput = useMemo(
     () => Object.values(values).some((value) => value.trim().length > 0),
@@ -501,6 +504,7 @@ export const PreAlertModal = () => {
       setStep("form");
       setValues(INITIAL_VALUES);
       setShowError(false);
+      setSubmitErrorMessage(null);
     };
 
     const escHandler = (event: KeyboardEvent) => {
@@ -531,6 +535,7 @@ export const PreAlertModal = () => {
       setStep("form");
       setValues(INITIAL_VALUES);
       setShowError(false);
+      setSubmitErrorMessage(null);
     }, 3000);
     return () => window.clearTimeout(timer);
   }, [open, step]);
@@ -557,14 +562,30 @@ export const PreAlertModal = () => {
     return emailOk;
   };
 
-  const onSubmit = (event: React.FormEvent) => {
+  const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!validate()) {
       setShowError(true);
+      setSubmitErrorMessage(null);
       return;
     }
     setShowError(false);
-    setStep("success");
+    setSubmitErrorMessage(null);
+
+    try {
+      await subscribeEarlyNotificationWithActiveCohort(values.email);
+      setStep("success");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setSubmitErrorMessage(error.message);
+        return;
+      }
+      if (error instanceof Error && error.message) {
+        setSubmitErrorMessage(error.message);
+        return;
+      }
+      setSubmitErrorMessage("사전 알림 신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
   };
 
   if (!open) return null;
@@ -582,7 +603,7 @@ export const PreAlertModal = () => {
             <>
               <Header>
                 <div>
-                  <Title>12기 모집 알림 신청</Title>
+                  <Title>14기 모집 알림 신청</Title>
                   <Description>DDD 14기 모집이 시작되면 가장 먼저 알려드릴게요.</Description>
                 </div>
                 <Decoration src={MODAL_DECORATION_IMAGE} alt="" />
@@ -598,9 +619,11 @@ export const PreAlertModal = () => {
                       placeholder="이메일 주소를 입력해주세요."
                       value={values.email}
                       invalid={showError && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)}
-                      onChange={(event) =>
-                        setValues((prev) => ({ ...prev, email: event.target.value }))
-                      }
+                      onChange={(event) => {
+                        setValues((prev) => ({ ...prev, email: event.target.value }));
+                        setSubmitErrorMessage(null);
+                        if (showError) setShowError(false);
+                      }}
                     />
                     {showError && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email) ? (
                       <InputErrorIcon aria-hidden>!</InputErrorIcon>
@@ -609,6 +632,9 @@ export const PreAlertModal = () => {
                 </InputGroup>
                 {showError ? (
                   <ErrorText>example@example.com 형식에 맞게 입력해주세요.</ErrorText>
+                ) : null}
+                {!showError && submitErrorMessage ? (
+                  <ErrorText>{submitErrorMessage}</ErrorText>
                 ) : null}
                 <ActionRow>
                   <PrimaryButton type="submit">모집 알림 신청하기</PrimaryButton>
@@ -621,7 +647,7 @@ export const PreAlertModal = () => {
             <>
               <SuccessWrap>
                 <SuccessImage src={MODAL_SUCCESS_IMAGE} alt="" />
-                <SuccessTitle>{"12기 모집 알림 신청이\n완료되었어요!"}</SuccessTitle>
+                <SuccessTitle>{"14기 모집 알림 신청이\n완료되었어요!"}</SuccessTitle>
                 <SuccessDescription>DDD 크루 모집 시, 이메일로 알려드릴게요.</SuccessDescription>
                 <SuccessTimerText>3초 뒤에 자동으로 화면이 닫힙니다.</SuccessTimerText>
               </SuccessWrap>

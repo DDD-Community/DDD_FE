@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
 
@@ -330,7 +331,7 @@ const PrivacyBox = styled.div({
   },
 });
 
-const Agreement = styled.button<{ checked: boolean }>(({ checked }) => ({
+const Agreement = styled.button<{ checked: boolean }>(({ checked: _checked }) => ({
   marginTop: "16px",
   border: "none",
   background: "transparent",
@@ -344,7 +345,7 @@ const Agreement = styled.button<{ checked: boolean }>(({ checked }) => ({
   fontSize: "14px",
   lineHeight: "18px",
   fontWeight: fontWeights.semiBold,
-  textAlign: "left",
+  textAlign: "left" as const,
   "@media (max-width: 375px)": {
     marginTop: "12px",
     fontSize: "12px",
@@ -576,7 +577,7 @@ const validateBasicField = (field: BasicField, value: string) => {
   }
 
   const normalized = trimmed.replace(/\s+/g, "");
-  const match = normalized.match(/^(\d{4})[\/.-]?(\d{2})[\/.-]?(\d{2})$/);
+  const match = normalized.match(/^(\d{4})[/.-]?(\d{2})[/.-]?(\d{2})$/);
 
   if (!trimmed) return "생년월일을 입력해주세요.";
   if (!match) return "생년월일은 YYYY/MM/DD 형식으로 입력해주세요.";

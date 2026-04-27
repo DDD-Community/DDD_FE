@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
-import { recruitButtonLabels, recruitStatus } from "@/constants/recruit";
+import { useRecruitStatus } from "@/components/providers/RecruitStatusProvider";
 import { openPreAlertModal } from "@/components/modals/PreAlertModal";
 import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
 
@@ -201,7 +201,7 @@ const MobileCta = styled(Link)({
 
 export const Navigation = () => {
   const [open, setOpen] = useState(false);
-  const isRecruitOpen = recruitStatus === "open";
+  const { isRecruitOpen, recruitButtonLabels } = useRecruitStatus();
 
   return (
     <Header>

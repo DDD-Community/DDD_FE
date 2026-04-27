@@ -18,7 +18,8 @@ const ContentSection = styled.div({
 const Banner = styled.div<{ src: string }>(({ src }) => ({
   minHeight: '330px',
   padding: '160px 320px 80px',
-  backgroundImage: `url('${src}')`,
+  backgroundColor: '#02111f',
+  backgroundImage: `linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%), url('${src}')`,
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   display: 'flex',

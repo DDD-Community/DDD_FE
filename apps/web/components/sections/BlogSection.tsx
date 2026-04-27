@@ -5,6 +5,7 @@ import Link from "next/link";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
 import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
+import type { ArticleItem } from "@/constants/articles";
 
 const ARTICLES = [
   {
@@ -280,9 +281,14 @@ const MoreButton = styled(Link)({
   },
 });
 
-export const BlogSection = () => {
+type Props = {
+  items?: ArticleItem[];
+};
+
+export const BlogSection = ({ items }: Props) => {
   const [activeSlide, setActiveSlide] = useState(0);
   const articleListRef = useRef<HTMLDivElement | null>(null);
+  const sourceArticles: readonly ArticleItem[] = items?.length ? items : ARTICLES;
 
   const updateActiveSlide = useCallback(() => {
     const container = articleListRef.current;
@@ -347,7 +353,7 @@ export const BlogSection = () => {
         </TitleArea>
         <ContentAndButton>
           <ArticleList ref={articleListRef}>
-            {ARTICLES.map(({ id, title, description, thumbnail }) => (
+            {sourceArticles.map(({ id, title, description, thumbnail }) => (
               <ArticleCard key={id}>
                 <ArticleThumbnail>
                   <img src={thumbnail} alt={title} />
@@ -360,7 +366,7 @@ export const BlogSection = () => {
             ))}
           </ArticleList>
           <MobileBulletRow>
-            {ARTICLES.map(({ id }, index) => (
+            {sourceArticles.map(({ id }, index) => (
               <MobileBullet
                 key={id}
                 active={activeSlide === index}

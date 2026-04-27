@@ -3,7 +3,7 @@
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
-import { recruitButtonLabels, recruitStatus } from "@/constants/recruit";
+import { useRecruitStatus } from "@/components/providers/RecruitStatusProvider";
 import { openPreAlertModal } from "@/components/modals/PreAlertModal";
 import { colors, fontWeights } from "@/constants/tokens";
 
@@ -152,7 +152,7 @@ const Arrow = styled.span({
 });
 
 export const RecruitHeroSection = () => {
-  const isRecruitOpen = recruitStatus === "open";
+  const { recruitStatus, isRecruitOpen, recruitButtonLabels } = useRecruitStatus();
   const heroTitle = recruitStatus === "open" ? "Now\nRecruiting" : "Currently Under\nRenewal";
 
   return (

@@ -86,6 +86,9 @@ function resolveBody(body: unknown): BodyInit | undefined {
   if (body === undefined || body === null) {
     return undefined;
   }
+  if (typeof body === "string") {
+    return body;
+  }
   if (
     body instanceof FormData ||
     body instanceof Blob ||

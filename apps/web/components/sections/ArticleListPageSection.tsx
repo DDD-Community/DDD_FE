@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import styled from "@emotion/styled";
 import { articles, articleBanner } from "@/constants/articles";
 import { fontWeights } from "@/constants/tokens";
+import type { ArticleItem } from "@/constants/articles";
+import { fetchPublicArticlesPage } from "@/lib/web-api";
 
 const Section = styled.section({
   background: "#fff",
@@ -18,7 +21,8 @@ const ContentSection = styled.div({
 const Banner = styled.div({
   minHeight: "330px",
   padding: "160px 320px 80px",
-  backgroundImage: `url('${articleBanner.desktop}')`,
+  backgroundColor: "#02111f",
+  backgroundImage: `linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%), url('${articleBanner.desktop}')`,
   backgroundSize: "cover",
   backgroundPosition: "center",
   display: "flex",
@@ -26,7 +30,7 @@ const Banner = styled.div({
 
   "@media (max-width: 1024px)": {
     padding: "160px 80px 80px",
-    backgroundImage: `url('${articleBanner.tablet}')`,
+    backgroundImage: `linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%), url('${articleBanner.tablet}')`,
   },
   "@media (max-width: 768px)": {
     padding: "140px 40px 50px",
@@ -169,7 +173,60 @@ const Arrow = styled.span({
   fontSize: "18px",
 });
 
-export const ArticleListPageSection = () => {
+type Props = {
+  initialItems?: ArticleItem[];
+  initialNextCursor?: string | null;
+};
+
+const PaginationButton = styled.button<{ disabled?: boolean }>(({ disabled }) => ({
+  border: "none",
+  background: "transparent",
+  color: disabled ? "#9aa8bb" : "#cad5e2",
+  fontSize: "18px",
+  cursor: disabled ? "not-allowed" : "pointer",
+}));
+
+export const ArticleListPageSection = ({
+  initialItems = articles,
+  initialNextCursor = null,
+}: Props) => {
+  const [articleItems, setArticleItems] = useState<ArticleItem[]>(initialItems);
+  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
+  const [cursorHistory, setCursorHistory] = useState<Array<string | null>>([null]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadNextPage = async () => {
+    if (!nextCursor || isLoading) return;
+    setIsLoading(true);
+    try {
+      const page = await fetchPublicArticlesPage({ cursor: nextCursor, limit: 4 });
+      setArticleItems(page.items);
+      setCursorHistory((prev) => [...prev, nextCursor]);
+      setNextCursor(page.nextCursor);
+      setCurrentPage((prev) => prev + 1);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadPrevPage = async () => {
+    if (cursorHistory.length <= 1 || isLoading) return;
+    const prevHistory = [...cursorHistory];
+    prevHistory.pop();
+    const prevCursor = prevHistory[prevHistory.length - 1] ?? null;
+    setIsLoading(true);
+    try {
+      const page = await fetchPublicArticlesPage({ cursor: prevCursor ?? undefined, limit: 4 });
+      setArticleItems(page.items);
+      setNextCursor(page.nextCursor);
+      setCursorHistory(prevHistory);
+      setCurrentPage((prev) => Math.max(1, prev - 1));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Section>
       <Banner>
@@ -181,7 +238,7 @@ export const ArticleListPageSection = () => {
       <ContentSection>
         <Body>
           <List>
-            {articles.map((article) => (
+            {articleItems.map((article) => (
               <Row key={article.id}>
                 <Thumbnail src={article.thumbnail} alt={article.title} />
                 <TextWrap>
@@ -192,13 +249,13 @@ export const ArticleListPageSection = () => {
             ))}
           </List>
           <Pagination>
-            <Arrow>‹</Arrow>
-            <span style={{ color: "#525252" }}>1</span>
-            <span>2</span>
-            <span>3</span>
-            <span>4</span>
-            <span>5</span>
-            <Arrow>›</Arrow>
+            <PaginationButton onClick={loadPrevPage} disabled={cursorHistory.length <= 1 || isLoading}>
+              <Arrow>‹</Arrow>
+            </PaginationButton>
+            <span style={{ color: "#525252" }}>{currentPage}</span>
+            <PaginationButton onClick={loadNextPage} disabled={!nextCursor || isLoading}>
+              <Arrow>›</Arrow>
+            </PaginationButton>
           </Pagination>
         </Body>
       </ContentSection>

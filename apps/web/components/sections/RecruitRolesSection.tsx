@@ -2,7 +2,8 @@
 
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
-import { recruitButtonLabels, recruitParts, recruitStatus } from "@/constants/recruit";
+import { recruitParts } from "@/constants/recruit";
+import { useRecruitStatus } from "@/components/providers/RecruitStatusProvider";
 
 const Section = styled.section({
   background: colors.background,
@@ -147,7 +148,7 @@ const ApplyButton = styled.button<{ isRecruitOpen: boolean }>(({ isRecruitOpen }
 }));
 
 export const RecruitRolesSection = () => {
-  const isRecruitOpen = recruitStatus === "open";
+  const { isRecruitOpen, recruitButtonLabels } = useRecruitStatus();
 
   return (
     <Section>

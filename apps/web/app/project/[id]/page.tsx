@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { notFound } from 'next/navigation';
-import { Navigation } from '@/components/layout/Navigation';
-import { Footer } from '@/components/layout/Footer';
-import { ProjectDetailSection } from '@/components/sections/ProjectDetailSection';
-import { projects } from '@/constants/projects';
+import { notFound } from "next/navigation";
+import { Navigation } from "@/components/layout/Navigation";
+import { Footer } from "@/components/layout/Footer";
+import { ProjectDetailSection } from "@/components/sections/ProjectDetailSection";
+import { fetchPublicProjectById, fetchPublicProjects } from "@/lib/web-api";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -11,7 +11,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const project = projects.find((item) => item.id === id);
+  const project = await fetchPublicProjectById(id);
   const projectName = project?.title ?? id;
 
   return {
@@ -22,10 +22,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { id } = await params;
-  const project = projects.find((item) => item.id === id);
+  const project = await fetchPublicProjectById(id);
 
   if (!project) {
-    notFound();
+    const fallbackProjects = await fetchPublicProjects();
+    const fallbackProject = fallbackProjects.find((item) => item.id === id);
+    if (!fallbackProject) {
+      notFound();
+    }
+
+    return (
+      <>
+        <Navigation />
+        <main>
+          <ProjectDetailSection project={fallbackProject} />
+        </main>
+        <Footer />
+      </>
+    );
   }
 
   return (

@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
 import { projects, type ProjectCategory } from "@/constants/projects";
+import type { ProjectItem } from "@/constants/projects";
+import { fetchPublicProjectsPage } from "@/lib/web-api";
 
 const tabs: ProjectCategory[] = ["전체", "iOS", "AOS", "WEB"];
 
@@ -23,8 +25,9 @@ const Banner = styled.div({
   overflow: "hidden",
   padding: "160px 320px 80px",
   minHeight: "330px",
+  backgroundColor: "#02111f",
   backgroundImage:
-    "url('https://www.figma.com/api/mcp/asset/6f928e32-36e6-4c5d-886d-63789ff48cea')",
+    "linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%), url('https://www.figma.com/api/mcp/asset/6f928e32-36e6-4c5d-886d-63789ff48cea')",
   backgroundSize: "cover",
   backgroundPosition: "center",
 
@@ -222,13 +225,90 @@ const Arrow = styled.span({
   fontSize: "18px",
 });
 
-export const ProjectListPageSection = () => {
-  const [activeTab, setActiveTab] = useState<ProjectCategory>("전체");
+type Props = {
+  initialItems?: ProjectItem[];
+  initialNextCursor?: string | null;
+};
 
-  const filtered = useMemo(() => {
-    if (activeTab === "전체") return projects;
-    return projects.filter((project) => project.category === activeTab);
-  }, [activeTab]);
+const PaginationButton = styled.button<{ disabled?: boolean }>(({ disabled }) => ({
+  border: "none",
+  background: "transparent",
+  color: disabled ? "#9aa8bb" : "#cad5e2",
+  fontSize: "18px",
+  cursor: disabled ? "not-allowed" : "pointer",
+}));
+
+const toApiPlatform = (tab: ProjectCategory): "IOS" | "AOS" | "WEB" | undefined => {
+  if (tab === "전체") return undefined;
+  if (tab === "iOS") return "IOS";
+  return tab;
+};
+
+export const ProjectListPageSection = ({
+  initialItems = projects,
+  initialNextCursor = null,
+}: Props) => {
+  const [activeTab, setActiveTab] = useState<ProjectCategory>("전체");
+  const [projectItems, setProjectItems] = useState<ProjectItem[]>(initialItems);
+  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
+  const [cursorHistory, setCursorHistory] = useState<Array<string | null>>([null]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadFirstPage = async (tab: ProjectCategory) => {
+    setIsLoading(true);
+    try {
+      const page = await fetchPublicProjectsPage({
+        platform: toApiPlatform(tab),
+        limit: 9,
+      });
+      setProjectItems(page.items);
+      setNextCursor(page.nextCursor);
+      setCursorHistory([null]);
+      setCurrentPage(1);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadNextPage = async () => {
+    if (!nextCursor || isLoading) return;
+    setIsLoading(true);
+    try {
+      const page = await fetchPublicProjectsPage({
+        platform: toApiPlatform(activeTab),
+        limit: 9,
+        cursor: nextCursor,
+      });
+      setProjectItems(page.items);
+      setCursorHistory((prev) => [...prev, nextCursor]);
+      setNextCursor(page.nextCursor);
+      setCurrentPage((prev) => prev + 1);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadPrevPage = async () => {
+    if (cursorHistory.length <= 1 || isLoading) return;
+    const prevHistory = [...cursorHistory];
+    prevHistory.pop();
+    const prevCursor = prevHistory[prevHistory.length - 1] ?? null;
+    setIsLoading(true);
+    try {
+      const page = await fetchPublicProjectsPage({
+        platform: toApiPlatform(activeTab),
+        limit: 9,
+        cursor: prevCursor ?? undefined,
+      });
+      setProjectItems(page.items);
+      setNextCursor(page.nextCursor);
+      setCursorHistory(prevHistory);
+      setCurrentPage((prev) => Math.max(1, prev - 1));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Section>
@@ -247,14 +327,18 @@ export const ProjectListPageSection = () => {
                 role="tab"
                 active={activeTab === tab}
                 aria-selected={activeTab === tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  if (activeTab === tab) return;
+                  setActiveTab(tab);
+                  void loadFirstPage(tab);
+                }}
               >
                 {tab}
               </Tab>
             ))}
           </TabList>
           <Grid>
-            {filtered.map((project) => (
+            {projectItems.map((project) => (
               <CardLink key={project.id} href={`/project/${project.id}`}>
                 <Card>
                   <CardThumbnail>
@@ -273,13 +357,13 @@ export const ProjectListPageSection = () => {
             ))}
           </Grid>
           <Pagination aria-label="프로젝트 페이지네이션">
-            <Arrow>‹</Arrow>
-            <span style={{ color: "#525252" }}>1</span>
-            <span>2</span>
-            <span>3</span>
-            <span>4</span>
-            <span>5</span>
-            <Arrow>›</Arrow>
+            <PaginationButton onClick={loadPrevPage} disabled={cursorHistory.length <= 1 || isLoading}>
+              <Arrow>‹</Arrow>
+            </PaginationButton>
+            <span style={{ color: "#525252" }}>{currentPage}</span>
+            <PaginationButton onClick={loadNextPage} disabled={!nextCursor || isLoading}>
+              <Arrow>›</Arrow>
+            </PaginationButton>
           </Pagination>
         </Body>
       </ContentSection>
