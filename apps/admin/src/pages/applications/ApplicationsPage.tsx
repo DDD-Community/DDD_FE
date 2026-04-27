@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { api } from "@ddd/api"
+import { getApiClient } from "@ddd/api"
 import { Button, Input, Table, Select, ListBox } from "@heroui/react"
 
 import { Title, Description } from "@/widgets/heading"
@@ -21,7 +21,7 @@ import {
 
 const getApplicationData = async () => {
   try {
-    const data = await api.get<ApplicationInfo[]>("/application")
+    const data = await getApiClient().get<ApplicationInfo[]>("/application")
     return data
   } catch (error) {
     console.error("Failed to fetch application data:", error)

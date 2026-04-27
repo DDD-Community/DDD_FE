@@ -10,7 +10,11 @@ import { ThemeProvider } from "@/app/providers/ThemeProvider.tsx"
 
 const apiUrl = import.meta.env.VITE_API_URL
 if (!apiUrl) throw new Error("VITE_API_URL is not set")
-configureApi(apiUrl)
+configureApi(apiUrl, {
+  onUnauthorized: () => {
+    window.location.replace("/");
+  },
+})
 
 async function enableMocking() {
   if (import.meta.env.DEV && import.meta.env.VITE_MSW_ENABLED === "true") {

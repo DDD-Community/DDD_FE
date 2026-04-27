@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { api } from "@ddd/api"
+import { getApiClient } from "@ddd/api"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
@@ -20,7 +20,7 @@ import { SemesterRegisterDrawer } from "./SemesterRegisterDrawer"
 
 const getSemesterData = async () => {
   try {
-    return await api.get<SemesterInfo[]>("/semester")
+    return await getApiClient().get<SemesterInfo[]>("/semester")
   } catch (error) {
     console.error("Failed to fetch semester data:", error)
   }
