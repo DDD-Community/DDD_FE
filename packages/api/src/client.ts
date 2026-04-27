@@ -1,91 +1,27 @@
 import { ApiError } from "./errors";
 import type { ApiResponse } from "./types";
 
-let _baseUrl: string | null = null;
-
-export function configureApi(baseUrl: string): void {
-  _baseUrl = baseUrl;
+export interface ApiClientConfig {
+  baseUrl: string;
+  credentials?: RequestCredentials;
+  refreshTokenPath?: string;
+  onUnauthorized?: () => void;
 }
 
-function getBaseUrl(): string {
-  if (_baseUrl && _baseUrl.trim() !== "") {
-    return _baseUrl;
-  }
-  throw new Error(
-    "API base URL is not configured. Call configureApi(baseUrl) before using the api client.",
-  );
+export interface ApiRequestOptions extends Omit<RequestInit, "body" | "method"> {
+  responseType?: "json" | "blob" | "text";
 }
 
-// URL 생성 로직을 별도 함수로 분리, '/' 신경쓰지않아도 되도록 수정
-function buildUrl(path: string): string {
-  const baseUrl = getBaseUrl();
-  return new URL(path, baseUrl).toString();
+export interface ApiClient {
+  get: <T>(path: string, options?: ApiRequestOptions) => Promise<T>;
+  post: <T>(path: string, body: unknown, options?: ApiRequestOptions) => Promise<T>;
+  patch: <T>(path: string, body: unknown, options?: ApiRequestOptions) => Promise<T>;
+  put: <T>(path: string, body: unknown, options?: ApiRequestOptions) => Promise<T>;
+  delete: <T>(path: string, options?: ApiRequestOptions) => Promise<T>;
 }
 
-export async function apiFetch<T>(
-  path: string,
-  init?: RequestInit,
-  signal?: AbortSignal,
-): Promise<T> {
-  /**
-   * 기본값은 application/json, 필요에 따라 다른 헤더 추가 가능 및, Content-Type 변경 가능하도록 구현
-   */
-  const method = (init?.method || "GET").toUpperCase();
-  const hasRequestBody = init?.body !== undefined && init?.body !== null;
-  const methodCanHaveBody = ["POST", "PATCH", "PUT"].includes(method);
-  const headers = new Headers(init?.headers);
-
-  // FormData인 경우 Content-Type을 자동으로 설정,
-  // 그렇지 않은 경우, body를 가질 수 있는 메서드이거나 body가 존재하는 경우 application/json으로 설정
-  if (
-    !headers.has("Content-Type") &&
-    !(init?.body instanceof FormData) &&
-    (methodCanHaveBody || hasRequestBody)
-  ) {
-    headers.set("Content-Type", "application/json");
-  }
-  const res = await fetch(buildUrl(path), {
-    ...init,
-    headers,
-    signal,
-  });
-
-  const contentType = res.headers.get("Content-Type") || "";
-  const isJsonResponse = contentType.includes("application/json");
-
-  if (res.status === 204 || res.headers.get("content-length") === "0") {
-    if (!res.ok) {
-      throw new ApiError("UNKNOWN_ERROR", "No content returned from the server.");
-    }
-    return null as T;
-  }
-
-  let body: ApiResponse<T>;
-
-  if (isJsonResponse) {
-    try {
-      body = (await res.json()) as ApiResponse<T>;
-    } catch (error) {
-      throw new ApiError("UNKNOWN_ERROR", error instanceof Error ? error.message : String(error));
-    }
-  } else {
-    const text = await res.text().catch(() => "");
-    const message = text || "Unexpected response format from the server.";
-    throw new ApiError("UNKNOWN_ERROR", message);
-  }
-
-  if (body.code !== "SUCCESS") {
-    throw new ApiError(body.code || "UNKNOWN_ERROR", body.message);
-  }
-
-  return body.data as T;
-}
-
-// JSON일 때만 stringify하고, 나머지는 그대로 보내도록 구현
 function resolveBody(body: unknown): BodyInit | undefined {
-  if (body === undefined || body === null) {
-    return undefined;
-  }
+  if (body === undefined || body === null) return undefined;
   if (
     body instanceof FormData ||
     body instanceof Blob ||
@@ -97,17 +33,163 @@ function resolveBody(body: unknown): BodyInit | undefined {
   return JSON.stringify(body);
 }
 
-export const api = {
-  get: <T>(path: string, init?: RequestInit) => apiFetch<T>(path, { ...init, method: "GET" }),
+export function createApiClient(config: ApiClientConfig): ApiClient {
+  const {
+    baseUrl,
+    credentials = "same-origin",
+    refreshTokenPath = "/api/v1/auth/refresh",
+    onUnauthorized,
+  } = config;
 
-  post: <T>(path: string, body: BodyInit | FormData | string | null, init?: RequestInit) =>
-    apiFetch<T>(path, { ...init, method: "POST", body: resolveBody(body) }),
+  let isRefreshing = false;
+  let waitQueue: Array<{ resolve: () => void; reject: (err: unknown) => void }> = [];
 
-  patch: <T>(path: string, body: BodyInit | FormData | string | null, init?: RequestInit) =>
-    apiFetch<T>(path, { ...init, method: "PATCH", body: resolveBody(body) }),
+  function buildUrl(path: string): string {
+    return new URL(path, baseUrl).toString();
+  }
 
-  put: <T>(path: string, body: BodyInit | FormData | string | null, init?: RequestInit) =>
-    apiFetch<T>(path, { ...init, method: "PUT", body: resolveBody(body) }),
+  async function doRefresh(): Promise<void> {
+    const res = await fetch(buildUrl(refreshTokenPath), {
+      method: "POST",
+      credentials,
+    });
+    if (!res.ok) throw new Error("Token refresh failed");
+  }
 
-  delete: <T>(path: string, init?: RequestInit) => apiFetch<T>(path, { ...init, method: "DELETE" }),
-};
+  async function parseResponse<T>(
+    res: Response,
+    responseType: "json" | "blob" | "text",
+  ): Promise<T> {
+    if (responseType === "blob") return res.blob() as unknown as T;
+    if (responseType === "text") return res.text() as unknown as T;
+
+    if (res.status === 204 || res.headers.get("content-length") === "0") {
+      if (!res.ok) throw new ApiError("UNKNOWN_ERROR", "No content returned from the server.");
+      return null as T;
+    }
+
+    const contentType = res.headers.get("Content-Type") ?? "";
+    if (!contentType.includes("application/json")) {
+      const text = await res.text().catch(() => "");
+      throw new ApiError("UNKNOWN_ERROR", text || "Unexpected response format from the server.");
+    }
+
+    let body: ApiResponse<T>;
+    try {
+      body = (await res.json()) as ApiResponse<T>;
+    } catch (error) {
+      throw new ApiError(
+        "UNKNOWN_ERROR",
+        error instanceof Error ? error.message : String(error),
+      );
+    }
+
+    if (body.code !== "SUCCESS") {
+      throw new ApiError(body.code ?? "UNKNOWN_ERROR", body.message);
+    }
+
+    return body.data as T;
+  }
+
+  async function execute<T>(
+    path: string,
+    method: string,
+    body?: unknown,
+    options?: ApiRequestOptions,
+    isRetry = false,
+  ): Promise<T> {
+    const { responseType = "json", signal, headers: optHeaders, ...restOptions } =
+      options ?? {};
+
+    const headers = new Headers(optHeaders as HeadersInit | undefined);
+    const hasBody = body !== undefined && body !== null;
+    const methodCanHaveBody = ["POST", "PATCH", "PUT"].includes(method);
+
+    if (
+      !headers.has("Content-Type") &&
+      !(body instanceof FormData) &&
+      (methodCanHaveBody || hasBody)
+    ) {
+      headers.set("Content-Type", "application/json");
+    }
+
+    const res = await fetch(buildUrl(path), {
+      ...restOptions,
+      method,
+      body: resolveBody(body),
+      headers,
+      credentials,
+      signal,
+    });
+
+    if (res.status === 401 && !isRetry) {
+      return handleUnauthorized<T>(path, method, body, options);
+    }
+
+    if (res.status === 401) {
+      onUnauthorized?.();
+      throw new ApiError("UNAUTHORIZED", "Session expired. Please log in again.");
+    }
+
+    return parseResponse<T>(res, responseType);
+  }
+
+  async function handleUnauthorized<T>(
+    path: string,
+    method: string,
+    body?: unknown,
+    options?: ApiRequestOptions,
+  ): Promise<T> {
+    if (isRefreshing) {
+      await new Promise<void>((resolve, reject) => {
+        waitQueue.push({ resolve, reject });
+      });
+      return execute<T>(path, method, body, options, true);
+    }
+
+    isRefreshing = true;
+    try {
+      await doRefresh();
+      waitQueue.forEach(({ resolve }) => resolve());
+      return execute<T>(path, method, body, options, true);
+    } catch (err) {
+      waitQueue.forEach(({ reject }) => reject(err));
+      onUnauthorized?.();
+      throw new ApiError("UNAUTHORIZED", "Session expired. Please log in again.");
+    } finally {
+      isRefreshing = false;
+      waitQueue = [];
+    }
+  }
+
+  return {
+    get: <T>(path: string, options?: ApiRequestOptions) =>
+      execute<T>(path, "GET", undefined, options),
+    post: <T>(path: string, body: unknown, options?: ApiRequestOptions) =>
+      execute<T>(path, "POST", body, options),
+    patch: <T>(path: string, body: unknown, options?: ApiRequestOptions) =>
+      execute<T>(path, "PATCH", body, options),
+    put: <T>(path: string, body: unknown, options?: ApiRequestOptions) =>
+      execute<T>(path, "PUT", body, options),
+    delete: <T>(path: string, options?: ApiRequestOptions) =>
+      execute<T>(path, "DELETE", undefined, options),
+  };
+}
+
+let _apiClient: ApiClient | undefined;
+
+export function getApiClient(): ApiClient {
+  if (!_apiClient) {
+    throw new Error(
+      "API client is not configured. Call configureApi(baseUrl) before using the api client.",
+    );
+  }
+  return _apiClient;
+}
+
+export function configureApi(
+  baseUrl: string,
+  options?: Omit<ApiClientConfig, "baseUrl">,
+): void {
+  _apiClient = createApiClient({ baseUrl, ...options });
+}
