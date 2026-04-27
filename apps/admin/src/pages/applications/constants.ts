@@ -1,86 +1,32 @@
-import type {
-  ApplicationCohort,
-  ApplicationPart,
-  ApplicationStatus,
-} from "./types"
+/** 백엔드 ApplicationGetAdminListStatus — generated 타입 미생성 시 로컬 정의 */
+export type ApplicationStatus =
+  | "서류심사대기"
+  | "서류합격"
+  | "서류불합격"
+  | "최종합격"
+  | "최종불합격"
+  | "활동중"
+  | "활동완료"
+  | "활동중단"
 
-export const PART_LABEL: Record<ApplicationPart, string> = {
-  pm: "PM",
-  pd: "PD",
-  web: "Web",
-  server: "Server",
-  ios: "iOS",
-  android: "Android",
+/** 다음 단계 진행 맵 — null이면 종결 상태 */
+export const NEXT_STATUS: Record<ApplicationStatus, ApplicationStatus | null> = {
+  서류심사대기: "서류합격",
+  서류합격: "최종합격",
+  최종합격: "활동중",
+  활동중: "활동완료",
+  서류불합격: null,
+  최종불합격: null,
+  활동완료: null,
+  활동중단: null,
 }
 
-export const STATUS_LABEL: Record<ApplicationStatus, string> = {
-  doc_pending: "서류대기",
-  doc_passed: "서류합격",
-  doc_failed: "서류불합격",
-  interview_pending: "면접대기",
-  interview_passed: "면접합격",
-  interview_failed: "면접불합격",
-  active: "활동중",
-  suspended: "활동중단",
-  completed: "활동종료",
-}
-
-export const COHORT_FILTER_OPTIONS = [
-  "전체 기수",
-  "12기",
-  "13기",
-  "14기",
-] as const
-
-export const PART_FILTER_OPTIONS = [
-  "전체 파트",
-  "PM",
-  "PD",
-  "Web",
-  "Server",
-  "iOS",
-  "Android",
-] as const
-
-export const STATUS_FILTER_OPTIONS = [
-  "전체 상태",
-  "서류대기",
-  "서류합격",
-  "서류불합격",
-  "면접대기",
-  "면접합격",
-  "면접불합격",
-  "활동중",
-  "활동중단",
-  "활동종료",
-] as const
-
-export const COHORT_FILTER_MAP: Record<string, ApplicationCohort | null> = {
-  "전체 기수": null,
-  "12기": "12",
-  "13기": "13",
-  "14기": "14",
-}
-
-export const PART_FILTER_MAP: Record<string, ApplicationPart | null> = {
-  "전체 파트": null,
-  PM: "pm",
-  PD: "pd",
-  Web: "web",
-  Server: "server",
-  iOS: "ios",
-  Android: "android",
-}
-
-export const STATUS_FILTER_MAP: Record<string, ApplicationStatus | null> = {
-  "전체 상태": null,
-  서류대기: "doc_pending",
-  서류합격: "doc_passed",
-  서류불합격: "doc_failed",
-  면접대기: "interview_pending",
-  면접합격: "interview_passed",
-  면접불합격: "interview_failed",
-  활동중: "active",
-  활동중단: "suspended",
-  활동종료: "completed",
+/** 백엔드 파트 enum → 운영진 친숙 표시명 */
+export const PART_LABEL: Record<string, string> = {
+  PM: "PM",
+  PD: "PD",
+  BE: "Server",
+  FE: "Web",
+  IOS: "iOS",
+  AND: "Android",
 }

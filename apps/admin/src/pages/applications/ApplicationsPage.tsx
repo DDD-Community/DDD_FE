@@ -1,60 +1,95 @@
 import { useMemo, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { getApiClient } from "@ddd/api"
-import { Button, Input, Table, Select, ListBox } from "@heroui/react"
-
-import { Title, Description } from "@/widgets/heading"
-import { GridBox } from "@/shared/ui/GridBox"
-import { FlexBox } from "@/shared/ui/FlexBox"
-
-import type { ApplicationInfo } from "./types"
 import {
-  PART_LABEL,
-  STATUS_LABEL,
-  COHORT_FILTER_OPTIONS,
-  COHORT_FILTER_MAP,
-  PART_FILTER_OPTIONS,
-  PART_FILTER_MAP,
-  STATUS_FILTER_OPTIONS,
-  STATUS_FILTER_MAP,
-} from "./constants"
+  useAdminApplications,
+  useCohorts,
+  type CohortDto,
+  type ApplicationDto,
+} from "@ddd/api"
+import { Title, Description } from "@/widgets/heading"
+import { CardSection } from "./components/Sections"
+import { ApplicationFilters } from "./components/ApplicationFilters"
+import { ApplicationTable } from "./components/ApplicationTable"
+import type { ApplicationStatus } from "./constants"
 
-const getApplicationData = async () => {
-  try {
-    const data = await getApiClient().get<ApplicationInfo[]>("/application")
-    return data
-  } catch (error) {
-    console.error("Failed to fetch application data:", error)
-  }
+const pickLatestCohortId = (cohorts: CohortDto[]): number | undefined => {
+  if (cohorts.length === 0) return undefined
+  return [...cohorts].sort(
+    (a, b) =>
+      new Date(b.recruitStartAt).getTime() - new Date(a.recruitStartAt).getTime() ||
+      b.id - a.id
+  )[0].id
 }
 
-/** 지원자 관리 페이지 */
+/**
+ * undefined = "아직 사용자가 선택하지 않음(→ 최신 기수 자동 적용)"
+ * null      = 사용자가 명시적으로 "전체 기수" 선택
+ */
 export default function ApplicationsPage() {
   const [searchText, setSearchText] = useState("")
-  const [cohortFilter, setCohortFilter] = useState<string>("전체 기수")
-  const [partFilter, setPartFilter] = useState<string>("전체 파트")
-  const [statusFilter, setStatusFilter] = useState<string>("전체 상태")
+  const [selectedCohortId, setSelectedCohortId] = useState<number | null | undefined>(undefined)
+  const [selectedCohortPartId, setSelectedCohortPartId] = useState<number | undefined>(undefined)
+  const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus | undefined>(undefined)
 
-  const { data: applications } = useQuery({
-    queryKey: ["applications"],
-    queryFn: getApplicationData,
+  const { data: cohorts } = useCohorts()
+  const cohortList = useMemo(() => cohorts ?? [], [cohorts])
+
+  // undefined(미선택) → 최신 기수 자동 적용, null → 전체 기수
+  const effectiveCohortId = useMemo(
+    () => (selectedCohortId === undefined ? pickLatestCohortId(cohortList) : selectedCohortId ?? undefined),
+    [selectedCohortId, cohortList]
+  )
+
+  // 카드용 쿼리 — status 제외, 기수/파트만
+  const { data: cardApplications } = useAdminApplications({
+    params: {
+      ...(effectiveCohortId !== undefined && { cohortId: effectiveCohortId }),
+      ...(selectedCohortPartId !== undefined && { cohortPartId: selectedCohortPartId }),
+    },
   })
 
-  const filteredApplications = useMemo(() => {
-    const source = applications ?? []
-    const targetCohort = COHORT_FILTER_MAP[cohortFilter]
-    const targetPart = PART_FILTER_MAP[partFilter]
-    const targetStatus = STATUS_FILTER_MAP[statusFilter]
+  // 표용 쿼리 — 모든 필터 적용
+  const { data: tableApplications } = useAdminApplications({
+    params: {
+      ...(effectiveCohortId !== undefined && { cohortId: effectiveCohortId }),
+      ...(selectedCohortPartId !== undefined && { cohortPartId: selectedCohortPartId }),
+      ...(selectedStatus !== undefined && { status: selectedStatus as string }),
+    },
+  })
 
-    return source
-      .filter(
-        (item) =>
-          item.name.includes(searchText) || item.email.includes(searchText)
-      )
-      .filter((item) => targetCohort === null || item.cohort === targetCohort)
-      .filter((item) => targetPart === null || item.part === targetPart)
-      .filter((item) => targetStatus === null || item.status === targetStatus)
-  }, [applications, searchText, cohortFilter, partFilter, statusFilter])
+  const cardList: ApplicationDto[] = useMemo(() => cardApplications ?? [], [cardApplications])
+  const tableList: ApplicationDto[] = useMemo(() => tableApplications ?? [], [tableApplications])
+
+  // 클라이언트 검색 필터 (이름 + 연락처)
+  const filteredApplications = useMemo(
+    () =>
+      searchText.trim() === ""
+        ? tableList
+        : tableList.filter(
+            (app) =>
+              app.applicantName.includes(searchText) ||
+              (app.applicantPhone?.includes(searchText) ?? false)
+          ),
+    [tableList, searchText]
+  )
+
+  // 카드 카운트 산출
+  const counts = useMemo(() => {
+    const acc: Partial<Record<ApplicationStatus, number>> = {}
+    for (const app of cardList) {
+      const s = app.status as ApplicationStatus
+      acc[s] = (acc[s] ?? 0) + 1
+    }
+    return acc
+  }, [cardList])
+
+  const selectedCohort = cohortList.find((c) => c.id === effectiveCohortId)
+  const contextLabel = selectedCohort ? `${selectedCohort.name} 기준` : "전체 기수 합산"
+
+  const handleCohortChange = (id: number | undefined) => {
+    // undefined → "전체 기수" 선택으로 null 저장
+    setSelectedCohortId(id ?? null)
+    setSelectedCohortPartId(undefined) // 기수 변경 시 파트 초기화
+  }
 
   return (
     <div className="w-full space-y-5 p-5">
@@ -62,165 +97,30 @@ export default function ApplicationsPage() {
         <Title title="지원자 관리" />
         <Description title="지원서를 검토하고 상태를 변경합니다." />
       </header>
-      <CardSection total={applications?.length ?? 0} />
+
+      <CardSection
+        total={cardList.length}
+        counts={counts}
+        contextLabel={contextLabel}
+      />
 
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
-        <FlexBox className="justify-between">
-          <Input
-            variant="secondary"
-            placeholder="이름 또는 이메일 검색..."
-            className="max-w-xs"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <FlexBox className="gap-2">
-            <Select
-              variant="secondary"
-              className="max-w-36"
-              aria-label="기수 필터"
-            >
-              <Select.Trigger>
-                <Select.Value>{cohortFilter}</Select.Value>
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover>
-                <ListBox>
-                  {COHORT_FILTER_OPTIONS.map((option) => (
-                    <ListBox.Item
-                      key={option}
-                      id={option}
-                      textValue={option}
-                      onClick={() => setCohortFilter(option)}
-                    >
-                      {option}
-                    </ListBox.Item>
-                  ))}
-                </ListBox>
-              </Select.Popover>
-            </Select>
-            <Select
-              variant="secondary"
-              className="max-w-36"
-              aria-label="파트 필터"
-            >
-              <Select.Trigger>
-                <Select.Value>{partFilter}</Select.Value>
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover>
-                <ListBox>
-                  {PART_FILTER_OPTIONS.map((option) => (
-                    <ListBox.Item
-                      key={option}
-                      id={option}
-                      textValue={option}
-                      onClick={() => setPartFilter(option)}
-                    >
-                      {option}
-                    </ListBox.Item>
-                  ))}
-                </ListBox>
-              </Select.Popover>
-            </Select>
-            <Select
-              variant="secondary"
-              className="max-w-36"
-              aria-label="상태 필터"
-            >
-              <Select.Trigger>
-                <Select.Value>{statusFilter}</Select.Value>
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover>
-                <ListBox>
-                  {STATUS_FILTER_OPTIONS.map((option) => (
-                    <ListBox.Item
-                      key={option}
-                      id={option}
-                      textValue={option}
-                      onClick={() => setStatusFilter(option)}
-                    >
-                      {option}
-                    </ListBox.Item>
-                  ))}
-                </ListBox>
-              </Select.Popover>
-            </Select>
-          </FlexBox>
-        </FlexBox>
-
-        <Table>
-          <Table.ScrollContainer>
-            <Table.Content aria-label="지원자 목록" className="min-w-[800px]">
-              <Table.Header>
-                <Table.Column isRowHeader>이름</Table.Column>
-                <Table.Column>이메일</Table.Column>
-                <Table.Column>파트</Table.Column>
-                <Table.Column>지원 기수</Table.Column>
-                <Table.Column>지원일</Table.Column>
-                <Table.Column>상태</Table.Column>
-                <Table.Column>액션</Table.Column>
-              </Table.Header>
-              <Table.Body>
-                {filteredApplications.map((application) => (
-                  <Table.Row key={application.id}>
-                    <Table.Cell>{application.name}</Table.Cell>
-                    <Table.Cell>{application.email}</Table.Cell>
-                    <Table.Cell>{PART_LABEL[application.part]}</Table.Cell>
-                    <Table.Cell>{application.semester}</Table.Cell>
-                    <Table.Cell>
-                      {new Date(application.appliedAt).toLocaleDateString(
-                        "ko-KR"
-                      )}
-                    </Table.Cell>
-                    <Table.Cell>{STATUS_LABEL[application.status]}</Table.Cell>
-                    <Table.Cell>
-                      <Button size="sm" variant="outline" className="mr-2">
-                        수정
-                      </Button>
-                      <Button size="sm">합격 처리</Button>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table.Content>
-          </Table.ScrollContainer>
-        </Table>
+        <ApplicationFilters
+          searchText={searchText}
+          onSearchChange={setSearchText}
+          cohorts={cohortList}
+          selectedCohortId={effectiveCohortId}
+          onCohortChange={handleCohortChange}
+          selectedCohortPartId={selectedCohortPartId}
+          onCohortPartChange={setSelectedCohortPartId}
+          selectedStatus={selectedStatus}
+          onStatusChange={setSelectedStatus}
+        />
+        <ApplicationTable
+          applications={filteredApplications}
+          cohorts={cohortList}
+        />
       </div>
     </div>
-  )
-}
-
-type CardSectionProps = { total: number }
-
-const CardSection = ({ total }: CardSectionProps) => {
-  return (
-    <GridBox className="grid-cols-5 gap-5">
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
-        <h3 className="font-semibold text-gray-700">전체 지원</h3>
-        <p className="text-2xl font-bold">{total}명</p>
-        <p className="text-sm text-gray-500">14기 기준</p>
-      </div>
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
-        <h3 className="font-semibold text-gray-700">대기</h3>
-        <p className="text-2xl font-bold">서류 대기</p>
-        <p className="text-sm text-gray-500">검토 필요</p>
-      </div>
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
-        <h3 className="font-semibold text-gray-700">면접 대기</h3>
-        <p className="text-2xl font-bold">18명</p>
-        <p className="text-sm text-gray-500">면접 대상자</p>
-      </div>
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
-        <h3 className="font-semibold text-gray-700">면접 합격</h3>
-        <p className="text-2xl font-bold">18명</p>
-        <p className="text-sm text-gray-500">활동 예정</p>
-      </div>
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
-        <h3 className="font-semibold text-gray-700">활동중</h3>
-        <p className="text-2xl font-bold">0명</p>
-        <p className="text-sm text-gray-500">현재 활동</p>
-      </div>
-    </GridBox>
   )
 }

@@ -1,66 +1,39 @@
 import { GridBox } from "@/shared/ui/GridBox"
 import { Card } from "@heroui/react"
+import type { ApplicationStatus } from "../constants"
 
-type CardSectionProps = { total: number }
+type CardSectionProps = {
+  total: number
+  counts: Partial<Record<ApplicationStatus, number>>
+  contextLabel: string
+}
 
-export const CardSection = ({ total }: CardSectionProps) => {
+export const CardSection = ({ total, counts, contextLabel }: CardSectionProps) => {
+  const cards: { title: string; key: ApplicationStatus | "total" }[] = [
+    { title: "전체 지원", key: "total" },
+    { title: "서류심사대기", key: "서류심사대기" },
+    { title: "서류합격", key: "서류합격" },
+    { title: "최종합격", key: "최종합격" },
+    { title: "활동중", key: "활동중" },
+  ]
+
   return (
     <GridBox className="grid-cols-5 gap-5">
-      <Card>
-        <Card.Header>
-          <Card.Title className="text-xs font-bold">전체 지원</Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <p className="text-xl font-semibold">{total}명</p>
-        </Card.Content>
-        <Card.Footer>
-          <span className="text-muted-foreground text-xs">14기 기준</span>
-        </Card.Footer>
-      </Card>
-      <Card>
-        <Card.Header>
-          <Card.Title className="text-xs font-bold">대기</Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <p className="text-xl font-semibold">서류 대기</p>
-        </Card.Content>
-        <Card.Footer>
-          <span className="text-muted-foreground text-xs">검토 필요</span>
-        </Card.Footer>
-      </Card>
-      <Card>
-        <Card.Header>
-          <Card.Title className="text-xs font-bold">면접 대기</Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <p className="text-xl font-semibold">18명</p>
-        </Card.Content>
-        <Card.Footer>
-          <span className="text-muted-foreground text-xs">면접 대상자</span>
-        </Card.Footer>
-      </Card>
-      <Card>
-        <Card.Header>
-          <Card.Title className="text-xs font-bold">면접 합격</Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <p className="text-xl font-semibold">18명</p>
-        </Card.Content>
-        <Card.Footer>
-          <span className="text-muted-foreground text-xs">활동 예정</span>
-        </Card.Footer>
-      </Card>
-      <Card>
-        <Card.Header>
-          <Card.Title className="text-xs font-bold">활동중</Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <p className="text-xl font-semibold">0명</p>
-        </Card.Content>
-        <Card.Footer>
-          <span className="text-muted-foreground text-xs">현재 활동</span>
-        </Card.Footer>
-      </Card>
+      {cards.map(({ title, key }) => (
+        <Card key={title}>
+          <Card.Header>
+            <Card.Title className="text-xs font-bold">{title}</Card.Title>
+          </Card.Header>
+          <Card.Content>
+            <p className="text-xl font-semibold">
+              {key === "total" ? total : (counts[key as ApplicationStatus] ?? 0)}명
+            </p>
+          </Card.Content>
+          <Card.Footer>
+            <span className="text-muted-foreground text-xs">{contextLabel}</span>
+          </Card.Footer>
+        </Card>
+      ))}
     </GridBox>
   )
 }
