@@ -1,7 +1,6 @@
 import type { RequestHandler } from "msw"
 
 import { semesterHandlers } from "@/pages/semesters/mockApi"
-import { applicationHandlers } from "@/pages/applications/mockApi"
 
 /**
  * MSW 핸들러 목록
@@ -12,5 +11,4 @@ import { applicationHandlers } from "@/pages/applications/mockApi"
  */
 export const handlers: RequestHandler[] = [
   ...semesterHandlers,
-  ...applicationHandlers,
 ]
