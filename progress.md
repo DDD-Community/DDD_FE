@@ -54,9 +54,20 @@
 
 **미구현**
 
-- ⬜ Google OAuth 실제 연결 (`pages/login/LoginPage.tsx` UI만 존재)
-- ⬜ 인증 보호 라우트 (`shared/lib/auth.ts` TODO 상태)
 - ⬜ 실제 백엔드 API 연동 (orval 생성 코드 → `@ddd/api`)
+
+**완료 (이번 라운드 추가)**
+
+- ✅ Google OAuth 실제 연결 — `LoginPage` 가 `${VITE_API_URL}/api/v1/auth/google` 로 외부 redirect, 백엔드가 `CLIENT_REDIRECT_URL` 로 되돌림 (httpOnly 쿠키)
+- ✅ 인증 보호 라우트 (Minimal) — 별도 loader 가드 없이 `client.ts` 401 인터셉터 + `main.tsx` `onUnauthorized` 콜백에 위임. 401 발생 시 `/` 로 자동 redirect
+
+**비-목표 (별도 라운드)**
+
+- 회원가입 — 별도 흐름 없음 (Google OAuth 첫 로그인이 곧 가입)
+- 로그인 사용자 컨텍스트 (me 표시) — 백엔드 `/me` 엔드포인트 추가 후
+- 로그아웃 UI / 사이드바 footer — 별도 라운드
+- 회원 탈퇴 UI — 별도 라운드
+- 권한(roles) 기반 접근 제어 — 별도 라운드
 
 ---
 

@@ -20,7 +20,6 @@ src/
 ├── pages/                      # 페이지 레이어 (라우트 1:1 대응, 주요 feature 단위)
 │   ├── index.tsx               # 라우터 설정 (createBrowserRouter)
 │   ├── login/
-│   ├── sign-up/
 │   ├── applications/
 │   ├── semesters/
 │   ├── reminders/
@@ -105,7 +104,7 @@ pages/applications/
 └── types.d.ts                  # 임시 타입 (추후 `@ddd/api` 생성 타입으로 대체)
 ```
 
-- 파일이 하나뿐인 단순 페이지(`login`, `error`, `sign-up`)는 `{Feature}Page.tsx`만 두고 세부 폴더를 만들지 않는다.
+- 파일이 하나뿐인 단순 페이지(`login`, `error`)는 `{Feature}Page.tsx`만 두고 세부 폴더를 만들지 않는다.
 - 페이지 전용 Drawer/Modal 등 큰 서브 컴포넌트는 페이지 루트(`SemesterRegisterDrawer.tsx`) 또는 `components/` 하위에 둔다.
 
 ---
