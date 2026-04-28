@@ -27,9 +27,21 @@
 
 ### 3.1 프로젝트 구조
 
-1. **패키지 의존성**: 의존 방향은 앱에서 패키지로만 허용한다. (`apps/*` → `packages/ui`)
+1. **패키지 의존성**: 의존 방향은 앱에서 패키지로만 허용한다. (`apps/*` → `packages/*`)
 2. **공통 컴포넌트**: 여러 앱에서 사용하는 컴포넌트는 `@ddd/ui`에 작성한다.
 3. **앱 전용 컴포넌트**: 특정 앱에서만 사용하는 컴포넌트는 해당 앱의 `components/`에 작성한다.
+4. **FSD 레이어 의존성**: FSD 구조를 채택한 앱(`apps/admin`)은 다음 단방향 의존성을 강제한다.
+
+   ```
+   app → pages → widgets → entities → shared
+                                   ↘
+                                packages/api
+   ```
+
+   - `entities`는 **도메인 비즈니스 로직**(흐름 훅, 도메인 상수/타입)을 담당하며, `packages/api`와 `shared`만 import 한다.
+   - `entities`끼리는 서로 import 하지 않는다(도메인 결합 차단). 두 도메인을 묶는 흐름은 `widgets` 또는 `pages`의 책임이다.
+   - `entities` 하위 도메인 분류는 `packages/api/src/{domain}` 과 **1:1로 맞춘다** (예: `entities/auth/`, `entities/application/`).
+   - `entities/{domain}` 내부는 FSD 표준에 따라 `model/`(훅·상수·타입), `ui/`(도메인 전용 UI), `lib/`(도메인 유틸) 등 하위 폴더로 분류한다. 처음에는 `model/`만 두고 필요할 때 점진 확장한다.
 
 ### 3.2 React 컴포넌트
 
@@ -62,6 +74,18 @@
      return { user, isAuthenticated, setUser };
    };
    ```
+
+4. **훅 위치 분류**: 훅의 책임 범위에 따라 위치를 구분한다.
+
+   | 분류                                                                      | 위치                                       | 예시                                |
+   | ------------------------------------------------------------------------- | ------------------------------------------ | ----------------------------------- |
+   | **API 호출 훅** (mutation/query wrapper)                                  | `packages/api/src/{domain}/hooks.ts`       | `useLogout`, `useApplications`      |
+   | **비즈니스 흐름 훅** (API 호출 + 부수효과: toast, 라우팅, 캐시 정리 등)   | `apps/{app}/src/entities/{domain}/model/`  | `useLogoutFlow`                     |
+   | **UI/플랫폼 훅** (도메인 무관)                                            | `apps/{app}/src/shared/hooks/`             | `useIsMobile`, `useTheme`           |
+
+   - `packages/api`는 앱-agnostic을 유지한다. UI 라이브러리(`@heroui/react`), 라우터(`react-router`), 앱 전용 상수(`paths`)에 의존하는 훅은 packages에 둘 수 없다.
+   - 비즈니스 흐름 훅은 `entities/{domain}/model/`에 두고, `packages/api`의 API 호출 훅을 사용해 도메인별 흐름을 조립한다.
+   - 단일 페이지에서만 사용되는 임시 훅은 페이지 slice 내부(`pages/{feature}/`)에 두고, 같은 도메인의 흐름 훅이 여러 페이지/위젯에서 반복 등장하면 그 시점에 `entities`로 끌어올린다(YAGNI).
 
 ### 3.4 상태 관리
 

@@ -57,7 +57,7 @@ export const ApplicationTable = ({ applications, cohorts }: ApplicationTableProp
                 <Table.Row key={app.id}>
                   <Table.Cell>{app.applicantName}</Table.Cell>
                   <Table.Cell>{app.applicantPhone ?? "-"}</Table.Cell>
-                  <Table.Cell>{PART_LABEL[partName] ?? partName || "-"}</Table.Cell>
+                  <Table.Cell>{PART_LABEL[partName] || partName || "-"}</Table.Cell>
                   <Table.Cell>
                     {cohortNameById.get(app.cohortId) ?? "-"}
                   </Table.Cell>

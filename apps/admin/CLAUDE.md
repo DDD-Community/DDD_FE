@@ -39,13 +39,19 @@ src/
 │   └── admin-layout/
 │       └── AdminLayout.tsx     # 뷰포트에 따라 SideBar/MobileHeader + Outlet 구성
 │
+├── entities/                   # 도메인 모델 레이어 (비즈니스 흐름 훅, 도메인 상수/타입)
+│   └── {domain}/               # packages/api/src/{domain} 과 1:1 매핑 (auth, application, blog, ...)
+│       ├── model/              # 흐름 훅·상수·타입 (예: useLogoutFlow)
+│       ├── ui/                 # 도메인 전용 UI (필요 시)
+│       └── lib/                # 도메인 유틸 (필요 시)
+│
 ├── mocks/                      # MSW 목업 환경
 │   ├── browser.ts
 │   └── handlers.ts
 │
 └── shared/                     # 순수 공유 자원 레이어
     ├── ui/                     # UI 컴포넌트 (HeroUI 외 커스텀 프리미티브)
-    ├── hooks/                  # 범용 훅 (useIsMobile 등)
+    ├── hooks/                  # 범용 UI/플랫폼 훅 (useIsMobile 등) — 도메인 무관
     └── lib/                    # 유틸 함수 및 상수 (cn, paths, auth)
 ```
 
@@ -53,16 +59,27 @@ src/
 
 ## 레이어 규칙
 
-의존성 방향은 **단방향**으로 강제한다.
+의존성 방향은 **단방향**으로 강제한다. (자세한 정의: 루트 [CODE_RULES.md §3.1](../../CODE_RULES.md))
 
 ```
-pages → widgets → shared
-app   → pages
+app → pages → widgets → entities → shared
+                              ↘
+                          packages/api
 ```
 
-- 각 레이어는 자신보다 **아래** 레이어만 import할 수 있다.
+- 각 레이어는 자신보다 **아래** 레이어만 import 가능.
+- `entities`는 `packages/api` 와 `shared` 만 import 한다. `entities` 끼리는 **서로 import 금지** (도메인 결합 차단).
+- 두 도메인을 묶는 흐름은 `widgets` 또는 `pages` 의 책임이다.
 - `shared`는 어떤 레이어도 import하지 않는다.
 - `widgets`는 `pages`를 import하지 않는다.
+
+### 훅 위치 결정 가이드
+
+새 훅을 추가할 때는 [CODE_RULES.md §3.3](../../CODE_RULES.md) 의 분류 표를 따른다.
+
+- **API 호출 훅** (`useLogout`, `useApplications` 등): `packages/api/src/{domain}/hooks.ts`
+- **비즈니스 흐름 훅** (`useLogoutFlow` 등 — API 호출 + toast/라우팅/캐시 정리): `entities/{domain}/model/`
+- **UI/플랫폼 훅** (`useIsMobile`, `useTheme` 등 도메인 무관): `shared/hooks/`
 
 ---
 
