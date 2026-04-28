@@ -1,10 +1,4 @@
-import type {
-  GoogleAuthCallbackResponseDto,
-  GoogleRefreshResponseDto,
-} from "../generated/dddApi.schemas";
-
-// POST /api/v1/auth/google - Google 로그인 콜백
-export type PostGoogleLoginResponse = GoogleAuthCallbackResponseDto;
+import type { GoogleRefreshResponseDto } from "../generated/dddApi.schemas";
 
 // POST /api/v1/auth/refresh - 토큰 갱신
 export type PostRefreshTokenResponse = GoogleRefreshResponseDto;
