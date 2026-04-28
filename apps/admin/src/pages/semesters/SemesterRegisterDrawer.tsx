@@ -318,7 +318,7 @@ type ProcessSectionProps = {
   onChange: (field: keyof ProcessSchedule, value: string) => void
 }
 
-function ProcessSection({ process, onChange }: ProcessSectionProps) {
+function ProcessSection({ onChange }: ProcessSectionProps) {
   return (
     <section className="space-y-4">
       <SectionTitle>프로세스 일정</SectionTitle>

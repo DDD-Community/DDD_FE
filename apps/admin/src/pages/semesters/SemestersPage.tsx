@@ -30,7 +30,6 @@ const getSemesterData = async () => {
 export default function SemestersPage() {
   const [searchText, setSearchText] = useState("")
   const [statusFilter, setStatusFilter] = useState("전체")
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   const { data: semesters } = useQuery({
     queryKey: ["semesters"],
