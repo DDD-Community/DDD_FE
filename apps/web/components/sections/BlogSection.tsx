@@ -57,14 +57,17 @@ const TitleArea = styled.div({
 
 const SectionLabel = styled.p({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: fontSizes.large,
+  fontSize: "clamp(14px, calc(0.6165vw + 11.69px), 24px)",
   fontWeight: fontWeights.medium,
-  lineHeight: lineHeights.paragraphLarge,
+  lineHeight: "clamp(18px, calc(0.7705vw + 15.11px), 34px)",
   color: colors.textInverse,
-
+  "@media (max-width: 768px)": {
+    fontSize: "16px",
+    lineHeight: "20px",
+  },
   "@media (max-width: 375px)": {
-    fontSize: fontSizes.small,
-    lineHeight: lineHeights.small,
+    fontSize: "14px",
+    lineHeight: "18px",
   },
 });
 
@@ -76,11 +79,10 @@ const TitleGroup = styled.div({
 
 const SectionTitle = styled.h2({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: fontSizes.headingXl,
+  fontSize: "clamp(24px, calc(1.541vw + 18.22px), 40px)",
   fontWeight: fontWeights.bold,
-  lineHeight: lineHeights.headingXl,
+  lineHeight: "clamp(30px, calc(2.158vw + 21.91px), 50px)",
   color: colors.textInverse,
-
   "@media (max-width: 768px)": {
     fontSize: "30px",
     lineHeight: "36px",
@@ -93,11 +95,10 @@ const SectionTitle = styled.h2({
 
 const SectionSubtitle = styled.p({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: fontSizes.headingLarge,
+  fontSize: "clamp(14px, calc(1.541vw + 8.22px), 28px)",
   fontWeight: fontWeights.semiBold,
-  lineHeight: lineHeights.headingLarge,
+  lineHeight: "clamp(18px, calc(1.849vw + 11.07px), 32px)",
   color: colors.textInverse,
-
   "@media (max-width: 768px)": {
     fontSize: "20px",
     lineHeight: "25px",

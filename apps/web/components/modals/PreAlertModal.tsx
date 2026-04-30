@@ -87,18 +87,9 @@ const Header = styled.div({
 const Title = styled.h2({
   margin: 0,
   color: "#202325",
-  fontSize: "40px",
-  lineHeight: "50px",
+  fontSize: "clamp(20px, calc(2.77vw + 9.60px), 40px)",
+  lineHeight: "clamp(25px, calc(3.54vw + 11.72px), 50px)",
   fontWeight: fontWeights.bold,
-
-  "@media (max-width: 768px)": {
-    fontSize: "34px",
-    lineHeight: "45px",
-  },
-  "@media (max-width: 375px)": {
-    fontSize: "20px",
-    lineHeight: "25px",
-  },
 });
 
 const FloatingCloseArea = styled.div({
@@ -154,6 +145,10 @@ const Description = styled.p({
   fontWeight: fontWeights.medium,
   maxWidth: "686px",
 
+  "@media (max-width: 1024px)": {
+    fontSize: "22px",
+    lineHeight: "28px",
+  },
   "@media (max-width: 768px)": {
     fontSize: "20px",
     lineHeight: "25px",
@@ -303,6 +298,10 @@ const PrimaryButton = styled.button({
   fontWeight: fontWeights.medium,
   cursor: "pointer",
 
+  "@media (max-width: 1024px)": {
+    fontSize: "19px",
+    lineHeight: "26px",
+  },
   "@media (max-width: 768px)": {
     fontSize: "18px",
     lineHeight: "23px",
@@ -344,16 +343,11 @@ const SuccessImage = styled.img({
 const SuccessTitle = styled.h3({
   margin: 0,
   color: "#1e1e1e",
-  fontSize: "40px",
-  lineHeight: "50px",
+  fontSize: "clamp(20px, calc(2.77vw + 9.60px), 40px)",
+  lineHeight: "clamp(25px, calc(3.54vw + 11.72px), 50px)",
   fontWeight: fontWeights.bold,
   textAlign: "center",
   whiteSpace: "pre-line",
-
-  "@media (max-width: 375px)": {
-    fontSize: "20px",
-    lineHeight: "25px",
-  },
 });
 
 const SuccessDescription = styled.p({
@@ -364,6 +358,10 @@ const SuccessDescription = styled.p({
   fontWeight: fontWeights.medium,
   textAlign: "center",
 
+  "@media (max-width: 1024px)": {
+    fontSize: "15px",
+    lineHeight: "19px",
+  },
   "@media (max-width: 375px)": {
     fontSize: "12px",
     lineHeight: "15px",
@@ -378,6 +376,10 @@ const SuccessTimerText = styled.p({
   fontWeight: fontWeights.regular,
   textAlign: "center",
 
+  "@media (max-width: 1024px)": {
+    fontSize: "11px",
+    lineHeight: "14px",
+  },
   "@media (max-width: 375px)": {
     fontSize: "9px",
     lineHeight: "12px",
@@ -413,14 +415,9 @@ const ConfirmHeader = styled.div({
 const ConfirmTitle = styled.h3({
   margin: 0,
   color: "#202325",
-  fontSize: "40px",
-  lineHeight: "50px",
+  fontSize: "clamp(20px, calc(2.77vw + 9.60px), 40px)",
+  lineHeight: "clamp(25px, calc(3.54vw + 11.72px), 50px)",
   fontWeight: fontWeights.bold,
-
-  "@media (max-width: 375px)": {
-    fontSize: "20px",
-    lineHeight: "25px",
-  },
 });
 
 const ConfirmDescription = styled.p({
@@ -431,6 +428,10 @@ const ConfirmDescription = styled.p({
   fontWeight: fontWeights.medium,
   whiteSpace: "pre-line",
 
+  "@media (max-width: 1024px)": {
+    fontSize: "22px",
+    lineHeight: "28px",
+  },
   "@media (max-width: 375px)": {
     fontSize: "16px",
     lineHeight: "20px",
@@ -460,6 +461,11 @@ const ConfirmPrimaryButton = styled.button({
   fontWeight: fontWeights.medium,
   cursor: "pointer",
 
+  "@media (max-width: 1024px)": {
+    height: "60px",
+    fontSize: "19px",
+    lineHeight: "26px",
+  },
   "@media (max-width: 375px)": {
     height: "56px",
     fontSize: "14px",
@@ -479,6 +485,11 @@ const ConfirmSecondaryButton = styled.button({
   fontWeight: fontWeights.medium,
   cursor: "pointer",
 
+  "@media (max-width: 1024px)": {
+    height: "60px",
+    fontSize: "19px",
+    lineHeight: "26px",
+  },
   "@media (max-width: 375px)": {
     height: "56px",
     fontSize: "14px",

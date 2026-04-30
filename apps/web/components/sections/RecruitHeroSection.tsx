@@ -70,43 +70,31 @@ const Inner = styled.div({
 
 const Label = styled.p({
   color: colors.textInverse,
-  fontSize: "20px",
-  lineHeight: "25px",
+  fontSize: "clamp(14px, calc(0.6165vw + 11.69px), 20px)",
+  lineHeight: "clamp(18px, calc(0.7705vw + 15.11px), 25px)",
   fontWeight: fontWeights.medium,
-
-  "@media (max-width: 1024px)": { fontSize: "18px" },
-  "@media (max-width: 768px)": { fontSize: "16px" },
-  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
 const Title = styled.h1({
   margin: 0,
-  fontSize: "120px",
-  lineHeight: "140px",
+  fontSize: "clamp(44px, calc(6.17vw + 20.88px), 120px)",
+  lineHeight: "clamp(52px, calc(7.70vw + 23.11px), 140px)",
   fontWeight: fontWeights.bold,
   // Figma 헤드 타이틀 느낌을 이미지가 아닌 타이포/그라데이션으로 구현
-  backgroundImage: "linear-gradient(180deg, #ffffff 0%, #cad5e2 42%, #0f1f38 100%)",
+  backgroundImage: "linear-gradient(180deg, rgba(255, 255, 255, 0.00) -3.04%, #FFF 95.35%);",
   backgroundClip: "text",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
   letterSpacing: "-0.02em",
-  whiteSpace: "pre-line",
-
-  "@media (max-width: 1024px)": { fontSize: "84px", lineHeight: "102px" },
-  "@media (max-width: 768px)": { fontSize: "64px", lineHeight: "78px" },
-  "@media (max-width: 375px)": { fontSize: "44px", lineHeight: "52px" },
 });
 
 const Description = styled.p({
   margin: 0,
   color: colors.textInverse,
-  fontSize: "20px",
-  lineHeight: "25px",
+  fontSize: "clamp(12px, calc(0.925vw + 8.53px), 20px)",
+  lineHeight: "clamp(16px, calc(1.233vw + 11.38px), 25px)",
   fontWeight: fontWeights.medium,
   whiteSpace: "pre-line",
-
-  "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "24px" },
-  "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "16px" },
 });
 
 const CtaButton = styled(Link)({

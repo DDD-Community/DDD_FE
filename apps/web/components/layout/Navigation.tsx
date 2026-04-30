@@ -61,7 +61,7 @@ const NavPill = styled.nav({
   display: "flex",
   alignItems: "center",
   gap: "2px",
-  background: "rgba(255, 255, 255, 0.55)",
+  background: "#FFF",
   backdropFilter: "blur(14px) saturate(160%)",
   WebkitBackdropFilter: "blur(14px) saturate(160%)",
   border: "1px solid rgba(255, 255, 255, 0.35)",
@@ -97,8 +97,6 @@ const CtaButton = styled(Link)({
   background: "rgba(46, 113, 255, 0.85)",
   backdropFilter: "blur(14px) saturate(160%)",
   WebkitBackdropFilter: "blur(14px) saturate(160%)",
-  border: "1px solid rgba(255, 255, 255, 0.22)",
-  boxShadow: "0 10px 26px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.35)",
   borderRadius: "99px",
   color: colors.textInverse,
   fontFamily: "'Pretendard', sans-serif",
@@ -131,7 +129,7 @@ const MobileBar = styled.div({
 
 const MobileMenuButton = styled.button({
   border: "1px solid rgba(255, 255, 255, 0.35)",
-  background: "rgba(255, 255, 255, 0.45)",
+  background: "#FFF",
   backdropFilter: "blur(14px) saturate(160%)",
   WebkitBackdropFilter: "blur(14px) saturate(160%)",
   boxShadow: "0 10px 26px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.45)",

@@ -23,12 +23,9 @@ const Title = styled.h2({
   margin: 0,
   color: colors.textInverse,
   textAlign: "center",
-  fontSize: "40px",
-  lineHeight: "50px",
+  fontSize: "clamp(28px, calc(1.54vw + 22.22px), 40px)",
+  lineHeight: "clamp(32px, calc(2.47vw + 22.76px), 50px)",
   fontWeight: fontWeights.bold,
-
-  "@media (max-width: 768px)": { fontSize: "36px", lineHeight: "45px" },
-  "@media (max-width: 375px)": { fontSize: "28px", lineHeight: "32px" },
 });
 
 const List = styled.div({
@@ -64,11 +61,9 @@ const Item = styled.article({
 const Step = styled.p({
   margin: 0,
   color: "#90a1b9",
-  fontSize: "64px",
-  lineHeight: "75px",
+  fontSize: "clamp(24px, calc(4.93vw + 5.51px), 64px)",
+  lineHeight: "clamp(28px, calc(5.55vw + 7.19px), 75px)",
   fontWeight: fontWeights.bold,
-
-  "@media (max-width: 1024px)": { fontSize: "56px", lineHeight: "64px" },
   "@media (max-width: 768px)": { fontSize: "48px", lineHeight: "56px" },
   "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "28px" },
 });
@@ -76,10 +71,9 @@ const Step = styled.p({
 const Label = styled.p({
   margin: 0,
   color: "#90a1b9",
-  fontSize: "28px",
-  lineHeight: "32px",
+  fontSize: "clamp(14px, calc(1.849vw + 7.07px), 28px)",
+  lineHeight: "clamp(18px, calc(1.849vw + 11.07px), 32px)",
   fontWeight: fontWeights.semiBold,
-
   "@media (max-width: 768px)": { fontSize: "24px", lineHeight: "28px" },
   "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 });
@@ -88,10 +82,9 @@ const DateText = styled.p({
   margin: 0,
   marginTop: "10px",
   color: colors.textInverse,
-  fontSize: "40px",
-  lineHeight: "50px",
+  fontSize: "clamp(14px, calc(3.082vw + 2.44px), 40px)",
+  lineHeight: "clamp(18px, calc(3.699vw + 4.13px), 50px)",
   fontWeight: fontWeights.bold,
-
   "@media (max-width: 768px)": { fontSize: "28px", lineHeight: "36px" },
   "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px", marginTop: "6px" },
 });

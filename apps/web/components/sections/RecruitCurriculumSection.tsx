@@ -26,12 +26,9 @@ const Title = styled.h2({
   margin: 0,
   textAlign: "center",
   color: colors.textInverse,
-  fontSize: "40px",
-  lineHeight: "50px",
+  fontSize: "clamp(28px, calc(1.54vw + 22.22px), 40px)",
+  lineHeight: "clamp(32px, calc(2.47vw + 22.76px), 50px)",
   fontWeight: fontWeights.bold,
-
-  "@media (max-width: 768px)": { fontSize: "36px", lineHeight: "45px" },
-  "@media (max-width: 375px)": { fontSize: "28px", lineHeight: "32px" },
 });
 
 const Grid = styled.div({
@@ -71,6 +68,7 @@ const Week = styled.p({
   lineHeight: "25px",
   fontWeight: fontWeights.medium,
 
+  "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
   "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
@@ -81,6 +79,7 @@ const DateText = styled.p({
   lineHeight: "30px",
   fontWeight: fontWeights.medium,
 
+  "@media (max-width: 1024px)": { fontSize: "22px", lineHeight: "28px" },
   "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
@@ -91,6 +90,7 @@ const ItemTitle = styled.h3({
   lineHeight: "50px",
   fontWeight: fontWeights.bold,
 
+  "@media (max-width: 1024px)": { fontSize: "38px", lineHeight: "48px" },
   "@media (max-width: 768px)": { fontSize: "34px", lineHeight: "42px" },
   "@media (max-width: 375px)": { fontSize: "20px", lineHeight: "25px", marginTop: "8px" },
 });
@@ -102,6 +102,8 @@ const Description = styled.p({
   lineHeight: "30px",
   fontWeight: fontWeights.medium,
 
+  "@media (max-width: 1024px)": { fontSize: "22px", lineHeight: "28px" },
+  "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
   "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "16px", marginTop: "8px" },
 });
 

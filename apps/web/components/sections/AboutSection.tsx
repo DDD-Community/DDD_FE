@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "@emotion/styled";
-import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
+import { colors, fontWeights } from "@/constants/tokens";
 
 const STATS = [
   { label: "DDD가 탄생한지", value: "10년" },
@@ -50,33 +50,19 @@ const TitleArea = styled.div({
 
 const SectionLabel = styled.p({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: fontSizes.large,
+  fontSize: "clamp(16px, calc(0.925vw + 12.53px), 24px)",
   fontWeight: fontWeights.medium,
-  lineHeight: lineHeights.paragraphLarge,
+  lineHeight: "clamp(22px, calc(1.233vw + 17.38px), 34px)",
   color: colors.textInverse,
-
-  "@media (max-width: 375px)": {
-    fontSize: "20px",
-    lineHeight: "28px",
-  },
 });
 
 const Title = styled.h2({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: fontSizes.paragraphXxxl,
+  fontSize: "clamp(36px, calc(4.31vw + 19.83px), 80px)",
   fontWeight: fontWeights.bold,
-  lineHeight: lineHeights.paragraphXxxl,
+  lineHeight: "clamp(46px, calc(4.47vw + 29.24px), 90px)",
   color: colors.slate200,
   whiteSpace: "pre-wrap",
-
-  "@media (max-width: 768px)": {
-    fontSize: "48px",
-    lineHeight: "60px",
-  },
-  "@media (max-width: 375px)": {
-    fontSize: "64px",
-    lineHeight: "75px",
-  },
 });
 
 const TitleHighlight = styled.span({
@@ -120,41 +106,35 @@ const StatCard = styled.div({
 
 const StatLabel = styled.p({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: fontSizes.large,
+  fontSize: "clamp(16px, calc(0.925vw + 12.53px), 24px)",
   fontWeight: fontWeights.medium,
-  lineHeight: lineHeights.paragraphLarge,
+  lineHeight: "clamp(22px, calc(1.233vw + 17.38px), 34px)",
   color: colors.slate300,
   textAlign: "center",
-
-  "@media (max-width: 375px)": {
-    fontSize: "20px",
-    lineHeight: "28px",
-  },
 });
 
 const StatValue = styled.p({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: "80px",
+  fontSize: "clamp(48px, calc(3.699vw + 34.13px), 80px)",
   fontWeight: fontWeights.bold,
-  lineHeight: lineHeights.paragraphXxxl,
+  lineHeight: "clamp(55px, calc(4.162vw + 39.39px), 90px)",
   color: colors.textInverse,
   textAlign: "center",
-
-  "@media (max-width: 768px)": {
-    fontSize: "64px",
-    lineHeight: "72px",
-  },
-  "@media (max-width: 375px)": {
-    fontSize: "48px",
-    lineHeight: "55px",
-  },
 });
 
 const useCountUpOnView = (target: number, enabled: boolean) => {
   const [value, setValue] = useState(0);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {
+      // 섹션이 화면에서 벗어났다가 다시 들어올 때
+      // 동일한 “지금처럼” 애니메이션을 매번 재생하기 위해 리셋합니다.
+      setValue(0);
+      return;
+    }
+
+    // enabled 전환 시 항상 0부터 카운트업 시작
+    setValue(0);
 
     const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
     if (reduceMotion) {
@@ -183,7 +163,7 @@ const useCountUpOnView = (target: number, enabled: boolean) => {
   return value;
 };
 
-const useInViewOnce = () => {
+const useInViewToggle = () => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [inView, setInView] = useState(false);
 
@@ -193,10 +173,9 @@ const useInViewOnce = () => {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry?.isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
+        // 화면에 들어오면 true, 벗어나면 false로 토글합니다.
+        // enabled가 토글될 때마다 count-up이 재생됩니다.
+        setInView(Boolean(entry?.isIntersecting));
       },
       { threshold: 0.35 },
     );
@@ -228,7 +207,7 @@ const StatValueCountUp = ({ rawValue, enabled }: { rawValue: string; enabled: bo
 };
 
 export const AboutSection = () => {
-  const { ref, inView } = useInViewOnce();
+  const { ref, inView } = useInViewToggle();
 
   return (
     <Section>

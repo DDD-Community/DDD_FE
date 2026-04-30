@@ -34,11 +34,10 @@ const Inner = styled.div({
 
 const Headline = styled.h2({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: fontSizes.headingXl,
+  fontSize: "clamp(28px, calc(0.925vw + 24.53px), 40px)",
   fontWeight: fontWeights.bold,
-  lineHeight: lineHeights.headingXl,
+  lineHeight: "clamp(32px, calc(1.849vw + 25.07px), 50px)",
   color: colors.textInverse,
-
   "@media (max-width: 768px)": {
     fontSize: "30px",
     lineHeight: "36px",

@@ -54,9 +54,13 @@ const Hero3D = styled.picture({
 });
 
 const Hero3DImage = styled.img({
-  width: "377px",
-  height: "377px",
-  objectFit: "contain",
+  width: "341.804px",
+  height: "350.535px",
+  flexShrink: 0,
+  aspectRatio: "39/40",
+  opacity: 0.6,
+  background: `url(${assets.hero3d}) no-repeat center center`,
+  backgroundSize: "cover",
 
   "@media (max-width: 1024px)": {
     width: "331px",
@@ -99,37 +103,24 @@ const HeadlineWrapper = styled.div({
   flexDirection: "column",
   gap: "40px",
   alignItems: "center",
-
-  "@media (max-width: 768px)": {
-    gap: "24px",
-  },
-  "@media (max-width: 375px)": {
-    gap: "16px",
-  },
+  padding: "120px 80px",
+  "@media (max-width: 1024px)": { padding: "120px 80px" },
+  "@media (max-width: 768px)": { padding: "100px 40px" },
+  "@media (max-width: 375px)": { padding: "80px 16px" },
 });
 
 const GradientHeadline = styled.h1({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: fontSizes.headingXxl,
+  fontSize: "clamp(45px, calc(5.40vw + 24.76px), 120px)",
   fontWeight: fontWeights.bold,
-  lineHeight: lineHeights.headingXxl,
+  lineHeight: "clamp(54px, calc(7.09vw + 27.40px), 140px)",
   // 이미지 텍스처 대신 타이포/그라데이션으로 헤드 타이틀 구현
-  background: "linear-gradient(180deg, #FFF -3.04%, rgba(255, 255, 255, 0.00) 95.35%)",
+  background: "linear-gradient(180deg, rgba(255, 255, 255, 0.00) -3.04%, #FFF 95.35%)",
   backgroundClip: "text",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
-
-  "@media (max-width: 1024px)": {
-    fontSize: "80px",
-    lineHeight: "100px",
-  },
-  "@media (max-width: 768px)": {
-    fontSize: "60px",
-    lineHeight: "72px",
-  },
+  whiteSpace: "nowrap",
   "@media (max-width: 375px)": {
-    fontSize: "45px",
-    lineHeight: "54px",
     whiteSpace: "normal",
     width: "100%",
   },
@@ -137,19 +128,10 @@ const GradientHeadline = styled.h1({
 
 const Subtitle = styled.p({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: fontSizes.headingLarge,
+  fontSize: "clamp(14px, calc(1.541vw + 8.22px), 28px)",
   fontWeight: fontWeights.semiBold,
-  lineHeight: lineHeights.headingLarge,
+  lineHeight: "clamp(18px, calc(1.849vw + 11.07px), 32px)",
   color: colors.textInverse,
-
-  "@media (max-width: 768px)": {
-    fontSize: fontSizes.headingLarge,
-    lineHeight: lineHeights.headingLarge,
-  },
-  "@media (max-width: 375px)": {
-    fontSize: "14px",
-    lineHeight: "18px",
-  },
 });
 
 const CtaButton = styled(Link)({
@@ -200,9 +182,6 @@ export const HeroSection = () => {
       </BgImage>
       <BgOverlay />
       <Hero3D>
-        <source media="(max-width: 375px)" srcSet={assets.hero3d375} />
-        <source media="(max-width: 768px)" srcSet={assets.hero3d768} />
-        <source media="(max-width: 1024px)" srcSet={assets.hero3d1024} />
         <Hero3DImage src={assets.hero3d} alt="" />
       </Hero3D>
       <Content>

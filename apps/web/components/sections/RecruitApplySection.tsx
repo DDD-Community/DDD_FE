@@ -93,12 +93,9 @@ const BannerLabel = styled.p({
 const BannerTitle = styled.h1({
   margin: "8px 0 0",
   color: colors.slate300,
-  fontSize: "40px",
-  lineHeight: "50px",
+  fontSize: "clamp(22px, calc(1.85vw + 15.07px), 40px)",
+  lineHeight: "clamp(30px, calc(2.16vw + 21.91px), 50px)",
   fontWeight: fontWeights.bold,
-  "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "44px" },
-  "@media (max-width: 768px)": { fontSize: "28px", lineHeight: "36px" },
-  "@media (max-width: 375px)": { fontSize: "22px", lineHeight: "30px" },
 });
 
 const Container = styled.div({
@@ -115,12 +112,9 @@ const FormTitle = styled.h2({
   margin: 0,
   textAlign: "center",
   color: colors.primary,
-  fontSize: "48px",
-  lineHeight: "55px",
+  fontSize: "clamp(28px, calc(1.85vw + 21.07px), 48px)",
+  lineHeight: "clamp(38px, calc(1.85vw + 31.07px), 55px)",
   fontWeight: fontWeights.bold,
-  "@media (max-width: 1024px)": { fontSize: "40px", lineHeight: "50px" },
-  "@media (max-width: 768px)": { fontSize: "34px", lineHeight: "44px" },
-  "@media (max-width: 375px)": { fontSize: "28px", lineHeight: "38px" },
 });
 
 const FormDescription = styled.p({

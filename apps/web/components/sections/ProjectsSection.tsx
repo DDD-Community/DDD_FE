@@ -107,24 +107,26 @@ const TitleArea = styled.div({
 
 const SectionLabel = styled.p({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: fontSizes.large,
+  fontSize: "clamp(14px, calc(0.6165vw + 11.69px), 24px)",
   fontWeight: fontWeights.medium,
-  lineHeight: lineHeights.paragraphLarge,
+  lineHeight: "clamp(18px, calc(0.7705vw + 15.11px), 34px)",
   color: colors.textInverse,
-
+  "@media (max-width: 768px)": {
+    fontSize: "16px",
+    lineHeight: "20px",
+  },
   "@media (max-width: 375px)": {
-    fontSize: fontSizes.small,
-    lineHeight: lineHeights.small,
+    fontSize: "14px",
+    lineHeight: "18px",
   },
 });
 
 const SectionTitle = styled.h2({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: fontSizes.headingLarge,
+  fontSize: "clamp(20px, calc(1.233vw + 15.38px), 32px)",
   fontWeight: fontWeights.semiBold,
-  lineHeight: lineHeights.headingLarge,
+  lineHeight: "clamp(25px, calc(1.695vw + 18.64px), 40px)",
   color: colors.textInverse,
-
   "@media (max-width: 768px)": {
     fontSize: "24px",
     lineHeight: "30px",
