@@ -83,6 +83,18 @@ const NavItem = styled(Link)({
   textDecoration: "none",
   whiteSpace: "nowrap",
   transition: "background 0.15s",
+  "@media (max-width: 1024px)": {
+    fontSize: "14px",
+    lineHeight: "18px",
+  },
+  "@media (max-width: 768px)": {
+    fontSize: "13px",
+    lineHeight: "16px",
+  },
+  "@media (max-width: 375px)": {
+    fontSize: "12px",
+    lineHeight: "14px",
+  },
 
   "&:hover": {
     background: "rgba(255, 255, 255, 0.4)",
@@ -106,13 +118,21 @@ const CtaButton = styled(Link)({
   textDecoration: "none",
   whiteSpace: "nowrap",
   transition: "background 0.15s",
-
+  "@media (max-width: 1024px)": {
+    fontSize: "14px",
+    lineHeight: "18px",
+  },
+  "@media (max-width: 768px)": {
+    fontSize: "13px",
+    lineHeight: "16px",
+    display: "none",
+  },
+  "@media (max-width: 375px)": {
+    fontSize: "12px",
+    lineHeight: "14px",
+  },
   "&:hover": {
     background: "rgba(31, 95, 224, 0.9)",
-  },
-
-  "@media (max-width: 768px)": {
-    display: "none",
   },
 });
 
@@ -128,18 +148,14 @@ const MobileBar = styled.div({
 });
 
 const MobileMenuButton = styled.button({
-  border: "1px solid rgba(255, 255, 255, 0.35)",
-  background: "#FFF",
-  backdropFilter: "blur(14px) saturate(160%)",
-  WebkitBackdropFilter: "blur(14px) saturate(160%)",
-  boxShadow: "0 10px 26px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.45)",
   borderRadius: "99px",
-  width: "48px",
-  height: "48px",
-  color: colors.textPrimary,
-  fontSize: "20px",
-  lineHeight: "20px",
-  cursor: "pointer",
+  border: "1px solid #CAD5E2",
+  background: "#F1F5F9",
+  display: "flex",
+  padding: "12px",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: "2px",
 });
 
 const MobileDrawer = styled.nav<{ open: boolean }>(({ open }) => ({
@@ -225,7 +241,15 @@ export const Navigation = () => {
             aria-label="메뉴 열기"
             onClick={() => setOpen((prev) => !prev)}
           >
-            ≡
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="14"
+              viewBox="0 0 18 14"
+              fill="none"
+            >
+              <path d="M0 0H18V2H0V0ZM0 6H18V8H0V6ZM0 12H18V14H0V12Z" fill="#202325" />
+            </svg>
           </MobileMenuButton>
         </MobileBar>
         <CtaButton

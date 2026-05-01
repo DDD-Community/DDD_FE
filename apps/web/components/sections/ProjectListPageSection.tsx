@@ -54,7 +54,7 @@ const Label = styled.p({
   color: "#62748e",
   fontWeight: fontWeights.semiBold,
   "@media (max-width: 1024px)": { fontSize: "24px", lineHeight: "30px" },
-  "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "20px" },
+  "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
   "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "15px" },
 });
 
@@ -66,7 +66,7 @@ const Title = styled.h1({
   fontWeight: fontWeights.bold,
 
   "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
-  "@media (max-width: 768px)": { fontSize: "24px", lineHeight: "30px" },
+  "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
   "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "30px", width: "265px" },
 });
 
@@ -101,7 +101,7 @@ const Tab = styled.button<{ active: boolean }>(({ active }) => ({
   whiteSpace: "nowrap",
 
   "@media (max-width: 1024px)": { fontSize: "24px", lineHeight: "30px" },
-  "@media (max-width: 768px)": { fontSize: "14px", lineHeight: "18px", padding: "6px 10px" },
+  "@media (max-width: 768px)": { fontSize: "13px", lineHeight: "16px", padding: "6px 10px" },
   "@media (max-width: 375px)": {
     fontSize: "12px",
     lineHeight: "15px",
@@ -357,7 +357,10 @@ export const ProjectListPageSection = ({
             ))}
           </Grid>
           <Pagination aria-label="프로젝트 페이지네이션">
-            <PaginationButton onClick={loadPrevPage} disabled={cursorHistory.length <= 1 || isLoading}>
+            <PaginationButton
+              onClick={loadPrevPage}
+              disabled={cursorHistory.length <= 1 || isLoading}
+            >
               <Arrow>‹</Arrow>
             </PaginationButton>
             <span style={{ color: "#525252" }}>{currentPage}</span>

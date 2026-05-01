@@ -45,21 +45,23 @@ const Banner = styled.div({
 const BannerLabel = styled.p({
   margin: 0,
   color: "#62748e",
-  fontSize: "clamp(18px, calc(2.34375vw + 0px), 28px)",
-  lineHeight: "clamp(20px, calc(3.90625vw - 10px), 32px)",
+  fontSize: "28px",
+  lineHeight: "32px",
   fontWeight: fontWeights.semiBold,
-  "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "20px" },
+  "@media (max-width: 1024px)": { fontSize: "24px", lineHeight: "30px" },
+  "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
   "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "15px" },
 });
 
 const BannerTitle = styled.h1({
   margin: "8px 0 0",
   color: "#cad5e2",
-  fontSize: "clamp(24px, calc(3.90625vw - 6px), 40px)",
-  lineHeight: "clamp(30px, calc(5.859375vw - 15px), 50px)",
+  fontSize: "40px",
+  lineHeight: "50px",
   fontWeight: fontWeights.bold,
-  "@media (max-width: 768px)": { fontSize: "24px", lineHeight: "30px" },
-  "@media (max-width: 375px)": { width: "265px", fontSize: "24px", lineHeight: "30px" },
+  "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
+  "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
+  "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "30px" },
 });
 
 const Body = styled.div({
@@ -120,12 +122,13 @@ const TextWrap = styled.div({
 const Title = styled.h2({
   margin: 0,
   color: "#202325",
-  fontSize: "clamp(20px, calc(1.5625vw + 8px), 28px)",
-  lineHeight: "clamp(25px, calc(1.953125vw + 10px), 32px)",
+  fontSize: "28px",
+  lineHeight: "32px",
   fontWeight: fontWeights.semiBold,
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
+  "@media (max-width: 1024px)": { fontSize: "24px", lineHeight: "30px" },
   "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
   "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
 });
@@ -142,8 +145,8 @@ const Description = styled.p({
   overflow: "hidden",
 
   "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
-  "@media (max-width: 768px)": { fontSize: "14px", lineHeight: "18px" },
-  "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "15px" },
+  "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "20px" },
+  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
 const Pagination = styled.div({
@@ -246,7 +249,10 @@ export const ArticleListPageSection = ({
             ))}
           </List>
           <Pagination>
-            <PaginationButton onClick={loadPrevPage} disabled={cursorHistory.length <= 1 || isLoading}>
+            <PaginationButton
+              onClick={loadPrevPage}
+              disabled={cursorHistory.length <= 1 || isLoading}
+            >
               <Arrow>‹</Arrow>
             </PaginationButton>
             <span style={{ color: "#525252" }}>{currentPage}</span>

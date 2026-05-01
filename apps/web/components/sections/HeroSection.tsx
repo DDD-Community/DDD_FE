@@ -101,28 +101,36 @@ const Content = styled.div({
 const HeadlineWrapper = styled.div({
   display: "flex",
   flexDirection: "column",
+  width: "100%",
   gap: "40px",
   alignItems: "center",
-  padding: "120px 80px",
-  "@media (max-width: 1024px)": { padding: "120px 80px" },
-  "@media (max-width: 768px)": { padding: "100px 40px" },
-  "@media (max-width: 375px)": { padding: "80px 16px" },
 });
 
 const GradientHeadline = styled.h1({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: "clamp(45px, calc(5.40vw + 24.76px), 120px)",
+  whiteSpace: "nowrap",
+  wordBreak: "keep-all",
   fontWeight: fontWeights.bold,
-  lineHeight: "clamp(54px, calc(7.09vw + 27.40px), 140px)",
-  // 이미지 텍스처 대신 타이포/그라데이션으로 헤드 타이틀 구현
   background: "linear-gradient(180deg, rgba(255, 255, 255, 0.00) -3.04%, #FFF 95.35%)",
   backgroundClip: "text",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
-  whiteSpace: "nowrap",
-  "@media (max-width: 375px)": {
+  fontSize: fontSizes.headingXxl,
+  lineHeight: lineHeights.headingXxl,
+  "@media (max-width: 1024px)": {
+    fontSize: "100px",
+    lineHeight: "110px",
+  },
+  "@media (max-width: 768px)": {
+    fontSize: "90px",
+    lineHeight: "100px",
     whiteSpace: "normal",
     width: "100%",
+    textWrap: "balance",
+  },
+  "@media (max-width: 375px)": {
+    fontSize: "45px",
+    lineHeight: "50px",
   },
 });
 
