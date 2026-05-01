@@ -13,17 +13,10 @@ const Section = styled.section({
   background: "#ffffff",
 });
 
-const ContentSection = styled.div({
-  padding: "80px 80px",
-  "@media (max-width: 1024px)": { padding: "80px" },
-  "@media (max-width: 768px)": { padding: "40px" },
-  "@media (max-width: 375px)": { padding: "40px 16px" },
-});
-
 const Banner = styled.div({
+  padding: "160px 80px",
   position: "relative",
   overflow: "hidden",
-  padding: "160px 320px 80px",
   minHeight: "330px",
   backgroundColor: "#02111f",
   backgroundImage:
@@ -31,7 +24,7 @@ const Banner = styled.div({
   backgroundSize: "cover",
   backgroundPosition: "center",
 
-  "@media (max-width: 1024px)": { padding: "160px 80px 80px" },
+  "@media (max-width: 1024px)": { padding: "160px 80px 80px", minHeight: "323px" },
   "@media (max-width: 768px)": { padding: "140px 40px 50px", minHeight: "300px" },
   "@media (max-width: 375px)": { padding: "160px 16px 20px", minHeight: "300px" },
 });
@@ -40,6 +33,15 @@ const Heading = styled.div({
   display: "flex",
   flexDirection: "column",
   gap: "8px",
+  maxWidth: "1280px",
+  margin: "0 auto",
+});
+
+const ContentSection = styled.div({
+  padding: "80px",
+  "@media (max-width: 1024px)": { padding: "80px" },
+  "@media (max-width: 768px)": { padding: "40px" },
+  "@media (max-width: 375px)": { padding: "40px 16px" },
 });
 
 const Body = styled.div({
@@ -176,7 +178,8 @@ const CardDescription = styled.p({
   overflow: "hidden",
   minHeight: "40px",
 
-  "@media (max-width: 768px)": { fontSize: "14px", lineHeight: "18px" },
+  "@media (max-width: 1024px)": { fontSize: "14px", lineHeight: "18px" },
+  "@media (max-width: 768px)": { fontSize: "13px", lineHeight: "18px" },
   "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "15px" },
 });
 
@@ -197,8 +200,9 @@ const Badge = styled.span<{ kind: "primary" | "gray" }>(({ kind }) => ({
   fontWeight: fontWeights.medium,
   background: kind === "primary" ? colors.mainLight : "#e9e9e9",
   color: kind === "primary" ? colors.primary : "#525252",
-
-  "@media (max-width: 768px)": { fontSize: "14px", lineHeight: "18px" },
+  "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
+  "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "20px" },
+  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 }));
 
 const Pagination = styled.div({

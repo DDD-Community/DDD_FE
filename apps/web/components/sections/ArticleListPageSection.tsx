@@ -20,7 +20,7 @@ const ContentSection = styled.div({
 
 const Banner = styled.div({
   minHeight: "330px",
-  padding: "160px 320px 80px",
+  padding: "160px 80px",
   backgroundColor: "#02111f",
   backgroundImage: `linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%), url('${articleBanner.desktop}')`,
   backgroundSize: "cover",

@@ -69,23 +69,24 @@ const Badge = styled.span<{ kind: "primary" | "gray" }>(({ kind }) => ({
   padding: "4px 20px",
   borderRadius: "30px",
   fontSize: "20px",
-  lineHeight: "25px",
+  lineHeight: "28px",
   fontWeight: fontWeights.medium,
   color: kind === "primary" ? colors.primary : "#525252",
   background: kind === "primary" ? colors.mainLight : "#e9e9e9",
 
-  "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "23px" },
+  "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
+  "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "20px" },
   "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 }));
 
 const Title = styled.h2({
   margin: "20px 0 0",
   color: "#202325",
-  fontSize: "clamp(38px, calc(2.34375vw + 20px), 48px)",
-  lineHeight: "clamp(45px, calc(2.734375vw + 24px), 55px)",
+  fontSize: "48px",
+  lineHeight: "55px",
   fontWeight: fontWeights.bold,
-  "@media (max-width: 768px)": { fontSize: "38px", lineHeight: "45px" },
-  "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "30px", marginTop: "20px" },
+  "@media (max-width: 1024px)": { fontSize: "38px", lineHeight: "45px" },
+  "@media (max-width: 375px)": { fontSize: "18px", lineHeight: "25.2px" },
 });
 
 const LongDescription = styled.p({
@@ -93,22 +94,23 @@ const LongDescription = styled.p({
   color: "#202325",
   whiteSpace: "pre-line",
   fontSize: "20px",
-  lineHeight: "25px",
+  lineHeight: "28px",
   fontWeight: fontWeights.medium,
 
-  "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
-  "@media (max-width: 768px)": { fontSize: "14px", lineHeight: "18px" },
-  "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "16px" },
+  "@media (max-width: 1024px)": { fontSize: "14px", lineHeight: "18px" },
+  "@media (max-width: 375px)": { fontSize: "9px", lineHeight: "12px" },
 });
 
 const TeamTitle = styled.h3({
-  margin: "48px 0 0",
+  marginTop: "24px",
+  marginBottom: "12px",
   color: "#202325",
-  fontSize: "clamp(28px, calc(2.34375vw + 10px), 40px)",
-  lineHeight: "clamp(34px, calc(3.125vw + 10px), 50px)",
+  fontSize: "40px",
+  lineHeight: "50px",
   fontWeight: fontWeights.bold,
-  "@media (max-width: 768px)": { fontSize: "28px", lineHeight: "34px" },
-  "@media (max-width: 375px)": { marginTop: "48px", fontSize: "24px", lineHeight: "30px" },
+  "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px", marginTop: "20px" },
+  "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px", marginTop: "16px" },
+  "@media (max-width: 375px)": { fontSize: "20px", lineHeight: "25px", marginTop: "12px" },
 });
 
 const MemberGrid = styled.div({
@@ -133,22 +135,26 @@ const MemberName = styled.span({
   lineHeight: "30px",
   fontWeight: fontWeights.medium,
 
-  "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
+  "@media (max-width: 1024px)": { fontSize: "20px", lineHeight: "25px" },
+  "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "24px" },
   "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
 });
 
 const MemberRole = styled.span({
   color: "#90a1b9",
   fontSize: "20px",
-  lineHeight: "25px",
+  lineHeight: "28px",
   fontWeight: fontWeights.medium,
 
-  "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "23px" },
+  "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
+  "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "20px" },
   "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
 const Pdf = styled.img({
-  marginTop: "40px",
+  marginTop: "80px",
+  "@media (max-width: 1024px)": { marginTop: "40px" },
+  "@media (max-width: 768px)": { marginTop: "20px" },
   width: "100%",
   height: "auto",
   display: "block",
