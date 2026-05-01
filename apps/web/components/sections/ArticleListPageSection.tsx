@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import styled from "@emotion/styled";
-import { articles, articleBanner } from "@/constants/articles";
+import { articles } from "@/constants/articles";
 import { fontWeights } from "@/constants/tokens";
 import type { ArticleItem } from "@/constants/articles";
 import { fetchPublicArticlesPage } from "@/lib/web-api";
@@ -11,35 +11,28 @@ const Section = styled.section({
   background: "#fff",
 });
 
-const ContentSection = styled.div({
-  padding: "80px 80px",
-  "@media (max-width: 1024px)": { padding: "80px" },
-  "@media (max-width: 768px)": { padding: "48px 40px" },
-  "@media (max-width: 375px)": { padding: "40px 16px" },
-});
-
 const Banner = styled.div({
-  minHeight: "330px",
   padding: "160px 80px",
+  position: "relative",
+  overflow: "hidden",
+  minHeight: "330px",
   backgroundColor: "#02111f",
-  backgroundImage: `linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%), url('${articleBanner.desktop}')`,
+  backgroundImage:
+    "linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%), url('https://www.figma.com/api/mcp/asset/6f928e32-36e6-4c5d-886d-63789ff48cea')",
   backgroundSize: "cover",
   backgroundPosition: "center",
-  display: "flex",
-  alignItems: "flex-end",
 
-  "@media (max-width: 1024px)": {
-    padding: "160px 80px 80px",
-    backgroundImage: `linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%), url('${articleBanner.tablet}')`,
-  },
-  "@media (max-width: 768px)": {
-    padding: "140px 40px 50px",
-    minHeight: "300px",
-  },
-  "@media (max-width: 375px)": {
-    padding: "160px 16px 20px",
-    minHeight: "300px",
-  },
+  "@media (max-width: 1024px)": { padding: "160px 80px 80px", minHeight: "323px" },
+  "@media (max-width: 768px)": { padding: "140px 40px 50px", minHeight: "300px" },
+  "@media (max-width: 375px)": { padding: "160px 16px 20px", minHeight: "300px" },
+});
+
+const Heading = styled.div({
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+  maxWidth: "1280px",
+  margin: "0 auto",
 });
 
 const BannerLabel = styled.p({
@@ -62,6 +55,13 @@ const BannerTitle = styled.h1({
   "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
   "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
   "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "30px" },
+});
+
+const ContentSection = styled.div({
+  padding: "80px 80px",
+  "@media (max-width: 1024px)": { padding: "80px" },
+  "@media (max-width: 768px)": { padding: "48px 40px" },
+  "@media (max-width: 375px)": { padding: "40px 16px" },
 });
 
 const Body = styled.div({
@@ -230,10 +230,10 @@ export const ArticleListPageSection = ({
   return (
     <Section>
       <Banner>
-        <div>
+        <Heading>
           <BannerLabel>Article</BannerLabel>
           <BannerTitle>일잘러들의 생각, 글로 남겼어요.</BannerTitle>
-        </div>
+        </Heading>
       </Banner>
       <ContentSection>
         <Body>
