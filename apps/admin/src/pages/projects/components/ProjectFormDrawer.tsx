@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { useFieldArray, useForm, Controller } from "react-hook-form"
+import { useFieldArray, useForm, useWatch, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useQueryClient } from "@tanstack/react-query"
@@ -62,8 +62,12 @@ const projectFormSchema = z.object({
     .string()
     .min(1, "한줄 설명을 입력해 주세요.")
     .max(200, "200자 이하로 입력해 주세요."),
-  thumbnailUrl: z.string().url("URL 형식이 아닙니다.").optional().or(z.literal("")),
-  members: z.array(memberSchema).default([]),
+  thumbnailUrl: z
+    .string()
+    .url("URL 형식이 아닙니다.")
+    .optional()
+    .or(z.literal("")),
+  members: z.array(memberSchema),
 })
 
 export type ProjectFormValues = z.infer<typeof projectFormSchema>
@@ -113,7 +117,6 @@ export const ProjectFormDrawer = ({
     formState: { errors, isSubmitting },
     reset,
     setValue,
-    watch,
   } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectFormSchema),
     defaultValues: buildDefaults(project),
@@ -145,7 +148,7 @@ export const ProjectFormDrawer = ({
       })
       setValue("thumbnailUrl", result.url, { shouldValidate: true })
     } catch (error) {
-      toast.error("썸네일 업로드에 실패했습니다", {
+      toast.danger("썸네일 업로드에 실패했습니다", {
         description: (error as Error).message,
       })
     }
@@ -159,9 +162,7 @@ export const ProjectFormDrawer = ({
           platforms: values.platforms,
           name: values.name,
           description: values.description,
-          ...(values.thumbnailUrl
-            ? { thumbnailUrl: values.thumbnailUrl }
-            : {}),
+          ...(values.thumbnailUrl ? { thumbnailUrl: values.thumbnailUrl } : {}),
           members: values.members,
         }
         await createProject.mutateAsync({ payload })
@@ -170,13 +171,11 @@ export const ProjectFormDrawer = ({
         })
       } else if (project) {
         const payload: PutUpdateProjectRequest = {
-          cohortId: values.cohortId,
+          //id: values.cohortId,
           platforms: values.platforms,
           name: values.name,
           description: values.description,
-          ...(values.thumbnailUrl
-            ? { thumbnailUrl: values.thumbnailUrl }
-            : {}),
+          ...(values.thumbnailUrl ? { thumbnailUrl: values.thumbnailUrl } : {}),
         }
         await updateProject.mutateAsync({
           params: { id: project.id },
@@ -192,13 +191,13 @@ export const ProjectFormDrawer = ({
       queryClient.invalidateQueries({ queryKey: projectKeys.all })
       onOpenChange(false)
     } catch (error) {
-      toast.error("저장에 실패했습니다", {
+      toast.danger("저장에 실패했습니다", {
         description: (error as Error).message,
       })
     }
   })
 
-  const platforms = watch("platforms")
+  const platforms = useWatch({ control, name: "platforms" })
   const togglePlatform = (p: ProjectPlatform) => {
     const next = platforms.includes(p)
       ? platforms.filter((v) => v !== p)
@@ -206,8 +205,8 @@ export const ProjectFormDrawer = ({
     setValue("platforms", next, { shouldValidate: true })
   }
 
-  const thumbnailUrl = watch("thumbnailUrl")
-  const cohortId = watch("cohortId")
+  const thumbnailUrl = useWatch({ control, name: "thumbnailUrl" })
+  const cohortId = useWatch({ control, name: "cohortId" })
   const cohortLabel =
     cohorts.find((c) => c.id === cohortId)?.name ?? "기수 선택"
 
@@ -245,10 +244,7 @@ export const ProjectFormDrawer = ({
                 </FormField>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <FormField
-                    label="플랫폼"
-                    error={errors.platforms?.message}
-                  >
+                  <FormField label="플랫폼" error={errors.platforms?.message}>
                     <div className="flex flex-wrap gap-2">
                       {PLATFORM_OPTIONS.map((p) => {
                         const active = platforms.includes(p)
@@ -439,9 +435,7 @@ const ThumbnailUploader = ({
           />
           <div className="space-y-1">
             <p className="text-sm text-gray-600">
-              {isUploading
-                ? "업로드 중..."
-                : "이미지를 클릭해서 업로드"}
+              {isUploading ? "업로드 중..." : "이미지를 클릭해서 업로드"}
             </p>
             <p className="text-xs text-gray-400">PNG, JPG (최대 5MB)</p>
           </div>
@@ -474,10 +468,7 @@ const MemberRow = ({
     <div className="space-y-2 rounded-md border border-gray-200 bg-white p-3">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <FormField label="이름" error={errors?.name?.message}>
-          <Input
-            {...register(`members.${index}.name`)}
-            placeholder="이름"
-          />
+          <Input {...register(`members.${index}.name`)} placeholder="이름" />
         </FormField>
         <FormField label="파트" error={errors?.part?.message}>
           <Controller

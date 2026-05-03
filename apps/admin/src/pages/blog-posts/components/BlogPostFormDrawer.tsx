@@ -1,15 +1,9 @@
 import { useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { useQueryClient } from "@tanstack/react-query"
-import {
-  Button,
-  Drawer,
-  Input,
-  TextArea,
-  toast,
-} from "@heroui/react"
+import { Button, Drawer, Input, TextArea, toast } from "@heroui/react"
 
 import {
   blogKeys,
@@ -75,12 +69,12 @@ export const BlogPostFormDrawer = ({
   const queryClient = useQueryClient()
 
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
     setValue,
-    watch,
   } = useForm<BlogPostFormValues>({
     resolver: zodResolver(blogPostFormSchema),
     defaultValues: buildDefaults(post),
@@ -104,7 +98,7 @@ export const BlogPostFormDrawer = ({
       })
       setValue("thumbnail", result.url, { shouldValidate: true })
     } catch (error) {
-      toast.error("썸네일 업로드에 실패했습니다", {
+      toast.danger("썸네일 업로드에 실패했습니다", {
         description: (error as Error).message,
       })
     }
@@ -140,13 +134,13 @@ export const BlogPostFormDrawer = ({
       queryClient.invalidateQueries({ queryKey: blogKeys.all })
       onOpenChange(false)
     } catch (error) {
-      toast.error("저장에 실패했습니다", {
+      toast.danger("저장에 실패했습니다", {
         description: (error as Error).message,
       })
     }
   })
 
-  const thumbnailUrl = watch("thumbnail")
+  const thumbnailUrl = useWatch({ control, name: "thumbnail" })
 
   return (
     <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
