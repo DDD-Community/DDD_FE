@@ -9,6 +9,7 @@ import type {
 } from "../generated/dddApi.schemas";
 
 export { CohortPartConfigDtoName } from "../generated/dddApi.schemas";
+export { CreateCohortRequestDtoStatus } from "../generated/dddApi.schemas";
 
 // POST /api/v1/admin/cohorts - 기수 생성
 export type PostCreateCohortRequest = CreateCohortRequestDto;
