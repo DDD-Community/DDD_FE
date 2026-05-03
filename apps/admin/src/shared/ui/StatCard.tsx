@@ -1,4 +1,7 @@
 // apps/admin/src/shared/ui/StatCard.tsx
+/* eslint-disable react-refresh/only-export-components --
+ * compound 컴포넌트 패턴(Object.assign(StatCard, { Skeleton }))을 유지하기 위해
+ * 본 파일은 단일 합성 export 만 노출한다. Fast Refresh 비호환은 의도된 trade-off. */
 import type { ReactNode } from "react"
 
 import { Card, Skeleton } from "@heroui/react"
