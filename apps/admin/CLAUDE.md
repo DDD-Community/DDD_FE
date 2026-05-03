@@ -156,7 +156,6 @@ import { Button, Input, Card, Drawer, Table, Tabs } from "@heroui/react"
 | `shared/hooks/useIsMobile.ts` | 모바일 뷰포트 감지 훅      |
 | `shared/lib/cn.ts`            | clsx + tailwind-merge 유틸 |
 | `shared/lib/paths.ts`         | 라우트 경로 상수           |
-| `shared/lib/auth.ts`          | 인증 체크 로더 유틸 (TODO) |
 
 ---
 
