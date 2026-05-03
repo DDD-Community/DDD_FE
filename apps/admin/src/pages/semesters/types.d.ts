@@ -1,15 +1,11 @@
-// 임시 타입들, API 명세 보고 수정 필요
+// Drawer 전용 폼 상태 타입.
+// (목록·필터·테이블은 `@ddd/api` `CohortDto` / `CohortStatus` 를 직접 사용한다.)
+//
+// TODO: SemesterRegisterDrawer 가 useCreateCohort 로 연동되는 시점에
+//       파트명 매핑(Server↔BE / Web↔FE / Android↔AND) 과 함께 폼 타입 자체를
+//       `CreateCohortRequestDto` 기반으로 재정렬한다.
 
-export type SemesterStatus = "active" | "inactive" | "upcoming" | "recruiting"
-
-export type SemesterInfo = {
-  semester: string
-  status: SemesterStatus
-  recruitmentPeriod: string
-  applicants: number
-  members: number
-  createdAt: string
-}
+import type { CohortStatus } from "@ddd/api"
 
 export type SemesterPart = "PM" | "PD" | "Server" | "Web" | "iOS" | "Android"
 
@@ -29,7 +25,7 @@ export type CurriculumWeek = {
 
 export type SemesterRegisterForm = {
   cohortNumber: string
-  status: SemesterStatus
+  status: CohortStatus
   recruitStartDate: string
   recruitEndDate: string
   process: ProcessSchedule

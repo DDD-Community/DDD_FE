@@ -33,7 +33,7 @@ import { useIsMobile } from "@/shared/hooks/useIsMobile"
 
 const createInitialForm = (): SemesterRegisterForm => ({
   cohortNumber: "",
-  status: "upcoming",
+  status: "UPCOMING",
   recruitStartDate: "",
   recruitEndDate: "",
   process: {
