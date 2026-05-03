@@ -25,7 +25,7 @@ export const CardSection = ({ total, pending, notified }: CardSectionProps) => {
     <GridBox className="grid-cols-3 gap-5">
       <Card>
         <Card.Header>
-          <Card.Title className="text-xs font-bold">전체 신청</Card.Title>
+          <Card.Title className="text-sm font-bold">전체 신청</Card.Title>
         </Card.Header>
         <Card.Content>
           <p className="text-xl font-semibold">{total}명</p>
@@ -36,7 +36,7 @@ export const CardSection = ({ total, pending, notified }: CardSectionProps) => {
       </Card>
       <Card>
         <Card.Header>
-          <Card.Title className="text-xs font-bold">대기</Card.Title>
+          <Card.Title className="text-sm font-bold">대기</Card.Title>
         </Card.Header>
         <Card.Content>
           <p className="text-xl font-semibold">{pending}명</p>
@@ -47,7 +47,7 @@ export const CardSection = ({ total, pending, notified }: CardSectionProps) => {
       </Card>
       <Card>
         <Card.Header>
-          <Card.Title className="text-xs font-bold">발송 완료</Card.Title>
+          <Card.Title className="text-sm font-bold">발송 완료</Card.Title>
         </Card.Header>
         <Card.Content>
           <p className="text-xl font-semibold">{notified}명</p>
