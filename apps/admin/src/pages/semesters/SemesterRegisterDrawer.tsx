@@ -1,39 +1,56 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { PlusSignIcon, X } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
 import {
+  AlertDialog,
   Button,
-  Input,
-  TextArea,
-  Drawer,
-  Tabs,
+  Calendar,
+  DateField,
   DatePicker,
   DateRangePicker,
-  Calendar,
-  RangeCalendar,
-  DateField,
-  Select,
+  Drawer,
+  Input,
   ListBox,
+  RangeCalendar,
+  Select,
+  Tabs,
+  TextArea,
 } from "@heroui/react"
 
+import { CohortPartConfigDtoName, CreateCohortRequestDtoStatus } from "@ddd/api"
+
+import type { CohortPartName } from "@ddd/api"
+
 import {
-  CURRICULUM_WEEK_COUNT,
+  PART_LABEL,
   SEMESTER_PARTS,
-  STATUS_OPTIONS,
-} from "./constants"
+  useCreateOrUpdateCohortFlow,
+  useDeleteCohortFlow,
+} from "@/entities/cohort"
+import { useIsMobile } from "@/shared/hooks/useIsMobile"
+import { GridBox } from "@/shared/ui/GridBox"
+
+import { CURRICULUM_WEEK_COUNT, STATUS_OPTIONS } from "./constants"
 import type {
   CurriculumWeek,
   ProcessSchedule,
-  SemesterPart,
   SemesterRegisterForm,
 } from "./types"
-import { GridBox } from "@/shared/ui/GridBox"
-import { useIsMobile } from "@/shared/hooks/useIsMobile"
+
+type DrawerMode = "create" | "resume" | "edit"
+
+interface Props {
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+  mode: DrawerMode
+  targetId: number | null
+  prefill?: SemesterRegisterForm
+}
 
 const createInitialForm = (): SemesterRegisterForm => ({
   cohortNumber: "",
-  status: "UPCOMING",
+  status: CreateCohortRequestDtoStatus.UPCOMING,
   recruitStartDate: "",
   recruitEndDate: "",
   process: {
@@ -49,25 +66,67 @@ const createInitialForm = (): SemesterRegisterForm => ({
     description: "",
   })),
   applicationForms: {
-    PM: [""],
-    PD: [""],
-    Server: [""],
-    Web: [""],
-    iOS: [""],
-    Android: [""],
+    [CohortPartConfigDtoName.PM]: [""],
+    [CohortPartConfigDtoName.PD]: [""],
+    [CohortPartConfigDtoName.BE]: [""],
+    [CohortPartConfigDtoName.FE]: [""],
+    [CohortPartConfigDtoName.IOS]: [""],
+    [CohortPartConfigDtoName.AND]: [""],
   },
 })
 
-export function SemesterRegisterDrawer() {
+const TITLE_BY_MODE: Record<DrawerMode, string> = {
+  create: "신규 기수 등록",
+  resume: "기수 등록 마저하기",
+  edit: "기수 수정",
+}
+
+const SUBMIT_LABEL_BY_MODE: Record<DrawerMode, string> = {
+  create: "등록",
+  resume: "저장",
+  edit: "저장",
+}
+
+export function SemesterRegisterDrawer({
+  isOpen,
+  onOpenChange,
+  mode,
+  targetId,
+  prefill,
+}: Props) {
   const isMobile = useIsMobile()
-  const [form, setForm] = useState<SemesterRegisterForm>(createInitialForm)
+  const [form, setForm] = useState<SemesterRegisterForm>(
+    () => prefill ?? createInitialForm(),
+  )
+
+  // prefill / mode 가 바뀌면 폼 갱신 (다른 cohort 선택 시 등)
+  useEffect(() => {
+    setForm(prefill ?? createInitialForm())
+  }, [prefill, mode])
+
+  const { submit, isPending: isSubmitting } = useCreateOrUpdateCohortFlow({
+    mode,
+    targetId,
+    onSuccess: () => onOpenChange(false),
+  })
+
+  const {
+    isConfirmOpen,
+    openConfirm,
+    closeConfirm,
+    confirm: confirmDelete,
+    isPending: isDeleting,
+  } = useDeleteCohortFlow({
+    targetId,
+    onDeleted: () => onOpenChange(false),
+  })
 
   const handleBasicChange = (
     field: keyof Pick<
       SemesterRegisterForm,
       "cohortNumber" | "status" | "recruitStartDate" | "recruitEndDate"
     >,
-    value: string
+    value: string,
   ) => {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
@@ -82,7 +141,7 @@ export function SemesterRegisterDrawer() {
   const handleCurriculumChange = (
     weekIndex: number,
     field: keyof CurriculumWeek,
-    value: string
+    value: string,
   ) => {
     setForm((prev) => {
       const next = [...prev.curriculum]
@@ -92,9 +151,9 @@ export function SemesterRegisterDrawer() {
   }
 
   const handleQuestionChange = (
-    part: SemesterPart,
+    part: CohortPartName,
     questionIndex: number,
-    value: string
+    value: string,
   ) => {
     setForm((prev) => {
       const next = [...prev.applicationForms[part]]
@@ -106,7 +165,7 @@ export function SemesterRegisterDrawer() {
     })
   }
 
-  const addQuestion = (part: SemesterPart) => {
+  const addQuestion = (part: CohortPartName) => {
     setForm((prev) => ({
       ...prev,
       applicationForms: {
@@ -116,10 +175,10 @@ export function SemesterRegisterDrawer() {
     }))
   }
 
-  const removeQuestion = (part: SemesterPart, questionIndex: number) => {
+  const removeQuestion = (part: CohortPartName, questionIndex: number) => {
     setForm((prev) => {
       const next = prev.applicationForms[part].filter(
-        (_, i) => i !== questionIndex
+        (_, i) => i !== questionIndex,
       )
       return {
         ...prev,
@@ -128,48 +187,92 @@ export function SemesterRegisterDrawer() {
     })
   }
 
-  const handleSubmit = () => {
-    // TODO: 실제 API 연동 시 여기서 mutate 호출
-    console.log("등록:", form)
-  }
-
   return (
-    <Drawer.Backdrop>
-      <Drawer.Content placement={isMobile ? "bottom" : "right"}>
-        <Drawer.Dialog
-          className={!isMobile ? "w-full max-w-1/2 bg-gray-100" : ""}
-        >
-          <Drawer.Header>
-            <Drawer.Heading className="text-lg font-semibold">
-              신규 기수 등록
-            </Drawer.Heading>
-          </Drawer.Header>
+    <>
+      <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Drawer.Backdrop>
+          <Drawer.Content placement={isMobile ? "bottom" : "right"}>
+            <Drawer.Dialog
+              className={!isMobile ? "w-full max-w-1/2 bg-gray-100" : ""}
+            >
+              <Drawer.Header>
+                <Drawer.Heading className="text-lg font-semibold">
+                  {TITLE_BY_MODE[mode]}
+                </Drawer.Heading>
+              </Drawer.Header>
 
-          <Drawer.Body className="flex-1 space-y-8 overflow-y-auto">
-            <BasicInfoSection form={form} onChange={handleBasicChange} />
-            <ProcessSection
-              process={form.process}
-              onChange={handleProcessChange}
-            />
-            <CurriculumSection
-              curriculum={form.curriculum}
-              onChange={handleCurriculumChange}
-            />
-            <ApplicationFormSection
-              applicationForms={form.applicationForms}
-              onQuestionChange={handleQuestionChange}
-              onAddQuestion={addQuestion}
-              onRemoveQuestion={removeQuestion}
-            />
-          </Drawer.Body>
+              <Drawer.Body className="flex-1 space-y-8 overflow-y-auto">
+                <BasicInfoSection form={form} onChange={handleBasicChange} />
+                <ProcessSection
+                  process={form.process}
+                  onChange={handleProcessChange}
+                />
+                <CurriculumSection
+                  curriculum={form.curriculum}
+                  onChange={handleCurriculumChange}
+                />
+                <ApplicationFormSection
+                  applicationForms={form.applicationForms}
+                  onQuestionChange={handleQuestionChange}
+                  onAddQuestion={addQuestion}
+                  onRemoveQuestion={removeQuestion}
+                />
+              </Drawer.Body>
 
-          <Drawer.Footer>
-            <Drawer.CloseTrigger />
-            <Button onPress={handleSubmit}>등록</Button>
-          </Drawer.Footer>
-        </Drawer.Dialog>
-      </Drawer.Content>
-    </Drawer.Backdrop>
+              <Drawer.Footer className="gap-2">
+                <Button slot="close" variant="tertiary">
+                  취소
+                </Button>
+                {mode === "resume" && (
+                  <Button
+                    variant="danger"
+                    isDisabled={isDeleting || isSubmitting}
+                    onPress={openConfirm}
+                  >
+                    삭제
+                  </Button>
+                )}
+                <Button
+                  isDisabled={isSubmitting || isDeleting}
+                  onPress={() => submit(form)}
+                >
+                  {isSubmitting ? "저장 중..." : SUBMIT_LABEL_BY_MODE[mode]}
+                </Button>
+              </Drawer.Footer>
+            </Drawer.Dialog>
+          </Drawer.Content>
+        </Drawer.Backdrop>
+      </Drawer>
+
+      <AlertDialog.Backdrop isOpen={isConfirmOpen} onOpenChange={(o) => !o && closeConfirm()}>
+        <AlertDialog.Container>
+          <AlertDialog.Dialog className="sm:max-w-[400px]">
+            <AlertDialog.CloseTrigger />
+            <AlertDialog.Header>
+              <AlertDialog.Icon status="danger" />
+              <AlertDialog.Heading>기수를 삭제하시겠습니까?</AlertDialog.Heading>
+            </AlertDialog.Header>
+            <AlertDialog.Body>
+              <p>
+                작성 중인 모든 정보가 사라지며, 이 작업은 되돌릴 수 없습니다.
+              </p>
+            </AlertDialog.Body>
+            <AlertDialog.Footer>
+              <Button slot="close" variant="tertiary">
+                취소
+              </Button>
+              <Button
+                variant="danger"
+                isDisabled={isDeleting}
+                onPress={confirmDelete}
+              >
+                {isDeleting ? "삭제 중..." : "삭제"}
+              </Button>
+            </AlertDialog.Footer>
+          </AlertDialog.Dialog>
+        </AlertDialog.Container>
+      </AlertDialog.Backdrop>
+    </>
   )
 }
 
@@ -182,7 +285,7 @@ type BasicInfoSectionProps = {
       SemesterRegisterForm,
       "cohortNumber" | "status" | "recruitStartDate" | "recruitEndDate"
     >,
-    value: string
+    value: string,
   ) => void
 }
 
@@ -203,10 +306,8 @@ function BasicInfoSection({ form, onChange }: BasicInfoSectionProps) {
         <FormField label="상태">
           <Select
             className="w-full"
-            value={form.status}
-            onChange={(value) =>
-              onChange("status", value as SemesterRegisterForm["status"])
-            }
+            selectedKey={form.status}
+            onSelectionChange={(key) => onChange("status", String(key))}
           >
             <Select.Trigger>
               <Select.Value />
@@ -330,7 +431,7 @@ function ProcessSection({ onChange }: ProcessSectionProps) {
             onChange={(value) => {
               onChange(
                 "documentAcceptStartDate",
-                value?.start.toString() || ""
+                value?.start.toString() || "",
               )
               onChange("documentAcceptEndDate", value?.end.toString() || "")
             }}
@@ -510,7 +611,7 @@ type CurriculumSectionProps = {
   onChange: (
     weekIndex: number,
     field: keyof CurriculumWeek,
-    value: string
+    value: string,
   ) => void
 }
 
@@ -578,10 +679,14 @@ function CurriculumSection({ curriculum, onChange }: CurriculumSectionProps) {
 }
 
 type ApplicationFormSectionProps = {
-  applicationForms: Record<SemesterPart, string[]>
-  onQuestionChange: (part: SemesterPart, index: number, value: string) => void
-  onAddQuestion: (part: SemesterPart) => void
-  onRemoveQuestion: (part: SemesterPart, index: number) => void
+  applicationForms: SemesterRegisterForm["applicationForms"]
+  onQuestionChange: (
+    part: CohortPartName,
+    index: number,
+    value: string,
+  ) => void
+  onAddQuestion: (part: CohortPartName) => void
+  onRemoveQuestion: (part: CohortPartName, index: number) => void
 }
 
 function ApplicationFormSection({
@@ -598,7 +703,7 @@ function ApplicationFormSection({
           <Tabs.List aria-label="파트별 지원서">
             {SEMESTER_PARTS.map((part) => (
               <Tabs.Tab key={part} id={part}>
-                {part}
+                {PART_LABEL[part]}
                 <Tabs.Indicator />
               </Tabs.Tab>
             ))}
