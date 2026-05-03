@@ -15,6 +15,7 @@ import {
 } from "@/entities/cohort"
 import { FlexBox } from "@/shared/ui/FlexBox"
 import { GridBox } from "@/shared/ui/GridBox"
+import { StatCard } from "@/shared/ui/StatCard"
 import { Description, Title } from "@/widgets/heading"
 
 import { SemesterRegisterDrawer } from "./components"
@@ -215,45 +216,29 @@ type CardSectionProps = {
 const CardSection = ({ summary }: CardSectionProps) => {
   return (
     <GridBox className="grid-cols-4 gap-5">
-      <SummaryCard
+      <StatCard
         title="전체 기수"
         value={`${summary.totalCohorts}`}
-        sub="등록된 기수 수"
+        footer="등록된 기수 수"
       />
-      <SummaryCard
+      <StatCard
         title="현재 상태"
         value={summary.currentStatusLabel}
-        sub="가장 최신 기수"
+        footer="가장 최신 기수"
       />
-      <SummaryCard
+      <StatCard
         title="누적 지원자"
         value={`${summary.totalApplicants}명`}
-        sub="전체 기수 합산"
+        footer="전체 기수 합산"
       />
-      <SummaryCard
+      <StatCard
         title="누적 활동 멤버"
         value={`${summary.totalMembers}명`}
-        sub="전체 기수 합산"
+        footer="전체 기수 합산"
       />
     </GridBox>
   )
 }
-
-const SummaryCard = ({
-  title,
-  value,
-  sub,
-}: {
-  title: string
-  value: string
-  sub: string
-}) => (
-  <div className="rounded-lg border border-gray-200 bg-white p-4 shadow">
-    <h3 className="font-semibold text-gray-700">{title}</h3>
-    <p className="text-2xl font-bold">{value}</p>
-    <p className="text-sm text-gray-500">{sub}</p>
-  </div>
-)
 
 type SemesterRowProps = {
   row: CohortRow
