@@ -1,40 +1,24 @@
-import { getApiClient } from "../client";
+import {
+  discordAuthorizeUrl,
+  discordGetLink,
+  discordOauthCallback,
+} from "../generated/public-discord/public-discord";
 import type {
   GetDiscordAuthorizeUrlParams,
-  GetDiscordAuthorizeUrlResponse,
-  GetDiscordOauthCallbackParams,
   GetDiscordLinkParams,
-  GetDiscordLinkResponse,
+  GetDiscordOauthCallbackParams,
 } from "./types";
 
-const DISCORD_BASE_URL = "/api/v1/discord" as const;
-
 export const discordAPI = {
-  getAuthorizeUrl: ({ params }: { params: GetDiscordAuthorizeUrlParams }) => {
-    const searchParams = new URLSearchParams({
-      applicationFormId: params.applicationFormId,
-    });
-    return getApiClient().get<GetDiscordAuthorizeUrlResponse>(
-      `${DISCORD_BASE_URL}/authorize?${searchParams}`,
-    );
-  },
+  /** Discord OAuth 동의 URL 조회 — GET /api/v1/discord/oauth/authorize */
+  getAuthorizeUrl: ({ params }: { params: GetDiscordAuthorizeUrlParams }) =>
+    discordAuthorizeUrl(params),
 
-  oauthCallback: ({ params }: { params: GetDiscordOauthCallbackParams }) => {
-    const searchParams = new URLSearchParams({
-      code: params.code,
-      state: params.state,
-    });
-    return getApiClient().get<void>(
-      `${DISCORD_BASE_URL}/oauth/callback?${searchParams}`,
-    );
-  },
+  /** Discord OAuth 콜백 — GET /api/v1/discord/oauth/callback */
+  oauthCallback: ({ params }: { params: GetDiscordOauthCallbackParams }) =>
+    discordOauthCallback(params),
 
-  getLink: ({ params }: { params: GetDiscordLinkParams }) => {
-    const searchParams = new URLSearchParams({
-      applicationFormId: params.applicationFormId,
-    });
-    return getApiClient().get<GetDiscordLinkResponse>(
-      `${DISCORD_BASE_URL}/link?${searchParams}`,
-    );
-  },
+  /** Discord 연동 상태 조회 — GET /api/v1/discord/link */
+  getLink: ({ params }: { params: GetDiscordLinkParams }) =>
+    discordGetLink(params),
 };

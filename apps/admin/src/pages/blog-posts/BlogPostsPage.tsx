@@ -2,7 +2,7 @@ import { useMemo, useState } from "react"
 import { Button } from "@heroui/react"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { useInfiniteBlogPosts } from "@ddd/api"
+import { useAdminInfiniteBlogPosts } from "@ddd/api"
 import type { BlogPostDto } from "@ddd/api"
 
 import { FlexBox } from "@/shared/ui/FlexBox"
@@ -35,7 +35,7 @@ export default function BlogPostsPage() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteBlogPosts({ params: { limit: PAGE_LIMIT } })
+  } = useAdminInfiniteBlogPosts({ params: { limit: PAGE_LIMIT } })
 
   const allPosts = useMemo<BlogPostDto[]>(
     () => postsData?.pages.flatMap((page) => page.items) ?? [],

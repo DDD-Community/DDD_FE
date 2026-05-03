@@ -3,12 +3,6 @@ import { interviewQueries, interviewMutations } from "./queries";
 import type {
   GetInterviewSlotsParams,
   GetInterviewSlotParams,
-  PostCreateInterviewSlotRequest,
-  PatchUpdateInterviewSlotParams,
-  PatchUpdateInterviewSlotRequest,
-  DeleteInterviewSlotParams,
-  PostCreateInterviewReservationRequest,
-  DeleteInterviewReservationParams,
 } from "./types";
 
 /**
@@ -73,21 +67,11 @@ export const useDeleteInterviewSlot = () =>
   useMutation(interviewMutations.deleteInterviewSlot());
 
 /**
- * 면접 예약 훅
+ * 면접 예약 생성 훅
  *
  * @example
  * const { mutate: createReservation, isPending } = useCreateInterviewReservation()
- * createReservation({ payload: { applicationFormId: 1 } })
+ * createReservation({ params: { slotId: 1 }, payload: { applicationFormId: 1 } })
  */
 export const useCreateInterviewReservation = () =>
   useMutation(interviewMutations.createInterviewReservation());
-
-/**
- * 면접 예약 취소 훅
- *
- * @example
- * const { mutate: deleteReservation, isPending } = useDeleteInterviewReservation()
- * deleteReservation({ params: { id: 1 } })
- */
-export const useDeleteInterviewReservation = () =>
-  useMutation(interviewMutations.deleteInterviewReservation());

@@ -1,82 +1,57 @@
-import { getApiClient } from "../client";
+import {
+  interviewListSlots,
+  interviewGetSlot,
+  interviewCreateSlot,
+  interviewUpdateSlot,
+  interviewDeleteSlot,
+  interviewCreateReservation,
+} from "../generated/admin-interview/admin-interview";
 import type {
   GetInterviewSlotsParams,
-  GetInterviewSlotsResponse,
   GetInterviewSlotParams,
-  GetInterviewSlotResponse,
   PostCreateInterviewSlotRequest,
-  PostCreateInterviewSlotResponse,
   PatchUpdateInterviewSlotParams,
   PatchUpdateInterviewSlotRequest,
-  PatchUpdateInterviewSlotResponse,
   DeleteInterviewSlotParams,
+  PostCreateInterviewReservationParams,
   PostCreateInterviewReservationRequest,
-  PostCreateInterviewReservationResponse,
-  DeleteInterviewReservationParams,
 } from "./types";
 
-const INTERVIEW_BASE_URL = "/api/v1/interview" as const;
-
 export const interviewAPI = {
-  getInterviewSlots: ({ params }: { params: GetInterviewSlotsParams }) => {
-    const searchParams = new URLSearchParams();
-    if (params.cohortId !== undefined)
-      searchParams.set("cohortId", String(params.cohortId));
-    if (params.cohortPartId !== undefined)
-      searchParams.set("cohortPartId", String(params.cohortPartId));
+  /** 기수/파트 필터로 슬롯을 조회합니다. */
+  getInterviewSlots: ({ params }: { params: GetInterviewSlotsParams }) =>
+    interviewListSlots(params),
 
-    const query = searchParams.toString();
-    return getApiClient().get<GetInterviewSlotsResponse>(
-      `${INTERVIEW_BASE_URL}/slots${query ? `?${query}` : ""}`,
-    );
-  },
-
+  /** 면접 슬롯 상세 조회 */
   getInterviewSlot: ({ params }: { params: GetInterviewSlotParams }) =>
-    getApiClient().get<GetInterviewSlotResponse>(
-      `${INTERVIEW_BASE_URL}/slots/${params.id}`,
-    ),
+    interviewGetSlot(params.id),
 
+  /** 새로운 면접 슬롯을 생성합니다. */
   createInterviewSlot: ({
     payload,
   }: {
     payload: PostCreateInterviewSlotRequest;
-  }) =>
-    getApiClient().post<PostCreateInterviewSlotResponse>(
-      `${INTERVIEW_BASE_URL}/slots`,
-      payload,
-    ),
+  }) => interviewCreateSlot(payload),
 
+  /** 면접 슬롯 수정 */
   updateInterviewSlot: ({
     params,
     payload,
   }: {
     params: PatchUpdateInterviewSlotParams;
     payload: PatchUpdateInterviewSlotRequest;
-  }) =>
-    getApiClient().patch<PatchUpdateInterviewSlotResponse>(
-      `${INTERVIEW_BASE_URL}/slots/${params.id}`,
-      payload,
-    ),
+  }) => interviewUpdateSlot(params.id, payload),
 
+  /** 면접 슬롯 삭제 */
   deleteInterviewSlot: ({ params }: { params: DeleteInterviewSlotParams }) =>
-    getApiClient().delete<void>(`${INTERVIEW_BASE_URL}/slots/${params.id}`),
+    interviewDeleteSlot(params.id),
 
+  /** 지원자를 특정 슬롯에 배정하고 구글 캘린더 이벤트를 생성합니다. */
   createInterviewReservation: ({
+    params,
     payload,
   }: {
+    params: PostCreateInterviewReservationParams;
     payload: PostCreateInterviewReservationRequest;
-  }) =>
-    getApiClient().post<PostCreateInterviewReservationResponse>(
-      `${INTERVIEW_BASE_URL}/reservations`,
-      payload,
-    ),
-
-  deleteInterviewReservation: ({
-    params,
-  }: {
-    params: DeleteInterviewReservationParams;
-  }) =>
-    getApiClient().delete<void>(
-      `${INTERVIEW_BASE_URL}/reservations/${params.id}`,
-    ),
+  }) => interviewCreateReservation(params.slotId, payload),
 };

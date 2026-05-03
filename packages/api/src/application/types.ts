@@ -7,29 +7,30 @@ import type {
   UpdateApplicationStatusRequestDtoStatus,
 } from "../generated/dddApi.schemas";
 
-// GET /api/v1/application/admin - 어드민 지원서 목록 조회
+// GET /api/v1/admin/applications - 어드민 지원서 목록 조회
 export type GetAdminApplicationsParams = ApplicationGetAdminListParams;
 export type GetAdminApplicationsResponse = ApplicationDto[];
 
-// GET /api/v1/application/admin/{id} - 어드민 지원서 단일 조회
+// GET /api/v1/admin/applications/{id} - 어드민 지원서 단일 조회
 export type GetAdminApplicationParams = { id: number };
 export type GetAdminApplicationResponse = ApplicationDto;
 
-// PATCH /api/v1/application/admin/{id}/status - 지원서 상태 변경
+// PATCH /api/v1/admin/applications/{id}/status - 지원서 상태 변경
 export type PatchApplicationStatusParams = { id: number };
 export type PatchApplicationStatusRequest = UpdateApplicationStatusRequestDto;
-export type PatchApplicationStatusResponse = ApplicationDto;
+export type PatchApplicationStatusResponse = void;
 
-// POST /api/v1/application/draft - 지원서 임시 저장
+// POST /api/v1/applications/draft - 지원서 임시 저장
 export type PostSaveApplicationDraftRequest = SaveApplicationDraftRequestDto;
-export type PostSaveApplicationDraftResponse = ApplicationDto;
+export type PostSaveApplicationDraftResponse = void;
 
-// POST /api/v1/application/submit - 지원서 제출
+// GET /api/v1/applications/draft/{cohortPartId} - 임시저장 단건 조회
+export type GetApplicationDraftParams = { cohortPartId: number };
+export type GetApplicationDraftResponse = void;
+
+// POST /api/v1/applications - 지원서 제출
 export type PostSubmitApplicationRequest = SubmitApplicationRequestDto;
-export type PostSubmitApplicationResponse = ApplicationDto;
-
-// GET /api/v1/application/my - 내 지원서 조회
-export type GetMyApplicationResponse = ApplicationDto;
+export type PostSubmitApplicationResponse = void;
 
 // 엔티티 타입
 export type ApplicationStatus = ApplicationGetAdminListStatus;

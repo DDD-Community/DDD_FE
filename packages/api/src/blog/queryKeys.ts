@@ -1,7 +1,7 @@
 import type {
   GetBlogPostsParams,
-  GetBlogPostParams,
   GetInfiniteBlogPostsParams,
+  GetAdminBlogPostParams,
 } from "./types";
 
 export const blogKeys = {
@@ -33,12 +33,25 @@ export const blogKeys = {
   infiniteList: (params: GetInfiniteBlogPostsParams) =>
     [...blogKeys.infiniteLists(), params] as const,
 
+  /** 어드민 블로그 전체 목록 key */
+  adminLists: () => [...blogKeys.all, "admin-list"] as const,
+
+  /** 어드민 블로그 무한 스크롤 목록 key */
+  adminInfiniteLists: () => [...blogKeys.all, "admin-infinite-list"] as const,
+
+  /** 어드민 블로그 무한 스크롤 필터 key */
+  adminInfiniteList: (params: GetInfiniteBlogPostsParams) =>
+    [...blogKeys.adminInfiniteLists(), params] as const,
+
+  /** 어드민 블로그 단건 key */
+  adminDetails: () => [...blogKeys.all, "admin-detail"] as const,
+
   /**
-   * 블로그 단일 key
+   * 어드민 블로그 단건 필터 key
    *
-   * @param {GetBlogPostParams} params - 조회 파라미터
+   * @param {GetAdminBlogPostParams} params - 조회 파라미터
    * @param {number} params.id - 블로그 ID
    */
-  detail: (params: GetBlogPostParams) =>
-    [...blogKeys.all, "detail", params] as const,
+  adminDetail: (params: GetAdminBlogPostParams) =>
+    [...blogKeys.adminDetails(), params] as const,
 };

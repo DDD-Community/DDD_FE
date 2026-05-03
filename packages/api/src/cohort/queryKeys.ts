@@ -15,4 +15,7 @@ export const cohortKeys = {
    */
   detail: (params: GetCohortParams) =>
     [...cohortKeys.all, "detail", params] as const,
+
+  /** 현재 활성 기수 key (public) */
+  active: () => [...cohortKeys.all, "active"] as const,
 };

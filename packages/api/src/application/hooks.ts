@@ -3,19 +3,11 @@ import { applicationQueries, applicationMutations } from "./queries";
 import type {
   GetAdminApplicationsParams,
   GetAdminApplicationParams,
-  PatchApplicationStatusParams,
-  PatchApplicationStatusRequest,
-  PostSaveApplicationDraftRequest,
-  PostSubmitApplicationRequest,
+  GetApplicationDraftParams,
 } from "./types";
 
 /**
  * 어드민 지원서 목록 조회 훅
- *
- * @param {GetAdminApplicationsParams} params - 조회 파라미터
- * @param {number} [params.cohortId] - 기수 ID (선택)
- * @param {number} [params.cohortPartId] - 파트 ID (선택)
- * @param {ApplicationStatus} [params.status] - 지원 상태 (선택)
  *
  * @example
  * const { data: applications, isLoading } = useAdminApplications({ params: { cohortId: 1 } })
@@ -27,10 +19,7 @@ export const useAdminApplications = ({
 }) => useQuery(applicationQueries.getAdminApplications({ params }));
 
 /**
- * 어드민 지원서 단일 조회 훅
- *
- * @param {GetAdminApplicationParams} params - 조회 파라미터
- * @param {number} params.id - 지원서 ID
+ * 어드민 지원서 단건 상세 조회 훅
  *
  * @example
  * const { data: application, isLoading } = useAdminApplication({ params: { id: 1 } })
@@ -42,16 +31,19 @@ export const useAdminApplication = ({
 }) => useQuery(applicationQueries.getAdminApplication({ params }));
 
 /**
- * 내 지원서 조회 훅
+ * 파트별 임시저장 단건 조회 훅
  *
  * @example
- * const { data: myApplication, isLoading } = useMyApplication()
+ * const { data: draft } = useApplicationDraft({ params: { cohortPartId: 3 } })
  */
-export const useMyApplication = () =>
-  useQuery(applicationQueries.getMyApplication());
+export const useApplicationDraft = ({
+  params,
+}: {
+  params: GetApplicationDraftParams;
+}) => useQuery(applicationQueries.getApplicationDraft({ params }));
 
 /**
- * 지원서 상태 변경 훅
+ * 어드민 지원서 상태 변경 훅
  *
  * @example
  * const { mutate: patchStatus, isPending } = usePatchApplicationStatus()
@@ -61,7 +53,7 @@ export const usePatchApplicationStatus = () =>
   useMutation(applicationMutations.patchApplicationStatus());
 
 /**
- * 지원서 임시 저장 훅
+ * 지원서 임시저장 훅
  *
  * @example
  * const { mutate: saveDraft, isPending } = useSaveApplicationDraft()
@@ -71,7 +63,7 @@ export const useSaveApplicationDraft = () =>
   useMutation(applicationMutations.saveApplicationDraft());
 
 /**
- * 지원서 제출 훅
+ * 지원서 최종 제출 훅
  *
  * @example
  * const { mutate: submit, isPending } = useSubmitApplication()

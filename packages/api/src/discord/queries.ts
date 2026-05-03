@@ -1,10 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { discordAPI } from "./api";
 import { discordKeys } from "./queryKeys";
-import type {
-  GetDiscordAuthorizeUrlParams,
-  GetDiscordLinkParams,
-} from "./types";
+import type { GetDiscordAuthorizeUrlParams, GetDiscordLinkParams } from "./types";
 
 export const discordQueries = {
   /**

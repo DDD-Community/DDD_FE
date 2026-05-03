@@ -1,53 +1,52 @@
-import { getApiClient } from "../client";
+import {
+  blogGetAdminList,
+  blogGetAdminById,
+  blogCreateAdmin,
+  blogUpdateAdminById,
+  blogDeleteAdminById,
+} from "../generated/admin-blog/admin-blog";
+import { blogGetPublicList as blogGetPublicListFn } from "../generated/blog/blog";
 import type {
   GetBlogPostsParams,
   GetBlogPostsResponse,
-  GetBlogPostParams,
-  GetBlogPostResponse,
+  GetAdminBlogPostParams,
+  GetAdminBlogPostResponse,
   PostCreateBlogPostRequest,
   PostCreateBlogPostResponse,
-  PutUpdateBlogPostParams,
-  PutUpdateBlogPostRequest,
-  PutUpdateBlogPostResponse,
+  PatchUpdateBlogPostParams,
+  PatchUpdateBlogPostRequest,
+  PatchUpdateBlogPostResponse,
   DeleteBlogPostParams,
 } from "./types";
 
-const BLOG_BASE_URL = "/api/v1/blog" as const;
-
 export const blogAPI = {
-  getBlogPosts: ({ params }: { params: GetBlogPostsParams }) => {
-    const searchParams = new URLSearchParams();
-    if (params.cursor !== undefined) searchParams.set("cursor", params.cursor);
-    if (params.limit !== undefined)
-      searchParams.set("limit", String(params.limit));
+  /** 공개 블로그 게시글 목록 조회 (커서 기반 페이지네이션) */
+  getBlogPosts: ({ params }: { params: GetBlogPostsParams }) =>
+    blogGetPublicListFn(params) as unknown as Promise<GetBlogPostsResponse>,
 
-    const query = searchParams.toString();
-    return getApiClient().get<GetBlogPostsResponse>(
-      `${BLOG_BASE_URL}${query ? `?${query}` : ""}`,
-    );
-  },
+  /** 어드민 블로그 게시글 전체 목록 조회 */
+  getAdminBlogPosts: () =>
+    blogGetAdminList() as unknown as Promise<GetBlogPostsResponse>,
 
-  getBlogPost: ({ params }: { params: GetBlogPostParams }) =>
-    getApiClient().get<GetBlogPostResponse>(`${BLOG_BASE_URL}/${params.id}`),
+  /** 어드민 블로그 게시글 단건 조회 */
+  getAdminBlogPost: ({ params }: { params: GetAdminBlogPostParams }) =>
+    blogGetAdminById(params.id) as unknown as Promise<GetAdminBlogPostResponse>,
 
+  /** 블로그 게시글 생성 (어드민) */
   createBlogPost: ({ payload }: { payload: PostCreateBlogPostRequest }) =>
-    getApiClient().post<PostCreateBlogPostResponse>(
-      `${BLOG_BASE_URL}/admin`,
-      payload,
-    ),
+    blogCreateAdmin(payload) as unknown as Promise<PostCreateBlogPostResponse>,
 
+  /** 블로그 게시글 수정 (어드민) */
   updateBlogPost: ({
     params,
     payload,
   }: {
-    params: PutUpdateBlogPostParams;
-    payload: PutUpdateBlogPostRequest;
+    params: PatchUpdateBlogPostParams;
+    payload: PatchUpdateBlogPostRequest;
   }) =>
-    getApiClient().put<PutUpdateBlogPostResponse>(
-      `${BLOG_BASE_URL}/admin/${params.id}`,
-      payload,
-    ),
+    blogUpdateAdminById(params.id, payload) as unknown as Promise<PatchUpdateBlogPostResponse>,
 
+  /** 블로그 게시글 삭제 (어드민) */
   deleteBlogPost: ({ params }: { params: DeleteBlogPostParams }) =>
-    getApiClient().delete<void>(`${BLOG_BASE_URL}/admin/${params.id}`),
+    blogDeleteAdminById(params.id),
 };

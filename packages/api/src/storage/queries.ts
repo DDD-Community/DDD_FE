@@ -1,5 +1,5 @@
 import { mutationOptions } from "@tanstack/react-query";
-import { storageAPI } from "./api";
+import { storageApi } from "./api";
 import type { PostUploadFileParams } from "./types";
 
 export const storageMutations = {
@@ -22,6 +22,6 @@ export const storageMutations = {
       }: {
         params: PostUploadFileParams;
         payload: FormData;
-      }) => storageAPI.uploadFile({ params, payload }),
+      }) => storageApi.uploadFile({ params, payload }),
     }),
 };

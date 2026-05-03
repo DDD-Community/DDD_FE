@@ -1,9 +1,9 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { cohortQueries, cohortMutations } from "./queries";
+import { cohortQueries, cohortMutations, cohortPublicQueries } from "./queries";
 import type {
   GetCohortParams,
-  PutUpdateCohortParams,
-  PutUpdateCohortRequest,
+  PatchUpdateCohortParams,
+  PatchUpdateCohortRequest,
   DeleteCohortParams,
   PutUpdateCohortPartsParams,
   PutUpdateCohortPartsRequest,
@@ -39,7 +39,7 @@ export const useCohort = ({ params }: { params: GetCohortParams }) =>
 export const useCreateCohort = () => useMutation(cohortMutations.createCohort());
 
 /**
- * 기수 수정 훅
+ * 기수 수정 훅 (PATCH /api/v1/admin/cohorts/{id})
  *
  * @example
  * const { mutate: updateCohort, isPending } = useUpdateCohort()
@@ -57,7 +57,7 @@ export const useUpdateCohort = () => useMutation(cohortMutations.updateCohort())
 export const useDeleteCohort = () => useMutation(cohortMutations.deleteCohort());
 
 /**
- * 기수 파트 설정 수정 훅
+ * 기수 파트 설정 수정 훅 (PUT /api/v1/admin/cohorts/{id}/parts)
  *
  * @example
  * const { mutate: updateCohortParts, isPending } = useUpdateCohortParts()
@@ -65,3 +65,11 @@ export const useDeleteCohort = () => useMutation(cohortMutations.deleteCohort())
  */
 export const useUpdateCohortParts = () =>
   useMutation(cohortMutations.updateCohortParts());
+
+/**
+ * 현재 활성 기수 조회 훅 (GET /api/v1/cohorts/active — public)
+ *
+ * @example
+ * const { data: activeCohort } = useActiveCohort()
+ */
+export const useActiveCohort = () => useQuery(cohortPublicQueries.getActiveCohort());

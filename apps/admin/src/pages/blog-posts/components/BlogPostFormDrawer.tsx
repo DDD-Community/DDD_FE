@@ -20,7 +20,7 @@ import {
 import type {
   BlogPostDto,
   PostCreateBlogPostRequest,
-  PutUpdateBlogPostRequest,
+  PatchUpdateBlogPostRequest,
 } from "@ddd/api"
 
 import { cn } from "@/shared/lib/cn"
@@ -124,7 +124,7 @@ export const BlogPostFormDrawer = ({
           description: "홈페이지 블로그 섹션에 노출됩니다.",
         })
       } else if (post) {
-        const payload: PutUpdateBlogPostRequest = {
+        const payload: PatchUpdateBlogPostRequest = {
           title: values.title,
           excerpt: values.excerpt,
           externalUrl: values.externalUrl,

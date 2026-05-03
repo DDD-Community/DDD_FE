@@ -7,11 +7,11 @@ import { blogAPI } from "./api";
 import { blogKeys } from "./queryKeys";
 import type {
   GetBlogPostsParams,
-  GetBlogPostParams,
   GetInfiniteBlogPostsParams,
+  GetAdminBlogPostParams,
   PostCreateBlogPostRequest,
-  PutUpdateBlogPostParams,
-  PutUpdateBlogPostRequest,
+  PatchUpdateBlogPostParams,
+  PatchUpdateBlogPostRequest,
   DeleteBlogPostParams,
 } from "./types";
 
@@ -35,7 +35,7 @@ export const blogQueries = {
     }),
 
   /**
-   * 블로그 무한 스크롤 목록 조회 쿼리
+   * 블로그 공개 무한 스크롤 목록 조회 쿼리
    *
    * cursor는 useInfiniteQuery의 pageParam으로 자동 관리되므로
    * params에 cursor를 직접 전달하지 않는다.
@@ -59,20 +59,42 @@ export const blogQueries = {
     }),
 
   /**
-   * 블로그 단일 조회 쿼리
+   * 어드민 블로그 무한 스크롤 목록 조회 쿼리 (GET /admin/blog-posts)
    *
-   * @param {GetBlogPostParams} params - 조회 파라미터
+   * 어드민 페이지에서 사용. cursor는 useInfiniteQuery의 pageParam으로 관리.
+   *
+   * @param {GetInfiniteBlogPostsParams} params - 조회 파라미터 (cursor 제외)
+   * @param {number} [params.limit] - 페이지 크기 (선택)
+   *
+   * @returns {InfiniteQueryOptions} TanStack Query Infinite 옵션 객체
+   *
+   * @example
+   * const query = useInfiniteQuery(blogQueries.getAdminInfiniteBlogPosts({ params: { limit: 20 } }))
+   */
+  getAdminInfiniteBlogPosts: ({ params }: { params: GetInfiniteBlogPostsParams }) =>
+    infiniteQueryOptions({
+      queryKey: blogKeys.adminInfiniteList(params),
+      queryFn: () => blogAPI.getAdminBlogPosts(),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (last) =>
+        last.hasMore ? last.nextCursor : undefined,
+    }),
+
+  /**
+   * 어드민 블로그 단건 조회 쿼리 (GET /admin/blog-posts/{id})
+   *
+   * @param {GetAdminBlogPostParams} params - 조회 파라미터
    * @param {number} params.id - 블로그 ID
    *
    * @returns {QueryOptions} TanStack Query 옵션 객체
    *
    * @example
-   * const query = useQuery(blogQueries.getBlogPost({ params: { id: 1 } }))
+   * const query = useQuery(blogQueries.getAdminBlogPost({ params: { id: 1 } }))
    */
-  getBlogPost: ({ params }: { params: GetBlogPostParams }) =>
+  getAdminBlogPost: ({ params }: { params: GetAdminBlogPostParams }) =>
     queryOptions({
-      queryKey: blogKeys.detail(params),
-      queryFn: () => blogAPI.getBlogPost({ params }),
+      queryKey: blogKeys.adminDetail(params),
+      queryFn: () => blogAPI.getAdminBlogPost({ params }),
       enabled: !!params.id,
     }),
 };
@@ -94,7 +116,7 @@ export const blogMutations = {
     }),
 
   /**
-   * 블로그 수정 mutation (어드민)
+   * 블로그 수정 mutation (어드민) - PATCH /admin/blog-posts/{id}
    *
    * @returns {MutationOptions} TanStack Query Mutation 옵션 객체
    *
@@ -108,8 +130,8 @@ export const blogMutations = {
         params,
         payload,
       }: {
-        params: PutUpdateBlogPostParams;
-        payload: PutUpdateBlogPostRequest;
+        params: PatchUpdateBlogPostParams;
+        payload: PatchUpdateBlogPostRequest;
       }) => blogAPI.updateBlogPost({ params, payload }),
     }),
 

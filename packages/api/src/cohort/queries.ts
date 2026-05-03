@@ -1,10 +1,10 @@
 import { queryOptions, mutationOptions } from "@tanstack/react-query";
-import { cohortAPI } from "./api";
+import { cohortAPI, cohortPublicAPI } from "./api";
 import { cohortKeys } from "./queryKeys";
 import type {
   GetCohortParams,
-  PutUpdateCohortParams,
-  PutUpdateCohortRequest,
+  PatchUpdateCohortParams,
+  PatchUpdateCohortRequest,
   DeleteCohortParams,
   PostCreateCohortRequest,
   PutUpdateCohortPartsParams,
@@ -61,7 +61,7 @@ export const cohortMutations = {
     }),
 
   /**
-   * 기수 수정 mutation
+   * 기수 수정 mutation (PATCH /api/v1/admin/cohorts/{id})
    *
    * @returns {MutationOptions} TanStack Query Mutation 옵션 객체
    *
@@ -75,8 +75,8 @@ export const cohortMutations = {
         params,
         payload,
       }: {
-        params: PutUpdateCohortParams;
-        payload: PutUpdateCohortRequest;
+        params: PatchUpdateCohortParams;
+        payload: PatchUpdateCohortRequest;
       }) => cohortAPI.updateCohort({ params, payload }),
     }),
 
@@ -96,7 +96,7 @@ export const cohortMutations = {
     }),
 
   /**
-   * 기수 파트 설정 수정 mutation
+   * 기수 파트 설정 수정 mutation (PUT /api/v1/admin/cohorts/{id}/parts)
    *
    * @returns {MutationOptions} TanStack Query Mutation 옵션 객체
    *
@@ -113,5 +113,21 @@ export const cohortMutations = {
         params: PutUpdateCohortPartsParams;
         payload: PutUpdateCohortPartsRequest;
       }) => cohortAPI.updateCohortParts({ params, payload }),
+    }),
+};
+
+export const cohortPublicQueries = {
+  /**
+   * 현재 활성 기수 조회 쿼리 (GET /api/v1/cohorts/active)
+   *
+   * @returns {QueryOptions} TanStack Query 옵션 객체
+   *
+   * @example
+   * const activeCohortQuery = useQuery(cohortPublicQueries.getActiveCohort())
+   */
+  getActiveCohort: () =>
+    queryOptions({
+      queryKey: cohortKeys.active(),
+      queryFn: () => cohortPublicAPI.getActiveCohort(),
     }),
 };

@@ -1,9 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { discordQueries } from "./queries";
-import type {
-  GetDiscordAuthorizeUrlParams,
-  GetDiscordLinkParams,
-} from "./types";
+import type { GetDiscordAuthorizeUrlParams, GetDiscordLinkParams } from "./types";
 
 /**
  * Discord 인증 URL 조회 훅

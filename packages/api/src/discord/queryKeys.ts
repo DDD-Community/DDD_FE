@@ -1,7 +1,4 @@
-import type {
-  GetDiscordAuthorizeUrlParams,
-  GetDiscordLinkParams,
-} from "./types";
+import type { GetDiscordAuthorizeUrlParams, GetDiscordLinkParams } from "./types";
 
 export const discordKeys = {
   /** Discord base key */

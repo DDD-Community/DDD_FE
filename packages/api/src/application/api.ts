@@ -1,4 +1,13 @@
-import { getApiClient } from "../client";
+import {
+  applicationGetAdminList,
+  applicationGetAdminById,
+  applicationPatchAdminStatusById,
+} from "../generated/admin-application/admin-application";
+import {
+  applicationSaveDraft,
+  applicationGetDraftByPart,
+  applicationSubmit,
+} from "../generated/application/application";
 import type {
   GetAdminApplicationsParams,
   GetAdminApplicationsResponse,
@@ -6,68 +15,44 @@ import type {
   GetAdminApplicationResponse,
   PatchApplicationStatusParams,
   PatchApplicationStatusRequest,
-  PatchApplicationStatusResponse,
   PostSaveApplicationDraftRequest,
-  PostSaveApplicationDraftResponse,
+  GetApplicationDraftParams,
   PostSubmitApplicationRequest,
-  PostSubmitApplicationResponse,
-  GetMyApplicationResponse,
 } from "./types";
 
-const APPLICATION_BASE_URL = "/api/v1/application" as const;
-
 export const applicationAPI = {
-  getAdminApplications: ({ params }: { params: GetAdminApplicationsParams }) => {
-    const searchParams = new URLSearchParams();
-    if (params.cohortId !== undefined)
-      searchParams.set("cohortId", String(params.cohortId));
-    if (params.cohortPartId !== undefined)
-      searchParams.set("cohortPartId", String(params.cohortPartId));
-    if (params.status !== undefined) searchParams.set("status", params.status);
+  /** 어드민 지원서 목록 조회 */
+  getAdminApplications: ({ params }: { params: GetAdminApplicationsParams }) =>
+    applicationGetAdminList(params) as unknown as Promise<GetAdminApplicationsResponse>,
 
-    const query = searchParams.toString();
-    return getApiClient().get<GetAdminApplicationsResponse>(
-      `${APPLICATION_BASE_URL}/admin${query ? `?${query}` : ""}`,
-    );
-  },
-
+  /** 어드민 지원서 단건 상세 조회 */
   getAdminApplication: ({ params }: { params: GetAdminApplicationParams }) =>
-    getApiClient().get<GetAdminApplicationResponse>(
-      `${APPLICATION_BASE_URL}/admin/${params.id}`,
-    ),
+    applicationGetAdminById(params.id) as unknown as Promise<GetAdminApplicationResponse>,
 
+  /** 어드민 지원서 상태 업데이트 */
   patchApplicationStatus: ({
     params,
     payload,
   }: {
     params: PatchApplicationStatusParams;
     payload: PatchApplicationStatusRequest;
-  }) =>
-    getApiClient().patch<PatchApplicationStatusResponse>(
-      `${APPLICATION_BASE_URL}/admin/${params.id}/status`,
-      payload,
-    ),
+  }) => applicationPatchAdminStatusById(params.id, payload),
 
+  /** 지원서 임시저장 */
   saveApplicationDraft: ({
     payload,
   }: {
     payload: PostSaveApplicationDraftRequest;
-  }) =>
-    getApiClient().post<PostSaveApplicationDraftResponse>(
-      `${APPLICATION_BASE_URL}/draft`,
-      payload,
-    ),
+  }) => applicationSaveDraft(payload),
 
+  /** 임시저장 단건 조회 */
+  getApplicationDraft: ({ params }: { params: GetApplicationDraftParams }) =>
+    applicationGetDraftByPart(params.cohortPartId),
+
+  /** 지원서 최종 제출 */
   submitApplication: ({
     payload,
   }: {
     payload: PostSubmitApplicationRequest;
-  }) =>
-    getApiClient().post<PostSubmitApplicationResponse>(
-      `${APPLICATION_BASE_URL}/submit`,
-      payload,
-    ),
-
-  getMyApplication: () =>
-    getApiClient().get<GetMyApplicationResponse>(`${APPLICATION_BASE_URL}/my`),
+  }) => applicationSubmit(payload),
 };

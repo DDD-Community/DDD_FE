@@ -1,61 +1,70 @@
-import { getApiClient } from "../client";
+import {
+  projectGetPublicList,
+  projectGetPublicById,
+} from "../generated/project/project";
+import {
+  projectGetAdminList,
+  projectGetAdminById,
+  projectCreateAdmin,
+  projectUpdateAdminById,
+  projectDeleteAdminById,
+  projectUpdateMembersAdmin,
+} from "../generated/admin-project/admin-project";
 import type {
   GetProjectsParams,
   GetProjectsResponse,
   GetProjectParams,
   GetProjectResponse,
+  GetAdminProjectsResponse,
+  GetAdminProjectParams,
+  GetAdminProjectResponse,
   PostCreateProjectRequest,
   PostCreateProjectResponse,
-  PutUpdateProjectParams,
-  PutUpdateProjectRequest,
-  PutUpdateProjectResponse,
+  PatchUpdateProjectParams,
+  PatchUpdateProjectRequest,
+  PatchUpdateProjectResponse,
   DeleteProjectParams,
   PutUpdateProjectMembersParams,
   PutUpdateProjectMembersRequest,
   PutUpdateProjectMembersResponse,
 } from "./types";
 
-const PROJECT_BASE_URL = "/api/v1/project" as const;
-
 export const projectAPI = {
-  getProjects: ({ params }: { params: GetProjectsParams }) => {
-    const searchParams = new URLSearchParams();
-    if (params.platform !== undefined)
-      searchParams.set("platform", params.platform);
-    if (params.cursor !== undefined) searchParams.set("cursor", params.cursor);
-    if (params.limit !== undefined)
-      searchParams.set("limit", String(params.limit));
+  /** 공개 프로젝트 목록 조회 (커서 기반 페이지네이션) */
+  getProjects: ({ params }: { params: GetProjectsParams }) =>
+    projectGetPublicList(params) as unknown as Promise<GetProjectsResponse>,
 
-    const query = searchParams.toString();
-    return getApiClient().get<GetProjectsResponse>(
-      `${PROJECT_BASE_URL}${query ? `?${query}` : ""}`,
-    );
-  },
-
+  /** 공개 프로젝트 단건 조회 */
   getProject: ({ params }: { params: GetProjectParams }) =>
-    getApiClient().get<GetProjectResponse>(`${PROJECT_BASE_URL}/${params.id}`),
+    projectGetPublicById(params.id) as unknown as Promise<GetProjectResponse>,
 
+  /** 어드민 프로젝트 전체 목록 조회 */
+  getAdminProjects: () =>
+    projectGetAdminList() as unknown as Promise<GetAdminProjectsResponse>,
+
+  /** 어드민 프로젝트 단건 조회 */
+  getAdminProject: ({ params }: { params: GetAdminProjectParams }) =>
+    projectGetAdminById(params.id) as unknown as Promise<GetAdminProjectResponse>,
+
+  /** 프로젝트 생성 (어드민) */
   createProject: ({ payload }: { payload: PostCreateProjectRequest }) =>
-    getApiClient().post<PostCreateProjectResponse>(
-      `${PROJECT_BASE_URL}/admin`,
-      payload,
-    ),
+    projectCreateAdmin(payload) as unknown as Promise<PostCreateProjectResponse>,
 
+  /** 프로젝트 수정 (어드민) - PATCH /admin/projects/{id} */
   updateProject: ({
     params,
     payload,
   }: {
-    params: PutUpdateProjectParams;
-    payload: PutUpdateProjectRequest;
+    params: PatchUpdateProjectParams;
+    payload: PatchUpdateProjectRequest;
   }) =>
-    getApiClient().put<PutUpdateProjectResponse>(
-      `${PROJECT_BASE_URL}/admin/${params.id}`,
-      payload,
-    ),
+    projectUpdateAdminById(params.id, payload) as unknown as Promise<PatchUpdateProjectResponse>,
 
+  /** 프로젝트 삭제 (어드민) */
   deleteProject: ({ params }: { params: DeleteProjectParams }) =>
-    getApiClient().delete<void>(`${PROJECT_BASE_URL}/admin/${params.id}`),
+    projectDeleteAdminById(params.id),
 
+  /** 프로젝트 참여자 수정 (어드민) - PUT /admin/projects/{id}/members */
   updateProjectMembers: ({
     params,
     payload,
@@ -63,8 +72,5 @@ export const projectAPI = {
     params: PutUpdateProjectMembersParams;
     payload: PutUpdateProjectMembersRequest;
   }) =>
-    getApiClient().put<PutUpdateProjectMembersResponse>(
-      `${PROJECT_BASE_URL}/admin/${params.id}/members`,
-      payload,
-    ),
+    projectUpdateMembersAdmin(params.id, payload) as unknown as Promise<PutUpdateProjectMembersResponse>,
 };

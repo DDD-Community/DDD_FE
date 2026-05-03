@@ -7,6 +7,7 @@ import type {
   PatchApplicationStatusParams,
   PatchApplicationStatusRequest,
   PostSaveApplicationDraftRequest,
+  GetApplicationDraftParams,
   PostSubmitApplicationRequest,
 } from "./types";
 
@@ -18,11 +19,6 @@ export const applicationQueries = {
    * @param {number} [params.cohortId] - 기수 ID (선택)
    * @param {number} [params.cohortPartId] - 파트 ID (선택)
    * @param {ApplicationStatus} [params.status] - 지원 상태 (선택)
-   *
-   * @returns {QueryOptions} TanStack Query 옵션 객체
-   *
-   * @example
-   * const query = useQuery(applicationQueries.getAdminApplications({ params: { cohortId: 1 } }))
    */
   getAdminApplications: ({ params }: { params: GetAdminApplicationsParams }) =>
     queryOptions({
@@ -31,15 +27,10 @@ export const applicationQueries = {
     }),
 
   /**
-   * 어드민 지원서 단일 조회 쿼리
+   * 어드민 지원서 단건 상세 조회 쿼리
    *
    * @param {GetAdminApplicationParams} params - 조회 파라미터
    * @param {number} params.id - 지원서 ID
-   *
-   * @returns {QueryOptions} TanStack Query 옵션 객체
-   *
-   * @example
-   * const query = useQuery(applicationQueries.getAdminApplication({ params: { id: 1 } }))
    */
   getAdminApplication: ({ params }: { params: GetAdminApplicationParams }) =>
     queryOptions({
@@ -49,25 +40,22 @@ export const applicationQueries = {
     }),
 
   /**
-   * 내 지원서 조회 쿼리
+   * 파트별 임시저장 단건 조회 쿼리
    *
-   * @returns {QueryOptions} TanStack Query 옵션 객체
-   *
-   * @example
-   * const query = useQuery(applicationQueries.getMyApplication())
+   * @param {GetApplicationDraftParams} params - 조회 파라미터
+   * @param {number} params.cohortPartId - 파트 ID
    */
-  getMyApplication: () =>
+  getApplicationDraft: ({ params }: { params: GetApplicationDraftParams }) =>
     queryOptions({
-      queryKey: applicationKeys.my(),
-      queryFn: () => applicationAPI.getMyApplication(),
+      queryKey: applicationKeys.draft(params),
+      queryFn: () => applicationAPI.getApplicationDraft({ params }),
+      enabled: Number.isFinite(params.cohortPartId),
     }),
 };
 
 export const applicationMutations = {
   /**
-   * 지원서 상태 변경 mutation
-   *
-   * @returns {MutationOptions} TanStack Query Mutation 옵션 객체
+   * 어드민 지원서 상태 변경 mutation
    *
    * @example
    * const mutation = useMutation(applicationMutations.patchApplicationStatus())
@@ -85,9 +73,7 @@ export const applicationMutations = {
     }),
 
   /**
-   * 지원서 임시 저장 mutation
-   *
-   * @returns {MutationOptions} TanStack Query Mutation 옵션 객체
+   * 지원서 임시저장 mutation
    *
    * @example
    * const mutation = useMutation(applicationMutations.saveApplicationDraft())
@@ -100,9 +86,7 @@ export const applicationMutations = {
     }),
 
   /**
-   * 지원서 제출 mutation
-   *
-   * @returns {MutationOptions} TanStack Query Mutation 옵션 객체
+   * 지원서 최종 제출 mutation
    *
    * @example
    * const mutation = useMutation(applicationMutations.submitApplication())

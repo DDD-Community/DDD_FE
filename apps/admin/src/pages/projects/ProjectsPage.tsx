@@ -2,7 +2,7 @@ import { useMemo, useState } from "react"
 import { Button } from "@heroui/react"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { useCohorts, useInfiniteProjects } from "@ddd/api"
+import { useCohorts, useAdminInfiniteProjects } from "@ddd/api"
 import type { ProjectDto } from "@ddd/api"
 
 import { FlexBox } from "@/shared/ui/FlexBox"
@@ -41,7 +41,7 @@ export default function ProjectsPage() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteProjects({
+  } = useAdminInfiniteProjects({
     params: {
       platform: platform === "ALL" ? undefined : platform,
       limit: PAGE_LIMIT,

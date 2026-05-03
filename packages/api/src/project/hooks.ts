@@ -8,12 +8,7 @@ import type {
   GetProjectsParams,
   GetProjectParams,
   GetInfiniteProjectsParams,
-  PostCreateProjectRequest,
-  PutUpdateProjectParams,
-  PutUpdateProjectRequest,
-  DeleteProjectParams,
-  PutUpdateProjectMembersParams,
-  PutUpdateProjectMembersRequest,
+  GetAdminProjectParams,
 } from "./types";
 
 /**
@@ -59,6 +54,37 @@ export const useInfiniteProjects = ({
  */
 export const useProject = ({ params }: { params: GetProjectParams }) =>
   useQuery(projectQueries.getProject({ params }));
+
+/**
+ * 어드민 프로젝트 무한 스크롤 목록 조회 훅 (GET /admin/projects)
+ *
+ * 어드민 관리 페이지에서 사용. 인증된 어드민 API 엔드포인트를 호출한다.
+ *
+ * @param {GetInfiniteProjectsParams} params - 조회 파라미터 (cursor 제외)
+ * @param {number} [params.limit] - 페이지 크기 (선택)
+ *
+ * @example
+ * const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+ *   useAdminInfiniteProjects({ params: { limit: 20 } })
+ * const items = data?.pages.flatMap((p) => p.items) ?? []
+ */
+export const useAdminInfiniteProjects = ({
+  params,
+}: {
+  params: GetInfiniteProjectsParams;
+}) => useInfiniteQuery(projectQueries.getAdminInfiniteProjects({ params }));
+
+/**
+ * 어드민 프로젝트 단건 조회 훅 (GET /admin/projects/{id})
+ *
+ * @param {GetAdminProjectParams} params - 조회 파라미터
+ * @param {number} params.id - 프로젝트 ID
+ *
+ * @example
+ * const { data: project, isLoading } = useAdminProject({ params: { id: 1 } })
+ */
+export const useAdminProject = ({ params }: { params: GetAdminProjectParams }) =>
+  useQuery(projectQueries.getAdminProject({ params }));
 
 /**
  * 프로젝트 생성 훅 (어드민)

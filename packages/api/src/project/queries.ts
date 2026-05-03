@@ -9,9 +9,10 @@ import type {
   GetProjectsParams,
   GetProjectParams,
   GetInfiniteProjectsParams,
+  GetAdminProjectParams,
   PostCreateProjectRequest,
-  PutUpdateProjectParams,
-  PutUpdateProjectRequest,
+  PatchUpdateProjectParams,
+  PatchUpdateProjectRequest,
   DeleteProjectParams,
   PutUpdateProjectMembersParams,
   PutUpdateProjectMembersRequest,
@@ -83,6 +84,50 @@ export const projectQueries = {
       queryFn: () => projectAPI.getProject({ params }),
       enabled: !!params.id,
     }),
+
+  /**
+   * 어드민 프로젝트 무한 스크롤 목록 조회 쿼리 (GET /admin/projects)
+   *
+   * 어드민 페이지에서 사용. cursor는 useInfiniteQuery의 pageParam으로 관리.
+   *
+   * @param {GetInfiniteProjectsParams} params - 조회 파라미터 (cursor 제외)
+   * @param {number} [params.limit] - 페이지 크기 (선택)
+   *
+   * @returns {InfiniteQueryOptions} TanStack Query Infinite 옵션 객체
+   *
+   * @example
+   * const query = useInfiniteQuery(projectQueries.getAdminInfiniteProjects({ params: { limit: 20 } }))
+   */
+  getAdminInfiniteProjects: ({
+    params,
+  }: {
+    params: GetInfiniteProjectsParams;
+  }) =>
+    infiniteQueryOptions({
+      queryKey: projectKeys.adminInfiniteList(params),
+      queryFn: () => projectAPI.getAdminProjects(),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (last) =>
+        last.hasMore ? last.nextCursor : undefined,
+    }),
+
+  /**
+   * 어드민 프로젝트 단건 조회 쿼리 (GET /admin/projects/{id})
+   *
+   * @param {GetAdminProjectParams} params - 조회 파라미터
+   * @param {number} params.id - 프로젝트 ID
+   *
+   * @returns {QueryOptions} TanStack Query 옵션 객체
+   *
+   * @example
+   * const query = useQuery(projectQueries.getAdminProject({ params: { id: 1 } }))
+   */
+  getAdminProject: ({ params }: { params: GetAdminProjectParams }) =>
+    queryOptions({
+      queryKey: projectKeys.adminDetail(params),
+      queryFn: () => projectAPI.getAdminProject({ params }),
+      enabled: !!params.id,
+    }),
 };
 
 export const projectMutations = {
@@ -102,7 +147,7 @@ export const projectMutations = {
     }),
 
   /**
-   * 프로젝트 수정 mutation (어드민)
+   * 프로젝트 수정 mutation (어드민) - PATCH /admin/projects/{id}
    *
    * @returns {MutationOptions} TanStack Query Mutation 옵션 객체
    *
@@ -116,8 +161,8 @@ export const projectMutations = {
         params,
         payload,
       }: {
-        params: PutUpdateProjectParams;
-        payload: PutUpdateProjectRequest;
+        params: PatchUpdateProjectParams;
+        payload: PatchUpdateProjectRequest;
       }) => projectAPI.updateProject({ params, payload }),
     }),
 

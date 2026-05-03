@@ -1,4 +1,8 @@
-import type { GetAdminApplicationsParams, GetAdminApplicationParams } from "./types";
+import type {
+  GetAdminApplicationsParams,
+  GetAdminApplicationParams,
+  GetApplicationDraftParams,
+} from "./types";
 
 export const applicationKeys = {
   /** 지원서 base key */
@@ -27,6 +31,15 @@ export const applicationKeys = {
   adminDetail: (params: GetAdminApplicationParams) =>
     [...applicationKeys.all, "admin", "detail", params] as const,
 
-  /** 내 지원서 key */
-  my: () => [...applicationKeys.all, "my"] as const,
+  /** 임시저장 목록 base key */
+  drafts: () => [...applicationKeys.all, "draft"] as const,
+
+  /**
+   * 파트별 임시저장 단건 key
+   *
+   * @param {GetApplicationDraftParams} params - 조회 파라미터
+   * @param {number} params.cohortPartId - 파트 ID
+   */
+  draft: (params: GetApplicationDraftParams) =>
+    [...applicationKeys.drafts(), params] as const,
 };

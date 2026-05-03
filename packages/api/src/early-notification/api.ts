@@ -1,64 +1,48 @@
-import { getApiClient } from "../client";
+import {
+  earlyNotificationGetAdminList,
+  earlyNotificationExportAdminCsv,
+  earlyNotificationSendBulk,
+} from "../generated/admin-early-notification/admin-early-notification";
+import { earlyNotificationSubscribe } from "../generated/early-notification/early-notification";
 import type {
   GetAdminEarlyNotificationsParams,
   GetAdminEarlyNotificationsResponse,
   GetAdminEarlyNotificationsCsvParams,
+  GetAdminEarlyNotificationsCsvResponse,
   PostSendBulkEarlyNotificationRequest,
   PostSubscribeEarlyNotificationRequest,
   PostSubscribeEarlyNotificationResponse,
 } from "./types";
 
-const EARLY_NOTIFICATION_BASE_URL = "/api/v1/early-notifications" as const;
-
 export const earlyNotificationAPI = {
+  /** 기수별 사전 알림 신청 목록을 조회합니다. */
   getAdminEarlyNotifications: ({
     params,
   }: {
     params: GetAdminEarlyNotificationsParams;
-  }) => {
-    const searchParams = new URLSearchParams({
-      cohortId: String(params.cohortId),
-    });
-    if (params.onlyUnnotified !== undefined)
-      searchParams.set("onlyUnnotified", String(params.onlyUnnotified));
+  }) =>
+    earlyNotificationGetAdminList(params) as unknown as Promise<GetAdminEarlyNotificationsResponse>,
 
-    return getApiClient().get<GetAdminEarlyNotificationsResponse>(
-      `${EARLY_NOTIFICATION_BASE_URL}/admin?${searchParams}`,
-    );
-  },
-
+  /** 기수별 사전 알림 신청 목록을 CSV 파일로 내보냅니다. */
   exportAdminCsv: ({
     params,
   }: {
     params: GetAdminEarlyNotificationsCsvParams;
-  }) => {
-    const searchParams = new URLSearchParams({
-      cohortId: String(params.cohortId),
-    });
+  }) =>
+    earlyNotificationExportAdminCsv(params) as Promise<GetAdminEarlyNotificationsCsvResponse>,
 
-    return getApiClient().get<Blob>(
-      `${EARLY_NOTIFICATION_BASE_URL}/admin/export/csv?${searchParams}`,
-      { responseType: "blob" },
-    );
-  },
-
+  /** 기수별 미발송 대상에게 사전 알림 이메일을 일괄 발송합니다. */
   sendBulkEarlyNotification: ({
     payload,
   }: {
     payload: PostSendBulkEarlyNotificationRequest;
-  }) =>
-    getApiClient().post<void>(
-      `${EARLY_NOTIFICATION_BASE_URL}/admin/send`,
-      payload,
-    ),
+  }) => earlyNotificationSendBulk(payload),
 
+  /** 기수별 사전 알림 이메일을 등록합니다. */
   subscribeEarlyNotification: ({
     payload,
   }: {
     payload: PostSubscribeEarlyNotificationRequest;
   }) =>
-    getApiClient().post<PostSubscribeEarlyNotificationResponse>(
-      `${EARLY_NOTIFICATION_BASE_URL}/subscribe`,
-      payload,
-    ),
+    earlyNotificationSubscribe(payload) as Promise<PostSubscribeEarlyNotificationResponse>,
 };
