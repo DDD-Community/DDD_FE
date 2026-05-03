@@ -30,7 +30,10 @@ export const ApplicationFilters = ({
   onStatusChange,
 }: ApplicationFiltersProps) => {
   const selectedCohort = cohorts.find((c) => c.id === selectedCohortId)
-  const parts = selectedCohort?.parts ?? []
+  const parts = (selectedCohort?.parts ?? []) as unknown as Array<{
+    id: number
+    name: string
+  }>
 
   return (
     <FlexBox className="flex-wrap gap-3">
@@ -78,7 +81,7 @@ export const ApplicationFilters = ({
       >
         <Select.Trigger>
           <Select.Value>
-            {(parts as Array<{ id: number; name: string }>).find((p) => p.id === selectedCohortPartId)?.name ?? "전체 파트"}
+            {parts.find((p) => p.id === selectedCohortPartId)?.name ?? "전체 파트"}
           </Select.Value>
           <Select.Indicator />
         </Select.Trigger>
@@ -91,7 +94,7 @@ export const ApplicationFilters = ({
             >
               전체 파트
             </ListBox.Item>
-            {(parts as Array<{ id: number; name: string }>).map((p) => (
+            {parts.map((p) => (
               <ListBox.Item
                 key={p.id}
                 id={String(p.id)}
