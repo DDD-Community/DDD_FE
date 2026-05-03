@@ -33,7 +33,7 @@ export interface RegistrationState {
  */
 export const useSemesterRegistrationMode = (): RegistrationState => {
   const { data } = useCohorts()
-  const cohorts: CohortDto[] = data ?? []
+  const cohorts: CohortDto[] = useMemo(() => data ?? [], [data])
 
   return useMemo(() => {
     const sortedDesc = cohorts.slice().sort((a, b) => b.id - a.id)

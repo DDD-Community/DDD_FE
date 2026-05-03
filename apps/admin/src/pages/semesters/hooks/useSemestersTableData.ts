@@ -51,7 +51,10 @@ export const useSemestersTableData = (): Result => {
   const cohortsQuery = useCohorts()
   const projectsQuery = useAdminProjects()
 
-  const cohorts: CohortDto[] = cohortsQuery.data ?? []
+  const cohorts: CohortDto[] = useMemo(
+    () => cohortsQuery.data ?? [],
+    [cohortsQuery.data],
+  )
 
   const applicationsByCohort = useQueries({
     queries: cohorts.map((c) =>
