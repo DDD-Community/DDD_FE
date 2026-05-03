@@ -28,7 +28,7 @@ export const DeleteBlogPostDialog = ({
       })
       onOpenChange(false)
     } catch (error) {
-      toast.error("삭제에 실패했습니다", {
+      toast.danger("삭제에 실패했습니다", {
         description: (error as Error).message,
       })
     }
@@ -41,7 +41,9 @@ export const DeleteBlogPostDialog = ({
           <AlertDialog.CloseTrigger />
           <AlertDialog.Header>
             <AlertDialog.Icon status="danger" />
-            <AlertDialog.Heading>블로그를 삭제하시겠습니까?</AlertDialog.Heading>
+            <AlertDialog.Heading>
+              블로그를 삭제하시겠습니까?
+            </AlertDialog.Heading>
           </AlertDialog.Header>
           <AlertDialog.Body>
             <p>

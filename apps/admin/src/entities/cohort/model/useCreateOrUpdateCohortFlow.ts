@@ -1,11 +1,7 @@
 import { toast } from "@heroui/react"
 import { useQueryClient } from "@tanstack/react-query"
 
-import {
-  cohortKeys,
-  useCreateCohort,
-  useUpdateCohort,
-} from "@ddd/api"
+import { cohortKeys, useCreateCohort, useUpdateCohort } from "@ddd/api"
 
 import type { SemesterRegisterForm } from "../../../pages/semesters/types"
 import {
@@ -49,7 +45,7 @@ export const useCreateOrUpdateCohortFlow = ({
         toast.success(`기수 ${created.name}을(를) 등록했습니다`)
       } else {
         if (targetId == null) {
-          toast.error("저장할 기수를 찾을 수 없습니다")
+          toast.danger("저장할 기수를 찾을 수 없습니다")
           return
         }
         const payload = serializeFormToUpdatePayload(form)
@@ -64,7 +60,7 @@ export const useCreateOrUpdateCohortFlow = ({
     } catch (error) {
       const fallback =
         mode === "create" ? "기수 등록에 실패했습니다" : "저장에 실패했습니다"
-      toast.error(fallback, {
+      toast.danger(fallback, {
         description: (error as Error)?.message,
       })
     }

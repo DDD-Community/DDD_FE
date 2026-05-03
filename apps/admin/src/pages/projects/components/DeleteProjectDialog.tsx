@@ -28,7 +28,7 @@ export const DeleteProjectDialog = ({
       })
       onOpenChange(false)
     } catch (error) {
-      toast.error("삭제에 실패했습니다", {
+      toast.danger("삭제에 실패했습니다", {
         description: (error as Error).message,
       })
     }
@@ -41,12 +41,14 @@ export const DeleteProjectDialog = ({
           <AlertDialog.CloseTrigger />
           <AlertDialog.Header>
             <AlertDialog.Icon status="danger" />
-            <AlertDialog.Heading>프로젝트를 삭제하시겠습니까?</AlertDialog.Heading>
+            <AlertDialog.Heading>
+              프로젝트를 삭제하시겠습니까?
+            </AlertDialog.Heading>
           </AlertDialog.Header>
           <AlertDialog.Body>
             <p>
-              <strong>{project?.name ?? ""}</strong>이(가) 영구적으로 삭제됩니다.
-              이 작업은 되돌릴 수 없습니다.
+              <strong>{project?.name ?? ""}</strong>이(가) 영구적으로
+              삭제됩니다. 이 작업은 되돌릴 수 없습니다.
             </p>
           </AlertDialog.Body>
           <AlertDialog.Footer>

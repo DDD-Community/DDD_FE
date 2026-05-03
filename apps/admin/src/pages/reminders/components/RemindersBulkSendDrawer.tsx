@@ -5,10 +5,7 @@ import { z } from "zod"
 import { useQueryClient } from "@tanstack/react-query"
 import { Button, Drawer, Input, TextArea, toast } from "@heroui/react"
 
-import {
-  earlyNotificationKeys,
-  useSendBulkEarlyNotification,
-} from "@ddd/api"
+import { earlyNotificationKeys, useSendBulkEarlyNotification } from "@ddd/api"
 
 import { useIsMobile } from "@/shared/hooks/useIsMobile"
 
@@ -101,7 +98,7 @@ export const RemindersBulkSendDrawer = ({
       })
       onOpenChange(false)
     } catch (error) {
-      toast.error("발송에 실패했습니다", {
+      toast.danger("발송에 실패했습니다", {
         description: (error as Error).message ?? "잠시 후 다시 시도해 주세요.",
       })
     }
@@ -146,10 +143,7 @@ export const RemindersBulkSendDrawer = ({
                 <Input {...register("ctaLabel")} placeholder="지원하기" />
               </FormField>
 
-              <FormField
-                label="버튼 링크 (URL)"
-                error={errors.ctaUrl?.message}
-              >
+              <FormField label="버튼 링크 (URL)" error={errors.ctaUrl?.message}>
                 <Input
                   {...register("ctaUrl")}
                   placeholder="https://dddstudy.com/recruit"

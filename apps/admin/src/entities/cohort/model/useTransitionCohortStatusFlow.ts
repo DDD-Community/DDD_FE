@@ -26,10 +26,10 @@ export const useTransitionCohortStatusFlow = () => {
       })
       queryClient.invalidateQueries({ queryKey: cohortKeys.all })
       toast.success(
-        `${cohort.name} 상태를 ${STATUS_LABEL[next]}(으)로 변경했습니다`,
+        `${cohort.name} 상태를 ${STATUS_LABEL[next]}(으)로 변경했습니다`
       )
     } catch (error) {
-      toast.error("상태 변경에 실패했습니다", {
+      toast.danger("상태 변경에 실패했습니다", {
         description: (error as Error)?.message,
       })
     }

@@ -3,11 +3,7 @@ import { useState } from "react"
 import { toast } from "@heroui/react"
 import { useQueryClient } from "@tanstack/react-query"
 
-import {
-  applicationKeys,
-  cohortKeys,
-  useDeleteCohort,
-} from "@ddd/api"
+import { applicationKeys, cohortKeys, useDeleteCohort } from "@ddd/api"
 
 interface Args {
   /** 삭제 대상 cohort id. resume 모드에서만 채워짐 */
@@ -32,7 +28,7 @@ export const useDeleteCohortFlow = ({ targetId, onDeleted }: Args) => {
 
   const openConfirm = () => {
     if (targetId == null) {
-      toast.error("삭제할 기수를 찾을 수 없습니다")
+      toast.danger("삭제할 기수를 찾을 수 없습니다")
       return
     }
     setIsConfirmOpen(true)
@@ -52,7 +48,7 @@ export const useDeleteCohortFlow = ({ targetId, onDeleted }: Args) => {
       setIsConfirmOpen(false)
       onDeleted?.()
     } catch (error) {
-      toast.error("삭제에 실패했습니다", {
+      toast.danger("삭제에 실패했습니다", {
         description: (error as Error)?.message,
       })
     }

@@ -14,7 +14,7 @@ export const useLogoutFlow = () => {
         window.location.replace(paths.login)
       },
       onError: (error) => {
-        toast.error("로그아웃에 실패했습니다", {
+        toast.danger("로그아웃에 실패했습니다", {
           description: error.message || "잠시 후 다시 시도해 주세요.",
         })
       },
