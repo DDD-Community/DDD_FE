@@ -3,8 +3,6 @@ import { earlyNotificationQueries, earlyNotificationMutations } from "./queries"
 import type {
   GetAdminEarlyNotificationsParams,
   GetAdminEarlyNotificationsCsvParams,
-  PostSendBulkEarlyNotificationRequest,
-  PostSubscribeEarlyNotificationRequest,
 } from "./types";
 
 /**
