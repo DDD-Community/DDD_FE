@@ -75,6 +75,15 @@ export const useAdminInfiniteProjects = ({
 }) => useInfiniteQuery(projectQueries.getAdminInfiniteProjects({ params }));
 
 /**
+ * 어드민 프로젝트 전체 목록 조회 훅 (단일 호출)
+ *
+ * @example
+ * const { data: projects } = useAdminProjects()
+ */
+export const useAdminProjects = () =>
+  useQuery(projectQueries.getAdminProjects());
+
+/**
  * 어드민 프로젝트 단건 조회 훅 (GET /admin/projects/{id})
  *
  * @param {GetAdminProjectParams} params - 조회 파라미터

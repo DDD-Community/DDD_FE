@@ -112,6 +112,20 @@ export const projectQueries = {
     }),
 
   /**
+   * 어드민 프로젝트 전체 목록 조회 쿼리 (GET /admin/projects, non-infinite)
+   *
+   * 단일 호출로 모든 프로젝트를 받아온다. cursor 페이지네이션이 필요한 화면은
+   * getAdminInfiniteProjects 를 사용한다.
+   *
+   * @returns {QueryOptions} TanStack Query 옵션 객체
+   */
+  getAdminProjects: () =>
+    queryOptions({
+      queryKey: projectKeys.adminLists(),
+      queryFn: () => projectAPI.getAdminProjects(),
+    }),
+
+  /**
    * 어드민 프로젝트 단건 조회 쿼리 (GET /admin/projects/{id})
    *
    * @param {GetAdminProjectParams} params - 조회 파라미터
