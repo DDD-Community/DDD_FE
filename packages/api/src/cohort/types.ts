@@ -8,6 +8,8 @@ import type {
   UpdateCohortRequestDtoStatus,
 } from "../generated/dddApi.schemas";
 
+export { CohortPartConfigDtoName } from "../generated/dddApi.schemas";
+
 // POST /api/v1/admin/cohorts - 기수 생성
 export type PostCreateCohortRequest = CreateCohortRequestDto;
 export type PostCreateCohortResponse = CohortDto;
