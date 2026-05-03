@@ -1,5 +1,8 @@
 import { Button, Input, ListBox, Select } from "@heroui/react"
-import { PlusSignIcon } from "@hugeicons/core-free-icons"
+import {
+  Download04Icon,
+  PlusSignIcon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
 import type { CohortDto } from "@ddd/api"
@@ -21,6 +24,9 @@ type RemindersToolbarProps = {
   onStatusFilterChange: (v: StatusFilterOption) => void
   onOpenBulkSend: () => void
   isBulkSendDisabled: boolean
+  onExportCsv: () => void
+  isExporting: boolean
+  isExportDisabled: boolean
 }
 
 export const RemindersToolbar = ({
@@ -33,6 +39,9 @@ export const RemindersToolbar = ({
   onStatusFilterChange,
   onOpenBulkSend,
   isBulkSendDisabled,
+  onExportCsv,
+  isExporting,
+  isExportDisabled,
 }: RemindersToolbarProps) => {
   const selectedCohort = cohorts.find((c) => c.id === cohortId)
 
@@ -97,14 +106,25 @@ export const RemindersToolbar = ({
           </Select.Popover>
         </Select>
       </FlexBox>
-      <Button
-        size="lg"
-        onPress={onOpenBulkSend}
-        isDisabled={isBulkSendDisabled}
-      >
-        <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
-        알림 발송
-      </Button>
+      <FlexBox className="gap-2">
+        <Button
+          size="lg"
+          variant="secondary"
+          onPress={onExportCsv}
+          isDisabled={isExportDisabled}
+        >
+          <HugeiconsIcon icon={Download04Icon} className="mr-2" />
+          {isExporting ? "내보내는 중..." : "CSV"}
+        </Button>
+        <Button
+          size="lg"
+          onPress={onOpenBulkSend}
+          isDisabled={isBulkSendDisabled}
+        >
+          <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
+          알림 발송
+        </Button>
+      </FlexBox>
     </FlexBox>
   )
 }
