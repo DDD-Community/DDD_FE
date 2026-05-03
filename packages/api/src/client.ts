@@ -36,7 +36,7 @@ function resolveBody(body: unknown): BodyInit | undefined {
 export function createApiClient(config: ApiClientConfig): ApiClient {
   const {
     baseUrl,
-    credentials = "same-origin",
+    credentials = "include",
     refreshTokenPath = "/api/v1/auth/refresh",
     onUnauthorized,
   } = config;
@@ -78,10 +78,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     try {
       body = (await res.json()) as ApiResponse<T>;
     } catch (error) {
-      throw new ApiError(
-        "UNKNOWN_ERROR",
-        error instanceof Error ? error.message : String(error),
-      );
+      throw new ApiError("UNKNOWN_ERROR", error instanceof Error ? error.message : String(error));
     }
 
     if (body.code !== "SUCCESS") {
@@ -98,8 +95,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     options?: ApiRequestOptions,
     isRetry = false,
   ): Promise<T> {
-    const { responseType = "json", signal, headers: optHeaders, ...restOptions } =
-      options ?? {};
+    const { responseType = "json", signal, headers: optHeaders, ...restOptions } = options ?? {};
 
     const headers = new Headers(optHeaders as HeadersInit | undefined);
     const hasBody = body !== undefined && body !== null;
@@ -187,9 +183,6 @@ export function getApiClient(): ApiClient {
   return _apiClient;
 }
 
-export function configureApi(
-  baseUrl: string,
-  options?: Omit<ApiClientConfig, "baseUrl">,
-): void {
+export function configureApi(baseUrl: string, options?: Omit<ApiClientConfig, "baseUrl">): void {
   _apiClient = createApiClient({ baseUrl, ...options });
 }
