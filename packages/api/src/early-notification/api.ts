@@ -1,9 +1,9 @@
 import {
   earlyNotificationGetAdminList,
-  earlyNotificationExportAdminCsv,
   earlyNotificationSendBulk,
 } from "../generated/admin-early-notification/admin-early-notification";
 import { earlyNotificationSubscribe } from "../generated/early-notification/early-notification";
+import { apiFetch } from "../mutator";
 import type {
   GetAdminEarlyNotificationsParams,
   GetAdminEarlyNotificationsResponse,
@@ -23,13 +23,23 @@ export const earlyNotificationAPI = {
   }) =>
     earlyNotificationGetAdminList(params) as unknown as Promise<GetAdminEarlyNotificationsResponse>,
 
-  /** 기수별 사전 알림 신청 목록을 CSV 파일로 내보냅니다. */
+  /**
+   * 기수별 사전 알림 신청 목록을 CSV 텍스트로 내보냅니다.
+   *
+   * NOTE: orval generated 함수는 responseType 을 전달하지 않아 JSON 파서를 거치므로
+   * 여기서는 apiFetch 를 직접 호출하면서 responseType: "text" 를 명시한다.
+   */
   exportAdminCsv: ({
     params,
   }: {
     params: GetAdminEarlyNotificationsCsvParams;
-  }) =>
-    earlyNotificationExportAdminCsv(params) as Promise<GetAdminEarlyNotificationsCsvResponse>,
+  }): Promise<GetAdminEarlyNotificationsCsvResponse> =>
+    apiFetch<string>({
+      url: "/api/v1/admin/early-notifications/export",
+      method: "GET",
+      params: params as unknown as Record<string, unknown>,
+      responseType: "text",
+    }),
 
   /** 기수별 미발송 대상에게 사전 알림 이메일을 일괄 발송합니다. */
   sendBulkEarlyNotification: ({
