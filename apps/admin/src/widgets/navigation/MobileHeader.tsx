@@ -1,5 +1,6 @@
 import { Avatar, Button, Drawer, DrawerContent, DrawerHeader, DrawerBody } from "@heroui/react"
 import { OPERATIONS, CONTENTS } from "./constants"
+import { UserMenuDropdown } from "./UserMenuDropdown"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Cancel01Icon } from "@hugeicons/core-free-icons"
 import type { MenuItemType } from "./types"
@@ -49,9 +50,15 @@ export const MobileHeader = () => {
       </Drawer>
 
       <h1 className="text-gray-900">{currentPageTitle}</h1>
-      <Avatar className="inline-flex size-8 items-center justify-center rounded-full bg-green-400 align-middle text-base text-white select-none">
-        W
-      </Avatar>
+      <UserMenuDropdown
+        placement="bottom end"
+        aria-label="사용자 메뉴"
+        className="cursor-pointer rounded-full transition-shadow hover:ring-2 hover:ring-gray-300"
+      >
+        <Avatar className="inline-flex size-8 items-center justify-center rounded-full bg-green-400 align-middle text-base text-white select-none">
+          W
+        </Avatar>
+      </UserMenuDropdown>
     </header>
   )
 }
