@@ -17,7 +17,7 @@ import { FlexBox } from "@/shared/ui/FlexBox"
 import { GridBox } from "@/shared/ui/GridBox"
 import { Description, Title } from "@/widgets/heading"
 
-import { SemesterRegisterDrawer } from "./SemesterRegisterDrawer"
+import { SemesterRegisterDrawer } from "./components"
 import {
   STATUS_FILTER_OPTIONS,
   type StatusFilterValue,
