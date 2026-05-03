@@ -23,9 +23,11 @@ description: |
 ## 핵심 규약
 
 1. **import 단일 형태**
+
    ```tsx
-   import { toast } from "@heroui/react"
+   import { toast } from "@heroui/react";
    ```
+
    대문자 `Toast`는 Provider 컴포넌트, 소문자 `toast`만 명령형 호출.
 
 2. **Provider는 main.tsx에 한 번만**
@@ -36,13 +38,14 @@ description: |
    | 메서드 | 용도 |
    | --- | --- |
    | `toast.success` | 저장/생성/삭제/발송 등 액션 성공 |
-   | `toast.error` | API 실패, 검증 실패, 네트워크 오류 |
+   | `toast.danger` | API 실패, 검증 실패, 네트워크 오류 |
    | `toast.info` | 단순 안내 |
    | `toast.warning` | 비파괴 경고 |
 
 4. **두 줄 메시지 구조**
+
    ```tsx
-   toast.success("제목 (액션 결과)", { description: "보충 한 문장" })
+   toast.success("제목 (액션 결과)", { description: "보충 한 문장" });
    ```
 
 5. **실패 처리 정형 패턴**
