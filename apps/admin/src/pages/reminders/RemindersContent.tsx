@@ -77,7 +77,7 @@ export const RemindersContent = ({
         cohortName: selectedCohort.name,
       })
     } catch (error) {
-      toast.error("CSV 내보내기에 실패했습니다", {
+      toast.danger("CSV 내보내기에 실패했습니다", {
         description:
           error instanceof Error
             ? error.message
