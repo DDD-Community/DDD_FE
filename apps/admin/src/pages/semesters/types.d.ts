@@ -1,13 +1,4 @@
-// Drawer 전용 폼 상태 타입.
-// (목록·필터·테이블은 `@ddd/api` `CohortDto` / `CohortStatus` 를 직접 사용한다.)
-//
-// TODO: SemesterRegisterDrawer 가 useCreateCohort 로 연동되는 시점에
-//       파트명 매핑(Server↔BE / Web↔FE / Android↔AND) 과 함께 폼 타입 자체를
-//       `CreateCohortRequestDto` 기반으로 재정렬한다.
-
-import type { CohortStatus } from "@ddd/api"
-
-export type SemesterPart = "PM" | "PD" | "Server" | "Web" | "iOS" | "Android"
+import type { CohortPartName, CohortStatus } from "@ddd/api"
 
 export type ProcessSchedule = {
   documentAcceptStartDate: string
@@ -23,6 +14,12 @@ export type CurriculumWeek = {
   description: string
 }
 
+/**
+ * Drawer 폼 state shape.
+ * cohortNumber 는 숫자만 입력 받는 가정 (직렬화 시 "기" 접미사가 자동 부착됨).
+ * status 는 CohortStatus 서버 enum 값.
+ * applicationForms 는 서버 파트 enum (PM/PD/BE/FE/IOS/AND) 키 사용.
+ */
 export type SemesterRegisterForm = {
   cohortNumber: string
   status: CohortStatus
@@ -30,5 +27,5 @@ export type SemesterRegisterForm = {
   recruitEndDate: string
   process: ProcessSchedule
   curriculum: CurriculumWeek[]
-  applicationForms: Record<SemesterPart, string[]>
+  applicationForms: Record<CohortPartName, string[]>
 }
