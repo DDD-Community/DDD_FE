@@ -71,6 +71,8 @@ const SUBMIT_LABEL_BY_MODE: Record<DrawerMode, string> = {
   edit: "저장",
 }
 
+const FORM_ID = "semester-register-form"
+
 export function SemesterRegisterDrawer({
   isOpen,
   onOpenChange,
@@ -132,11 +134,17 @@ export function SemesterRegisterDrawer({
                 </Drawer.Heading>
               </Drawer.Header>
 
-              <Drawer.Body className="flex-1 space-y-8 overflow-y-auto">
-                <BasicInfoSection control={control} register={register} />
-                <ProcessSection control={control} setValue={setValue} />
-                <CurriculumSection control={control} register={register} />
-                <ApplicationFormSection watch={watch} setValue={setValue} />
+              <Drawer.Body className="flex-1 overflow-y-auto">
+                <form
+                  id={FORM_ID}
+                  onSubmit={onSubmit}
+                  className="space-y-8"
+                >
+                  <BasicInfoSection control={control} register={register} />
+                  <ProcessSection control={control} setValue={setValue} />
+                  <CurriculumSection control={control} register={register} />
+                  <ApplicationFormSection watch={watch} setValue={setValue} />
+                </form>
               </Drawer.Body>
 
               <Drawer.Footer className="gap-2">
@@ -152,7 +160,7 @@ export function SemesterRegisterDrawer({
                     삭제
                   </Button>
                 )}
-                <Button isDisabled={isBusy} onPress={() => onSubmit()}>
+                <Button type="submit" form={FORM_ID} isDisabled={isBusy}>
                   {isMutating ? "저장 중..." : SUBMIT_LABEL_BY_MODE[mode]}
                 </Button>
               </Drawer.Footer>
