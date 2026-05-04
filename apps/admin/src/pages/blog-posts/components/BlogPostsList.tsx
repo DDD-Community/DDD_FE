@@ -24,12 +24,12 @@ export const BlogPostsList = ({
 }: BlogPostsListProps) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useSuspenseInfiniteQuery(
-      blogQueries.getAdminInfiniteBlogPosts({ params: { limit: PAGE_LIMIT } }),
+      blogQueries.getAdminInfiniteBlogPosts({ params: { limit: PAGE_LIMIT } })
     )
 
   const allPosts = useMemo<BlogPostDto[]>(
-    () => data.pages.flatMap((page) => page.items),
-    [data],
+    () => data.pages.flatMap((page) => page.items).filter(Boolean),
+    [data]
   )
 
   const filteredPosts = useMemo(() => {

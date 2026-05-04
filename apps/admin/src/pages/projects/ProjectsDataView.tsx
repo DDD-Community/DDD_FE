@@ -44,7 +44,7 @@ export const ProjectsDataView = ({
     )
 
   const allProjects = useMemo<ProjectDto[]>(
-    () => data.pages.flatMap((page) => page.items),
+    () => data.pages.flatMap((page) => page.items).filter(Boolean),
     [data]
   )
 
