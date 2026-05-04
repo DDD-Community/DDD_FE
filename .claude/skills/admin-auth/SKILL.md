@@ -29,9 +29,11 @@ description: |
 
 1. **Google OAuth는 백엔드가 모두 처리한다**
    프론트는 다음 한 줄만 책임진다.
+
    ```ts
-   window.location.href = `${import.meta.env.VITE_API_URL}/api/v1/auth/google`
+   window.location.href = `${import.meta.env.VITE_API_URL}/api/v1/auth/google`;
    ```
+
    - SPA `fetch()` 로 호출하지 않는다(redirect 체인이라 동작 안 함).
    - `?code=` 파라미터 파싱 / Google OAuth client id / popup 창 — **전부 프론트 책임이 아니다.**
 
@@ -47,21 +49,24 @@ description: |
 
 4. **세션 만료 처리는 `onUnauthorized` 콜백 한 곳에서**
    `apps/admin/src/main.tsx` 에서 `configureApi` 시 등록한 콜백이 단일 진입점.
+
    ```ts
    configureApi(apiUrl, {
      onUnauthorized: () => {
-       window.location.replace("/")
+       window.location.replace("/");
      },
-   })
+   });
    ```
+
    페이지/컴포넌트에서 401을 개별 catch 해서 redirect 하지 않는다.
 
 5. **로그아웃은 `useLogoutFlow` 한 곳에서**
    `apps/admin/src/entities/auth/model/useLogoutFlow.ts` 가 **`useLogout()` mutation + `queryClient.clear()` + `window.location.replace(paths.login)`** 을 묶어둔다.
    직접 `useLogout()` 만 호출하면 캐시 잔존 + 라우팅 누락이다.
+
    ```tsx
-   import { useLogoutFlow } from "@/entities/auth"
-   const { logoutAndRedirect, isPending } = useLogoutFlow()
+   import { useLogoutFlow } from "@/entities/auth";
+   const { logoutAndRedirect, isPending } = useLogoutFlow();
    ```
 
 6. **인증 상태 확인은 옵션 B (보호 API 401 처리) 가 현재 표준**
@@ -90,15 +95,15 @@ description: |
 
 ## 핵심 구현 파일 (빠른 점프)
 
-| 책임 | 파일 |
-| --- | --- |
-| API 클라이언트 + 401/refresh 인터셉터 | `packages/api/src/client.ts` |
-| Auth API (`/refresh`, `/logout`, `/withdrawal`) | `packages/api/src/auth/api.ts` |
-| Auth 훅 | `packages/api/src/auth/hooks.ts` |
-| API 초기화 + `onUnauthorized` | `apps/admin/src/main.tsx` |
-| 로그인 진입점 | `apps/admin/src/pages/login/LoginPage.tsx` |
-| 로그아웃 흐름 훅 | `apps/admin/src/entities/auth/model/useLogoutFlow.ts` |
-| 인증 가드 유틸 (TODO) | `apps/admin/src/shared/lib/auth.ts` |
+| 책임                                            | 파일                                                  |
+| ----------------------------------------------- | ----------------------------------------------------- |
+| API 클라이언트 + 401/refresh 인터셉터           | `packages/api/src/client.ts`                          |
+| Auth API (`/refresh`, `/logout`, `/withdrawal`) | `packages/api/src/auth/api.ts`                        |
+| Auth 훅                                         | `packages/api/src/auth/hooks.ts`                      |
+| API 초기화 + `onUnauthorized`                   | `apps/admin/src/main.tsx`                             |
+| 로그인 진입점                                   | `apps/admin/src/pages/login/LoginPage.tsx`            |
+| 로그아웃 흐름 훅                                | `apps/admin/src/entities/auth/model/useLogoutFlow.ts` |
+| 인증 가드 유틸 (TODO)                           | `apps/admin/src/shared/lib/auth.ts`                   |
 
 ---
 
