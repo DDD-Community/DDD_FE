@@ -77,14 +77,21 @@
 
 4. **훅 위치 분류**: 훅의 책임 범위에 따라 위치를 구분한다.
 
-   | 분류                                                                      | 위치                                       | 예시                                |
-   | ------------------------------------------------------------------------- | ------------------------------------------ | ----------------------------------- |
-   | **API 호출 훅** (mutation/query wrapper)                                  | `packages/api/src/{domain}/hooks.ts`       | `useLogout`, `useApplications`      |
-   | **비즈니스 흐름 훅** (API 호출 + 부수효과: toast, 라우팅, 캐시 정리 등)   | `apps/{app}/src/entities/{domain}/model/`  | `useLogoutFlow`                     |
-   | **UI/플랫폼 훅** (도메인 무관)                                            | `apps/{app}/src/shared/hooks/`             | `useIsMobile`, `useTheme`           |
+   | 분류                                                                      | 위치                                                              | 예시                                                              |
+   | ------------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- |
+   | **쿼리/뮤테이션 팩토리** (`queryOptions` / `mutationOptions`)             | `packages/api/src/{domain}/queries.ts`                            | `applicationQueries.getAdminApplications`, `authMutations.logout` |
+   | **쿼리키 팩토리**                                                         | `packages/api/src/{domain}/queryKeys.ts`                          | `applicationKeys.adminList`, `cohortKeys.detail`                  |
+   | **비즈니스 흐름 훅** (API 호출 + 부수효과: toast, 라우팅, 캐시 정리 등)   | `apps/{app}/src/entities/{domain}/model/`                         | `useLogoutFlow`                                                   |
+   | **UI/플랫폼 훅** (도메인 무관)                                            | `apps/{app}/src/shared/hooks/`                                    | `useIsMobile`, `useTheme`                                         |
 
    - `packages/api`는 앱-agnostic을 유지한다. UI 라이브러리(`@heroui/react`), 라우터(`react-router`), 앱 전용 상수(`paths`)에 의존하는 훅은 packages에 둘 수 없다.
-   - 비즈니스 흐름 훅은 `entities/{domain}/model/`에 두고, `packages/api`의 API 호출 훅을 사용해 도메인별 흐름을 조립한다.
+   - 앱 코드에서 API를 호출할 때는 `packages/api/src/{domain}/hooks.ts`의 래퍼 훅을 import 하지 않고, **쿼리/뮤테이션 팩토리(`{domain}Queries`, `{domain}Mutations`)를 `useQuery` / `useMutation`에 직접 전달**한다.
+     ```tsx
+     const { data } = useQuery(applicationQueries.getAdminApplications({ params }));
+     const logoutMutation = useMutation(authMutations.logout());
+     ```
+   - 쿼리키는 기존대로 `{domain}Keys` 팩토리를 그대로 사용한다(캐시 무효화·prefetch 등).
+   - 비즈니스 흐름 훅은 `entities/{domain}/model/`에 두고, 위 쿼리/뮤테이션 팩토리와 쿼리키 팩토리를 조합해 도메인별 흐름을 조립한다.
    - 단일 페이지에서만 사용되는 임시 훅은 페이지 slice 내부(`pages/{feature}/`)에 두고, 같은 도메인의 흐름 훅이 여러 페이지/위젯에서 반복 등장하면 그 시점에 `entities`로 끌어올린다(YAGNI).
 
 ### 3.4 상태 관리
@@ -98,6 +105,17 @@
 1. **클래스 병합**: 조건부 클래스 조합은 `cn()` 유틸리티(`clsx` + `tailwind-merge`)를 사용한다.
 2. **컴포넌트 변형**: 복수의 variant가 있는 컴포넌트는 `cva()`(class-variance-authority)로 정의한다.
 3. **디자인 토큰**: 색상, 타이포그래피, 스페이싱은 `@ddd/ui/tokens`에 정의된 Tailwind 테마 값을 사용한다. 임의의 하드코딩 값(`text-[13px]`, `bg-[#fff]`) 사용을 지양한다.
+4. **임의값(Arbitrary Values) 지양**: 너비·높이·간격·폰트 크기 등은 Tailwind의 정의된 스케일 값을 사용하고, `w-[400px]`, `h-[24px]`, `p-[12px]` 같은 대괄호 임의값 표기를 지양한다.
+
+   ```tsx
+   // ❌ 임의값
+   <div className="w-[400px] h-[24px] mt-[12px]" />
+
+   // ✅ Tailwind 스케일
+   <div className="w-100 h-6 mt-3" />
+   ```
+
+   디자인 시스템에 정의되지 않아 임의값이 반드시 필요한 경우에만 예외적으로 허용한다.
 
    ```tsx
    const buttonVariants = cva("rounded font-medium", {
