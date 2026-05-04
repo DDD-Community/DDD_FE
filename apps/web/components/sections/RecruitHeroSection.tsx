@@ -3,6 +3,7 @@
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
+import { recruitHeroDescriptionByStatus } from "@/constants/recruit";
 import { useRecruitStatus } from "@/components/providers/RecruitStatusProvider";
 import { openPreAlertModal } from "@/components/modals/PreAlertModal";
 import { colors, fontWeights } from "@/constants/tokens";
@@ -45,9 +46,9 @@ const Overlay = styled.div({
 const Inner = styled.div({
   position: "relative",
   zIndex: 1,
+  width: "100%",
   maxWidth: "1280px",
   margin: "0 auto",
-  padding: "0 320px",
   height: "100%",
   display: "flex",
   flexDirection: "column",
@@ -60,25 +61,32 @@ const Inner = styled.div({
     padding: "0 80px",
   },
   "@media (max-width: 768px)": {
-    padding: "0 48px",
-  },
-  "@media (max-width: 375px)": {
-    padding: "0 16px",
-    gap: "20px",
+    padding: "0 20px",
   },
 });
 
 const Label = styled.p({
   color: colors.textInverse,
-  fontSize: "clamp(14px, calc(0.6165vw + 11.69px), 20px)",
-  lineHeight: "clamp(18px, calc(0.7705vw + 15.11px), 25px)",
+  fontSize: "20px",
+  lineHeight: "28px",
   fontWeight: fontWeights.medium,
+  "@media (max-width: 1024px)": {
+    fontSize: "18px",
+    lineHeight: "23px",
+  },
+  "@media (max-width: 768px)": {
+    fontSize: "16px",
+    lineHeight: "20px",
+  },
+  "@media (max-width: 375px)": {
+    fontSize: "14px",
+    lineHeight: "18px",
+  },
 });
 
 const Title = styled.h1({
-  margin: 0,
-  fontSize: "clamp(44px, calc(6.17vw + 20.88px), 120px)",
-  lineHeight: "clamp(52px, calc(7.70vw + 23.11px), 140px)",
+  fontSize: "130px",
+  lineHeight: "130px",
   fontWeight: fontWeights.bold,
   // Figma 헤드 타이틀 느낌을 이미지가 아닌 타이포/그라데이션으로 구현
   backgroundImage: "linear-gradient(180deg, rgba(255, 255, 255, 0.00) -3.04%, #FFF 95.35%);",
@@ -86,15 +94,40 @@ const Title = styled.h1({
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
   letterSpacing: "-0.02em",
+
+  "@media (max-width: 1024px)": {
+    fontSize: "100px",
+    lineHeight: "110px",
+  },
+  "@media (max-width: 768px)": {
+    fontSize: "90px",
+    lineHeight: "100px",
+  },
+  "@media (max-width: 375px)": {
+    fontSize: "45px",
+    lineHeight: "50px",
+  },
 });
 
 const Description = styled.p({
   margin: 0,
   color: colors.textInverse,
-  fontSize: "clamp(12px, calc(0.925vw + 8.53px), 20px)",
-  lineHeight: "clamp(16px, calc(1.233vw + 11.38px), 25px)",
+  fontSize: "20px",
+  lineHeight: "28px",
   fontWeight: fontWeights.medium,
   whiteSpace: "pre-line",
+  "@media (max-width: 1024px)": {
+    fontSize: "18px",
+    lineHeight: "23px",
+  },
+  "@media (max-width: 768px)": {
+    fontSize: "16px",
+    lineHeight: "20px",
+  },
+  "@media (max-width: 375px)": {
+    fontSize: "14px",
+    lineHeight: "18px",
+  },
 });
 
 const CtaButton = styled(Link)({
@@ -151,11 +184,7 @@ export const RecruitHeroSection = () => {
         <Label>Recruitment</Label>
         <div style={{ display: "flex", flexDirection: "column", gap: "40px", width: "100%" }}>
           <Title>{heroTitle}</Title>
-          <Description>
-            {
-              "다음 크루원 모집을 위해 DDD 운영진들이 열심히 준비 중이에요.\n크루원 모집 준비가 끝나면 그 누구보다 빠르게 연락 드릴게요!"
-            }
-          </Description>
+          <Description>{recruitHeroDescriptionByStatus[recruitStatus]}</Description>
         </div>
         <CtaButton
           href="/recruit"

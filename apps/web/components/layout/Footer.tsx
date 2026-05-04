@@ -38,7 +38,9 @@ const FooterWrapper = styled.footer({
     padding: "100px 80px",
   },
   "@media (max-width: 375px)": {
-    padding: "80px 16px",
+    background: "#000000",
+    padding: "48px 16px 40px",
+    minHeight: "unset",
   },
 });
 
@@ -49,7 +51,6 @@ const FooterInner = styled.div({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "space-between",
-  minHeight: "157px",
 });
 
 const FooterTop = styled.div({
@@ -59,14 +60,16 @@ const FooterTop = styled.div({
   gap: "80px",
   justifyContent: "center",
   padding: "0 20px",
+  marginBottom: "80px",
 
   "@media (max-width: 375px)": {
-    width: "fit-content",
     flexDirection: "column",
     flexWrap: "nowrap",
-    alignItems: "flex-start",
-    gap: "20px",
+    alignItems: "center",
+    gap: "32px",
     padding: 0,
+    marginBottom: "40px",
+    textAlign: "center",
   },
 });
 
@@ -74,6 +77,11 @@ const FooterSection = styled.div({
   display: "flex",
   flexDirection: "column",
   gap: "8px",
+
+  "@media (max-width: 375px)": {
+    alignItems: "center",
+    width: "100%",
+  },
 });
 
 const FooterLabel = styled.p({
@@ -93,6 +101,7 @@ const FooterLabel = styled.p({
   "@media (max-width: 375px)": {
     fontSize: "10px",
     lineHeight: "13px",
+    color: colors.slate500,
   },
 });
 
@@ -114,6 +123,7 @@ const FooterEmail = styled.p({
   "@media (max-width: 375px)": {
     fontSize: "16px",
     lineHeight: "20px",
+    fontWeight: fontWeights.bold,
   },
 });
 
@@ -124,7 +134,43 @@ const SocialLinks = styled.div({
   gap: "16px",
 
   "@media (max-width: 375px)": {
-    flexWrap: "nowrap",
+    display: "grid",
+    width: "100%",
+    gridTemplateColumns: "auto 1px auto",
+    gridTemplateRows: "auto auto",
+    justifyContent: "center",
+    justifyItems: "center",
+    alignItems: "center",
+    columnGap: "12px",
+    rowGap: "20px",
+
+    "& > a:nth-of-type(1)": {
+      gridColumn: 1,
+      gridRow: 1,
+    },
+    "& > span:nth-of-type(1)": {
+      gridColumn: 2,
+      gridRow: 1,
+    },
+    "& > a:nth-of-type(2)": {
+      gridColumn: 3,
+      gridRow: 1,
+    },
+    "& > span:nth-of-type(2)": {
+      display: "none",
+    },
+    "& > a:nth-of-type(3)": {
+      gridColumn: 1,
+      gridRow: 2,
+    },
+    "& > span:nth-of-type(3)": {
+      gridColumn: 2,
+      gridRow: 2,
+    },
+    "& > a:nth-of-type(4)": {
+      gridColumn: 3,
+      gridRow: 2,
+    },
   },
 });
 
@@ -154,6 +200,7 @@ const SocialLink = styled.a({
   "@media (max-width: 375px)": {
     fontSize: "16px",
     lineHeight: "20px",
+    fontWeight: fontWeights.bold,
   },
 });
 
@@ -161,6 +208,12 @@ const Divider = styled.span({
   width: "1px",
   height: "14px",
   background: colors.slate300,
+
+  "@media (max-width: 375px)": {
+    height: "16px",
+    background: colors.textInverse,
+    alignSelf: "center",
+  },
 });
 
 const Copyright = styled.p({
@@ -170,6 +223,12 @@ const Copyright = styled.p({
   lineHeight: lineHeights.small,
   color: colors.textInverse,
   textAlign: "center",
+
+  "@media (max-width: 375px)": {
+    fontSize: "11px",
+    lineHeight: "15px",
+    fontWeight: fontWeights.regular,
+  },
 });
 
 export const Footer = () => {

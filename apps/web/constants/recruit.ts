@@ -2,6 +2,17 @@ export type RecruitStatus = "open" | "closed";
 
 export const recruitStatus: RecruitStatus = "closed";
 
+export const recruitPageMetaDescriptionByStatus: Record<RecruitStatus, string> = {
+  open: "지금 DDD 크루원을 모집하고 있어요! 함께 성장할 준비가 되셨다면 지금 바로 지원해보세요.",
+  closed: "DDD에서 함께할 개발자, 디자이너, 기획자를 모집합니다.",
+};
+
+export const recruitHeroDescriptionByStatus: Record<RecruitStatus, string> = {
+  open: "지금 DDD 크루원을 모집하고 있어요!\n함께 성장할 준비가 되셨다면 지금 바로 지원해보세요.",
+  closed:
+    "다음 크루원 모집을 위해 DDD 운영진들이 열심히 준비 중이에요.\n크루원 모집 준비가 끝나면 그 누구보다 빠르게 연락 드릴게요!",
+};
+
 export const recruitButtonLabelsByStatus: Record<
   RecruitStatus,
   { navigation: string; hero: string; role: string }
