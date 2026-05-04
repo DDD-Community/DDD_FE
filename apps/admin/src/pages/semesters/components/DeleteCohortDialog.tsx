@@ -1,14 +1,19 @@
 import { AlertDialog, Button } from "@heroui/react"
-import { useDeleteCohort } from "@ddd/api"
+
+import type { CohortDto } from "@ddd/api"
+
+import { useDeleteCohortFlow } from "@/entities/cohort"
 
 interface Props {
-  targetId: number
+  cohort: Pick<CohortDto, "id" | "name">
   isOpen: boolean
   onClose: () => void
 }
 
-export function DeleteCohortDialog({ targetId, isOpen, onClose }: Props) {
-  const { mutate: deleteCohort, isPending: isDeleting } = useDeleteCohort()
+export function DeleteCohortDialog({ cohort, isOpen, onClose }: Props) {
+  const { remove, isPending: isDeleting } = useDeleteCohortFlow({
+    onSuccess: onClose,
+  })
 
   return (
     <AlertDialog.Backdrop isOpen={isOpen} onOpenChange={onClose}>
@@ -29,7 +34,7 @@ export function DeleteCohortDialog({ targetId, isOpen, onClose }: Props) {
             <Button
               variant="danger"
               isDisabled={isDeleting}
-              onPress={() => deleteCohort({ params: { id: targetId } })}
+              onPress={() => remove(cohort)}
             >
               {isDeleting ? "삭제 중..." : "삭제"}
             </Button>

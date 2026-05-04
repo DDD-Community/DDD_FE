@@ -53,13 +53,11 @@ export function SemesterTableRow({ row, onEdit, onTransition }: Props) {
         </Table.Cell>
       </Table.Row>
 
-      {row.id && (
-        <DeleteCohortDialog
-          targetId={row.id}
-          isOpen={openDeleteConfirm}
-          onClose={() => setOpenDeleteConfirm(false)}
-        />
-      )}
+      <DeleteCohortDialog
+        cohort={row}
+        isOpen={openDeleteConfirm}
+        onClose={() => setOpenDeleteConfirm(false)}
+      />
     </>
   )
 }
