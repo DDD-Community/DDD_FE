@@ -3,10 +3,7 @@ import { ErrorBoundary } from "react-error-boundary"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { toast } from "@heroui/react"
 
-import {
-  cohortQueries,
-  type CohortDto,
-} from "@ddd/api"
+import { cohortQueries, type CohortDto } from "@ddd/api"
 
 import { EmptyState } from "@/shared/ui/EmptyState"
 import { ErrorFallback } from "@/shared/ui/ErrorFallback"
@@ -17,6 +14,7 @@ import { RemindersToolbar } from "./components/RemindersToolbar"
 import { EarlyNotificationDataView } from "./EarlyNotificationDataView"
 import { downloadRemindersCsv } from "./lib/downloadRemindersCsv"
 import type { StatusFilterOption } from "./constants"
+import { RemindersStatsSection } from "./components/RemindersStatsSection"
 
 const pickActiveCohortId = (cohorts: CohortDto[]): number | null => {
   if (cohorts.length === 0) return null
@@ -25,7 +23,7 @@ const pickActiveCohortId = (cohorts: CohortDto[]): number | null => {
   const sorted = [...cohorts].sort(
     (a, b) =>
       new Date(b.recruitStartAt).getTime() -
-      new Date(a.recruitStartAt).getTime(),
+      new Date(a.recruitStartAt).getTime()
   )
   return sorted[0]?.id ?? null
 }
@@ -55,8 +53,7 @@ export const EarlyNotificationContent = ({
     return <EmptyState>등록된 기수가 없습니다.</EmptyState>
   }
 
-  const effectiveCohortId =
-    overrideCohortId ?? pickActiveCohortId(cohorts)
+  const effectiveCohortId = overrideCohortId ?? pickActiveCohortId(cohorts)
   // cohorts.length > 0 이므로 effectiveCohortId 는 number 보장.
   // 타입 시스템상 null 가능성을 좁히기 위한 가드.
   if (effectiveCohortId === null) {
@@ -89,6 +86,10 @@ export const EarlyNotificationContent = ({
 
   return (
     <div className="space-y-5">
+      <Suspense fallback={<CohortsAreaSkeleton />}>
+        <RemindersStatsSection selectedCohort={selectedCohort} />
+      </Suspense>
+
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
         <RemindersToolbar
           searchText={searchText}
