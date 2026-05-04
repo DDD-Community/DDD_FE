@@ -6,6 +6,7 @@ import type { CohortRow } from "../../hooks"
 
 import { SemesterTableRow } from "./components/SemesterTableRow"
 import { SemesterTableToolbar } from "./components/SemesterTableToolbar"
+import { DeleteCohortDialog } from "../DeleteCohortDialog"
 
 interface Props {
   rows: CohortRow[]
@@ -20,6 +21,7 @@ export function SemesterTableSection({
 }: Props) {
   const [searchText, setSearchText] = useState("")
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>("ALL")
+  const [deletingRow, setDeletingRow] = useState<CohortRow | null>(null)
 
   const filteredRows = useMemo(() => {
     return rows
@@ -59,12 +61,21 @@ export function SemesterTableSection({
                   row={row}
                   onEdit={() => onEditRow(row)}
                   onTransition={() => onTransitionRow(row)}
+                  onDelete={() => setDeletingRow(row)}
                 />
               ))}
             </Table.Body>
           </Table.Content>
         </Table.ScrollContainer>
       </Table>
+
+      {deletingRow && (
+        <DeleteCohortDialog
+          cohort={deletingRow}
+          isOpen
+          onClose={() => setDeletingRow(null)}
+        />
+      )}
     </div>
   )
 }

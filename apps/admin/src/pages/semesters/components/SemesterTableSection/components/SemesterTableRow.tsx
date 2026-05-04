@@ -7,58 +7,49 @@ import {
 } from "@/entities/cohort"
 
 import type { CohortRow } from "../../../hooks"
-import { DeleteCohortDialog } from "../../DeleteCohortDialog"
-import { useState } from "react"
 
 interface Props {
   row: CohortRow
   onEdit: () => void
   onTransition: () => void
+  onDelete: () => void
 }
 
-export function SemesterTableRow({ row, onEdit, onTransition }: Props) {
-  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false)
+export function SemesterTableRow({
+  row,
+  onEdit,
+  onTransition,
+  onDelete,
+}: Props) {
   const transitionLabel = NEXT_STATUS_BUTTON_LABEL[row.status]
   const canTransition = nextStatus(row.status) !== null
 
-  const onDelete = () => {
-    setOpenDeleteConfirm(true)
-  }
-
   return (
-    <>
-      <Table.Row>
-        <Table.Cell>{row.name}</Table.Cell>
-        <Table.Cell>{STATUS_LABEL[row.status]}</Table.Cell>
-        <Table.Cell>
-          {formatPeriod(row.recruitStartAt, row.recruitEndAt)}
-        </Table.Cell>
-        <Table.Cell>{row.applicantsCount ?? "-"}</Table.Cell>
-        <Table.Cell>{row.membersCount ?? "-"}</Table.Cell>
-        <Table.Cell>
-          {new Date(row.createdAt).toLocaleDateString("ko-KR")}
-        </Table.Cell>
-        <Table.Cell>
-          <Button size="sm" variant="outline" className="mr-2" onPress={onEdit}>
-            수정
+    <Table.Row>
+      <Table.Cell>{row.name}</Table.Cell>
+      <Table.Cell>{STATUS_LABEL[row.status]}</Table.Cell>
+      <Table.Cell>
+        {formatPeriod(row.recruitStartAt, row.recruitEndAt)}
+      </Table.Cell>
+      <Table.Cell>{row.applicantsCount ?? "-"}</Table.Cell>
+      <Table.Cell>{row.membersCount ?? "-"}</Table.Cell>
+      <Table.Cell>
+        {new Date(row.createdAt).toLocaleDateString("ko-KR")}
+      </Table.Cell>
+      <Table.Cell>
+        <Button size="sm" variant="outline" className="mr-2" onPress={onEdit}>
+          수정
+        </Button>
+        {canTransition && transitionLabel && (
+          <Button size="sm" onPress={onTransition}>
+            {transitionLabel}
           </Button>
-          {canTransition && transitionLabel && (
-            <Button size="sm" onPress={onTransition}>
-              {transitionLabel}
-            </Button>
-          )}
-          <Button size="sm" variant="danger" onPress={onDelete}>
-            삭제
-          </Button>
-        </Table.Cell>
-      </Table.Row>
-
-      <DeleteCohortDialog
-        cohort={row}
-        isOpen={openDeleteConfirm}
-        onClose={() => setOpenDeleteConfirm(false)}
-      />
-    </>
+        )}
+        <Button size="sm" variant="danger" onPress={onDelete}>
+          삭제
+        </Button>
+      </Table.Cell>
+    </Table.Row>
   )
 }
 
