@@ -3,7 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 
 import { earlyNotificationQueries, type CohortDto } from "@ddd/api"
 
-import { RemindersTable } from "./components/RemindersTable"
+import { EarlyNotificationTable } from "./components/EarlyNotificationTable"
 import { STATUS_FILTER_PREDICATE, type StatusFilterOption } from "./constants"
 
 type EarlyNotificationDataViewProps = {
@@ -38,5 +38,7 @@ export const EarlyNotificationDataView = ({
       )
   }, [reminders, searchText, statusFilter])
 
-  return <RemindersTable reminders={filteredReminders} cohorts={cohorts} />
+  return (
+    <EarlyNotificationTable reminders={filteredReminders} cohorts={cohorts} />
+  )
 }

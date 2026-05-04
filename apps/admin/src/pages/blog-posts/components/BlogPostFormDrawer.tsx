@@ -171,6 +171,7 @@ export const BlogPostFormDrawer = ({
                 <Input
                   {...register("title")}
                   placeholder="블로그 포스트 제목"
+                  className="w-full"
                 />
               </FormField>
 
@@ -178,7 +179,7 @@ export const BlogPostFormDrawer = ({
                 <TextArea
                   {...register("excerpt")}
                   placeholder="목록에 노출될 본문 요약 (2~3문장)"
-                  className="min-h-24"
+                  className="min-h-24 w-full resize-none"
                 />
               </FormField>
 
@@ -189,6 +190,7 @@ export const BlogPostFormDrawer = ({
                 <Input
                   {...register("externalUrl")}
                   placeholder="https://brunch.co.kr/..."
+                  className="w-full"
                 />
               </FormField>
             </Section>

@@ -9,12 +9,12 @@ import { EmptyState } from "@/shared/ui/EmptyState"
 import { ErrorFallback } from "@/shared/ui/ErrorFallback"
 
 import { CohortsAreaSkeleton } from "./components/CohortsAreaSkeleton"
-import { RemindersBulkSendDrawer } from "./components/RemindersBulkSendDrawer"
-import { RemindersToolbar } from "./components/RemindersToolbar"
+import { EarlyNotificationBulkSendDrawer } from "./components/EarlyNotificationBulkSendDrawer"
+import { EarlyNotificationToolbar } from "./components/EarlyNotificationToolbar"
 import { EarlyNotificationDataView } from "./EarlyNotificationDataView"
-import { downloadRemindersCsv } from "./lib/downloadRemindersCsv"
+import { downloadEarlyNotificationsCsv } from "./lib/downloadEarlyNotificationsCsv"
 import type { StatusFilterOption } from "./constants"
-import { RemindersStatsSection } from "./components/RemindersStatsSection"
+import { EarlyNotificationStatsSection } from "./components/EarlyNotificationStatsSection"
 
 const pickActiveCohortId = (cohorts: CohortDto[]): number | null => {
   if (cohorts.length === 0) return null
@@ -68,7 +68,7 @@ export const EarlyNotificationContent = ({
   const handleExport = async () => {
     setIsExporting(true)
     try {
-      await downloadRemindersCsv({
+      await downloadEarlyNotificationsCsv({
         cohortId: effectiveCohortId,
         cohortName: selectedCohort.name,
       })
@@ -87,11 +87,11 @@ export const EarlyNotificationContent = ({
   return (
     <div className="space-y-5">
       <Suspense fallback={<CohortsAreaSkeleton />}>
-        <RemindersStatsSection selectedCohort={selectedCohort} />
+        <EarlyNotificationStatsSection selectedCohort={selectedCohort} />
       </Suspense>
 
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
-        <RemindersToolbar
+        <EarlyNotificationToolbar
           searchText={searchText}
           onSearchChange={onSearchChange}
           cohorts={cohorts}
@@ -117,7 +117,7 @@ export const EarlyNotificationContent = ({
         </ErrorBoundary>
       </div>
 
-      <RemindersBulkSendDrawer
+      <EarlyNotificationBulkSendDrawer
         isOpen={isBulkSendOpen}
         onOpenChange={setIsBulkSendOpen}
         cohortId={effectiveCohortId}

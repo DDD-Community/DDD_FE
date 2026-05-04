@@ -1,4 +1,3 @@
-// apps/admin/src/pages/reminders/components/RemindersStatsSection.tsx
 import { useMemo } from "react"
 
 import { earlyNotificationQueries } from "@ddd/api"
@@ -7,13 +6,13 @@ import { GridBox } from "@/shared/ui/GridBox"
 import { StatCard } from "@/shared/ui/StatCard"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
-type RemindersStatsSectionProps = {
+type EarlyNotificationStatsSectionProps = {
   selectedCohort: { id: number; name: string }
 }
 
-export const RemindersStatsSection = ({
+export const EarlyNotificationStatsSection = ({
   selectedCohort,
-}: RemindersStatsSectionProps) => {
+}: EarlyNotificationStatsSectionProps) => {
   const { data: reminders } = useSuspenseQuery(
     earlyNotificationQueries.getAdminEarlyNotifications({
       params: { cohortId: selectedCohort.id },

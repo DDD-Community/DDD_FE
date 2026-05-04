@@ -3,7 +3,7 @@ export const paths = {
   login: "/",
   applications: "/applications",
   semesters: "/semesters",
-  reminders: "/reminders",
+  reminders: "/early-notification",
   projects: "/projects",
   blogPosts: "/blog-posts",
 }

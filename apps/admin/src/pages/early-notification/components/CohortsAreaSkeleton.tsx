@@ -1,12 +1,12 @@
-import { RemindersStatsSkeleton } from "./RemindersStatsSkeleton"
-import { RemindersTableSkeleton } from "./RemindersTableSkeleton"
+import { EarlyNotificationStatsSkeleton } from "./EarlyNotificationStatsSkeleton"
+import { EarlyNotificationTableSkeleton } from "./EarlyNotificationTableSkeleton"
 
 export const CohortsAreaSkeleton = () => {
   return (
     <div className="space-y-5">
-      <RemindersStatsSkeleton />
+      <EarlyNotificationStatsSkeleton />
       <div className="rounded-lg bg-white p-5 shadow">
-        <RemindersTableSkeleton />
+        <EarlyNotificationTableSkeleton />
       </div>
     </div>
   )

@@ -4,7 +4,7 @@ export const STATUS_LABEL = {
   notified: "발송 완료",
 } as const
 
-export type ReminderStatusKey = keyof typeof STATUS_LABEL
+export type EarlyNotificationStatusKey = keyof typeof STATUS_LABEL
 
 /** 상태 필터 — Select 옵션 */
 export const STATUS_FILTER_OPTIONS = ["전체", "대기", "발송 완료"] as const

@@ -17,3 +17,17 @@ export const Description = ({ title, ...props }: TitleProps) => {
     </p>
   )
 }
+
+type TitleSectionProps = {
+  title: string
+  description: string
+}
+
+export const TitleSection = ({ title, description }: TitleSectionProps) => {
+  return (
+    <header className="space-y-2">
+      <Title title={title} />
+      <Description title={description} />
+    </header>
+  )
+}

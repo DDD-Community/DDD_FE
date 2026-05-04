@@ -2,9 +2,9 @@ import { Suspense, useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 
 import { ErrorFallback } from "@/shared/ui/ErrorFallback"
+import { TitleSection } from "@/widgets/heading"
 
 import { CohortsAreaSkeleton } from "./components/CohortsAreaSkeleton"
-import { TitleSection } from "./components/Sections"
 import { EarlyNotificationContent } from "./EarlyNotificationContent"
 import type { StatusFilterOption } from "./constants"
 
@@ -18,7 +18,10 @@ export default function EarlyNotificationPage() {
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection />
+      <TitleSection
+        title="사전 알림 신청"
+        description="기수 모집 공지 신청자를 관리합니다."
+      />
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Suspense fallback={<CohortsAreaSkeleton />}>
           <EarlyNotificationContent

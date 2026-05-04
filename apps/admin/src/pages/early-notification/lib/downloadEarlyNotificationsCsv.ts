@@ -14,7 +14,7 @@ const sanitizeFilenameSegment = (s: string): string =>
   // eslint-disable-next-line no-control-regex
   s.replace(/[\\/:*?"<>|\x00-\x1f]/g, "_")
 
-export async function downloadRemindersCsv({
+export async function downloadEarlyNotificationsCsv({
   cohortId,
   cohortName,
 }: {

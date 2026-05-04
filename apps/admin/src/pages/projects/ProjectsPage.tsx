@@ -6,7 +6,7 @@ import { useCohorts, useAdminInfiniteProjects } from "@ddd/api"
 import type { ProjectDto } from "@ddd/api"
 
 import { FlexBox } from "@/shared/ui/FlexBox"
-import { Title, Description } from "@/widgets/heading"
+import { TitleSection } from "@/widgets/heading"
 
 import { DeleteProjectDialog } from "./components/DeleteProjectDialog"
 import { ProjectFormDrawer } from "./components/ProjectFormDrawer"
@@ -86,7 +86,16 @@ export default function ProjectsPage() {
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection onCreate={handleCreate} />
+      <FlexBox className="justify-between">
+        <TitleSection
+          title="프로젝트 관리"
+          description="홈페이지에 노출되는 프로젝트를 등록하고 관리합니다."
+        />
+        <Button size="lg" onPress={handleCreate}>
+          <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
+          프로젝트 등록
+        </Button>
+      </FlexBox>
 
       <div className="space-y-5 rounded-lg bg-white p-5 shadow">
         <ProjectsToolbar
@@ -154,23 +163,6 @@ export default function ProjectsPage() {
         project={deleteTarget}
       />
     </div>
-  )
-}
-
-type TitleSectionProps = { onCreate: () => void }
-
-const TitleSection = ({ onCreate }: TitleSectionProps) => {
-  return (
-    <FlexBox className="justify-between">
-      <header className="space-y-2">
-        <Title title="프로젝트 관리" />
-        <Description title="홈페이지에 노출되는 프로젝트를 등록하고 관리합니다." />
-      </header>
-      <Button size="lg" onPress={onCreate}>
-        <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
-        프로젝트 등록
-      </Button>
-    </FlexBox>
   )
 }
 

@@ -5,7 +5,7 @@ import {
   type CohortDto,
   type ApplicationDto,
 } from "@ddd/api"
-import { Title, Description } from "@/widgets/heading"
+import { TitleSection } from "@/widgets/heading"
 import { CardSection } from "./components/Sections"
 import { ApplicationFilters } from "./components/ApplicationFilters"
 import { ApplicationTable } from "./components/ApplicationTable"
@@ -93,10 +93,10 @@ export default function ApplicationsPage() {
 
   return (
     <div className="w-full space-y-5 p-5">
-      <header className="space-y-2">
-        <Title title="지원자 관리" />
-        <Description title="지원서를 검토하고 상태를 변경합니다." />
-      </header>
+      <TitleSection
+        title="지원자 관리"
+        description="지원서를 검토하고 상태를 변경합니다."
+      />
 
       <CardSection
         total={cardList.length}

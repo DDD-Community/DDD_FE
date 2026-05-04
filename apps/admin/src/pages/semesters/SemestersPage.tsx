@@ -13,7 +13,7 @@ import {
 import { FlexBox } from "@/shared/ui/FlexBox"
 import { GridBox } from "@/shared/ui/GridBox"
 import { StatCard } from "@/shared/ui/StatCard"
-import { Description, Title } from "@/widgets/heading"
+import { TitleSection } from "@/widgets/heading"
 
 import { SemesterRegisterDrawer, SemesterTableSection } from "./components"
 import {
@@ -69,13 +69,21 @@ export default function SemestersPage() {
 
   return (
     <div className="w-full space-y-5 p-5">
-      <TitleSection
-        registrationLabel={registration.buttonLabel}
-        onClickRegister={() => {
-          setEditTarget(null)
-          setIsDrawerOpen(true)
-        }}
-      />
+      <FlexBox className="justify-between">
+        <TitleSection
+          title="기수 관리"
+          description="DDD 활동 기수를 등록하고 상태를 관리합니다."
+        />
+        <Button
+          onPress={() => {
+            setEditTarget(null)
+            setIsDrawerOpen(true)
+          }}
+        >
+          <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
+          {registration.buttonLabel}
+        </Button>
+      </FlexBox>
 
       <CardSection summary={summary} />
 
@@ -102,29 +110,6 @@ export default function SemestersPage() {
 }
 
 // ─── 서브컴포넌트 ────────────────────────────────────────────────────────────
-
-type TitleSectionProps = {
-  registrationLabel: string
-  onClickRegister: () => void
-}
-
-const TitleSection = ({
-  registrationLabel,
-  onClickRegister,
-}: TitleSectionProps) => {
-  return (
-    <FlexBox className="justify-between">
-      <header className="space-y-2">
-        <Title title="기수 관리" />
-        <Description title="DDD 활동 기수를 등록하고 상태를 관리합니다." />
-      </header>
-      <Button onPress={onClickRegister}>
-        <HugeiconsIcon icon={PlusSignIcon} className="mr-2" />
-        {registrationLabel}
-      </Button>
-    </FlexBox>
-  )
-}
 
 type CardSectionProps = {
   summary: SemestersSummary

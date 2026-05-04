@@ -2,7 +2,7 @@ import { Skeleton, Table } from "@heroui/react"
 
 const SKELETON_ROW_COUNT = 6
 
-export const RemindersTableSkeleton = () => {
+export const EarlyNotificationTableSkeleton = () => {
   return (
     <Table>
       <Table.ScrollContainer>

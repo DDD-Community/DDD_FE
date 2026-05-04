@@ -31,7 +31,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "/reminders",
+        path: "/early-notification",
         element: <EarlyNotificationPage />,
         errorElement: <ErrorPage />,
       },

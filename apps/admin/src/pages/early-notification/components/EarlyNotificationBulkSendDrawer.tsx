@@ -41,19 +41,19 @@ const DEFAULT_VALUES: BulkSendFormValues = {
   ctaUrl: "",
 }
 
-type RemindersBulkSendDrawerProps = {
+type EarlyNotificationBulkSendDrawerProps = {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   cohortId: number
   cohortName: string
 }
 
-export const RemindersBulkSendDrawer = ({
+export const EarlyNotificationBulkSendDrawer = ({
   isOpen,
   onOpenChange,
   cohortId,
   cohortName,
-}: RemindersBulkSendDrawerProps) => {
+}: EarlyNotificationBulkSendDrawerProps) => {
   const isMobile = useIsMobile()
   const queryClient = useQueryClient()
   const { mutateAsync, isPending } = useSendBulkEarlyNotification()
@@ -126,6 +126,7 @@ export const RemindersBulkSendDrawer = ({
               <Input
                 {...register("subject")}
                 placeholder="예: 14기 모집이 시작되었습니다"
+                className="w-full"
               />
             </FormField>
 
@@ -134,18 +135,23 @@ export const RemindersBulkSendDrawer = ({
                 {...register("message")}
                 rows={8}
                 placeholder="신청자에게 안내할 내용을 입력하세요. 줄바꿈은 그대로 적용됩니다."
-                className="min-h-40"
+                className="min-h-40 w-full resize-none"
               />
             </FormField>
 
             <FormField label="버튼 라벨" error={errors.ctaLabel?.message}>
-              <Input {...register("ctaLabel")} placeholder="지원하기" />
+              <Input
+                {...register("ctaLabel")}
+                placeholder="지원하기"
+                className="w-full"
+              />
             </FormField>
 
             <FormField label="버튼 링크 (URL)" error={errors.ctaUrl?.message}>
               <Input
                 {...register("ctaUrl")}
                 placeholder="https://dddstudy.com/recruit"
+                className="w-full"
               />
             </FormField>
           </Drawer.Body>

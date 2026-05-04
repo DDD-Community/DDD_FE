@@ -16,9 +16,13 @@ export function DeleteCohortDialog({ cohort, isOpen, onClose }: Props) {
   })
 
   return (
-    <AlertDialog.Backdrop isOpen={isOpen} onOpenChange={onClose}>
+    <AlertDialog.Backdrop
+      isOpen={isOpen}
+      onOpenChange={onClose}
+      isKeyboardDismissDisabled={false}
+    >
       <AlertDialog.Container>
-        <AlertDialog.Dialog className="sm:max-w-100">
+        <AlertDialog.Dialog>
           <AlertDialog.CloseTrigger />
           <AlertDialog.Header>
             <AlertDialog.Icon status="danger" />
@@ -28,7 +32,7 @@ export function DeleteCohortDialog({ cohort, isOpen, onClose }: Props) {
             <p>작성 중인 모든 정보가 사라지며, 이 작업은 되돌릴 수 없습니다.</p>
           </AlertDialog.Body>
           <AlertDialog.Footer>
-            <Button slot="close" variant="tertiary">
+            <Button slot="close" variant="outline">
               취소
             </Button>
             <Button

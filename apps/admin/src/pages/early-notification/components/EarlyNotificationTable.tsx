@@ -4,7 +4,7 @@ import type { CohortDto, EarlyNotificationDto } from "@ddd/api"
 
 import { STATUS_LABEL } from "../constants"
 
-type RemindersTableProps = {
+type EarlyNotificationTableProps = {
   reminders: EarlyNotificationDto[]
   cohorts: CohortDto[]
 }
@@ -15,7 +15,10 @@ const formatDate = (iso: string): string =>
 const formatDateTime = (iso?: string): string =>
   iso ? new Date(iso).toLocaleString("ko-KR") : "-"
 
-export const RemindersTable = ({ reminders, cohorts }: RemindersTableProps) => {
+export const EarlyNotificationTable = ({
+  reminders,
+  cohorts,
+}: EarlyNotificationTableProps) => {
   const cohortNameById = new Map(cohorts.map((c) => [c.id, c.name]))
 
   return (

@@ -14,7 +14,7 @@ import {
   type StatusFilterOption,
 } from "../constants"
 
-type RemindersToolbarProps = {
+type EarlyNotificationToolbarProps = {
   searchText: string
   onSearchChange: (v: string) => void
   cohorts: CohortDto[]
@@ -29,7 +29,7 @@ type RemindersToolbarProps = {
   isExportDisabled: boolean
 }
 
-export const RemindersToolbar = ({
+export const EarlyNotificationToolbar = ({
   searchText,
   onSearchChange,
   cohorts,
@@ -42,7 +42,7 @@ export const RemindersToolbar = ({
   onExportCsv,
   isExporting,
   isExportDisabled,
-}: RemindersToolbarProps) => {
+}: EarlyNotificationToolbarProps) => {
   const selectedCohort = cohorts.find((c) => c.id === cohortId)
 
   return (
