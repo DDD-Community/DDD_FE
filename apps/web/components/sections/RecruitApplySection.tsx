@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
+import successIcon from "@/public/images/success.png";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 type BasicField = "name" | "email" | "phone" | "birth" | "region";
@@ -42,7 +43,6 @@ const PART_DESCRIPTIONS: Record<(typeof PART_OPTIONS)[number], string> = {
 };
 
 const BANNER_TEXT = "함께 성장할 PM, 디자이너, 개발자를 기다리고 있어요.";
-const SUCCESS_ICON_URL = "https://www.figma.com/api/mcp/asset/b7889ea5-5ffc-4126-a47f-35c18267dea3";
 
 const initialValues: FormValues = {
   name: "",
@@ -65,19 +65,25 @@ const PageSection = styled.section({
 
 const Banner = styled.section({
   minHeight: "400px",
-  background: "linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%)",
-  display: "flex",
-  alignItems: "flex-end",
+  padding: "160px 80px",
+  position: "relative",
+  overflow: "hidden",
+  backgroundColor: "#02111f",
+  backgroundImage:
+    "linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%), url('https://www.figma.com/api/mcp/asset/6f928e32-36e6-4c5d-886d-63789ff48cea')",
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  "@media (max-width: 1024px)": { padding: "160px 80px 80px" },
+  "@media (max-width: 768px)": { padding: "140px 40px 50px" },
+  "@media (max-width: 375px)": { padding: "160px 16px 20px" },
 });
 
 const BannerInner = styled.div({
-  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
   maxWidth: "1280px",
   margin: "0 auto",
-  padding: "80px 24px",
-  "@media (max-width: 1024px)": { padding: "72px 32px" },
-  "@media (max-width: 768px)": { padding: "64px 24px" },
-  "@media (max-width: 375px)": { padding: "40px 16px" },
 });
 
 const BannerLabel = styled.p({
@@ -86,16 +92,20 @@ const BannerLabel = styled.p({
   fontSize: "28px",
   lineHeight: "32px",
   fontWeight: fontWeights.semiBold,
+  "@media (max-width: 1024px)": { fontSize: "24px", lineHeight: "30px" },
   "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
-  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
+  "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "15px" },
 });
 
 const BannerTitle = styled.h1({
   margin: "8px 0 0",
   color: colors.slate300,
-  fontSize: "clamp(22px, calc(1.85vw + 15.07px), 40px)",
-  lineHeight: "clamp(30px, calc(2.16vw + 21.91px), 50px)",
+  fontSize: "40px",
+  lineHeight: "50px",
   fontWeight: fontWeights.bold,
+  "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
+  "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
+  "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "30px", width: "265px" },
 });
 
 const Container = styled.div({
@@ -512,7 +522,6 @@ const SuccessWrap = styled.div({
   flexDirection: "column",
   alignItems: "center",
   textAlign: "center",
-  gap: "40px",
   "@media (max-width: 375px)": { paddingTop: "20px", gap: "24px" },
 });
 
@@ -521,6 +530,8 @@ const SuccessTitle = styled.h3({
   fontSize: "64px",
   lineHeight: "75px",
   fontWeight: fontWeights.bold,
+  marginBottom: "20px",
+  marginTop: "40px",
   "@media (max-width: 768px)": { fontSize: "44px", lineHeight: "54px" },
   "@media (max-width: 375px)": { fontSize: "32px", lineHeight: "40px" },
 });
@@ -694,8 +705,12 @@ export const RecruitApplySection = () => {
       </Banner>
 
       <Container>
-        <FormTitle>DDD 지원서</FormTitle>
-        <FormDescription>{BANNER_TEXT}</FormDescription>
+        {step < 5 ? (
+          <>
+            <FormTitle>DDD 지원서</FormTitle>
+            <FormDescription>{BANNER_TEXT}</FormDescription>
+          </>
+        ) : null}
 
         {step < 5 ? (
           <>
@@ -1014,12 +1029,12 @@ export const RecruitApplySection = () => {
           </>
         ) : (
           <SuccessWrap>
-            <img src={SUCCESS_ICON_URL} alt="" width={180} height={180} />
+            <img src={successIcon.src} alt="" width={180} height={180} />
             <div>
               <SuccessTitle>지원서가 제출됐어요.</SuccessTitle>
               <p
                 style={{
-                  margin: "20px 0 0",
+                  marginBottom: "160px",
                   fontSize: "28px",
                   lineHeight: "32px",
                   fontWeight: 600,
