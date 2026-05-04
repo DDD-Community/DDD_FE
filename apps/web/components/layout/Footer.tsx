@@ -14,6 +14,7 @@ type SocialLinkItem = {
 const SOCIAL_LINKS: SocialLinkItem[] = [
   {
     label: "Instagram",
+    icon: assets.social.instagram,
     href: "https://www.instagram.com/dynamic_ddd?igsh=MTF1Mm42eW8xZTZ4YQ==",
   },
   { label: "Tistory", icon: assets.social.tistory, href: "https://dynamic-ddd.tistory.com/" },
@@ -27,7 +28,7 @@ const FooterWrapper = styled.footer({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: "80px 320px",
+  padding: "80px",
   minHeight: "317px",
 
   "@media (max-width: 1024px)": {
@@ -81,7 +82,14 @@ const FooterLabel = styled.p({
   fontWeight: fontWeights.regular,
   lineHeight: lineHeights.small,
   color: colors.textInverse,
-
+  "@media (max-width: 1024px)": {
+    fontSize: "12px",
+    lineHeight: "16px",
+  },
+  "@media (max-width: 768px)": {
+    fontSize: "11px",
+    lineHeight: "15px",
+  },
   "@media (max-width: 375px)": {
     fontSize: "10px",
     lineHeight: "13px",
@@ -94,6 +102,14 @@ const FooterEmail = styled.p({
   fontWeight: fontWeights.semiBold,
   lineHeight: lineHeights.headingLarge,
   color: colors.textInverse,
+  "@media (max-width: 1024px)": {
+    fontSize: "24px",
+    lineHeight: "30px",
+  },
+  "@media (max-width: 768px)": {
+    fontSize: "20px",
+    lineHeight: "25px",
+  },
 
   "@media (max-width: 375px)": {
     fontSize: "16px",
@@ -122,6 +138,14 @@ const SocialLink = styled.a({
   lineHeight: lineHeights.headingLarge,
   color: colors.textInverse,
   textDecoration: "none",
+  "@media (max-width: 1024px)": {
+    fontSize: "24px",
+    lineHeight: "30px",
+  },
+  "@media (max-width: 768px)": {
+    fontSize: "20px",
+    lineHeight: "25px",
+  },
 
   "&:hover": {
     opacity: 0.8,

@@ -108,14 +108,20 @@ const BannerTitle = styled.h1({
   "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "30px", width: "265px" },
 });
 
+const ContainerPadding = styled.div({
+  padding: "80px",
+  "@media (max-width: 768px)": {
+    padding: "16px 40px",
+  },
+  "@media (max-width: 375px)": {
+    padding: "16px 16px",
+  },
+});
+
 const Container = styled.div({
   width: "100%",
   maxWidth: "1280px",
   margin: "0 auto",
-  padding: "80px 24px",
-  "@media (max-width: 1024px)": { padding: "72px 32px" },
-  "@media (max-width: 768px)": { padding: "56px 24px" },
-  "@media (max-width: 375px)": { padding: "48px 16px" },
 });
 
 const FormTitle = styled.h2({
@@ -704,228 +710,203 @@ export const RecruitApplySection = () => {
         </BannerInner>
       </Banner>
 
-      <Container>
-        {step < 5 ? (
-          <>
-            <FormTitle>DDD 지원서</FormTitle>
-            <FormDescription>{BANNER_TEXT}</FormDescription>
-          </>
-        ) : null}
+      <ContainerPadding>
+        <Container>
+          {step < 5 ? (
+            <>
+              <FormTitle>DDD 지원서</FormTitle>
+              <FormDescription>{BANNER_TEXT}</FormDescription>
+            </>
+          ) : null}
 
-        {step < 5 ? (
-          <>
-            <StepWrap>
-              <StepLine />
-              {stepLabels.map((label, index) => {
-                const current = index + 1;
-                const isActive = step === current;
-                return (
-                  <StepItem key={label}>
-                    <StepCircle active={isActive}>{current}</StepCircle>
-                    <StepLabel active={isActive}>{label}</StepLabel>
-                  </StepItem>
-                );
-              })}
-            </StepWrap>
+          {step < 5 ? (
+            <>
+              <StepWrap>
+                <StepLine />
+                {stepLabels.map((label, index) => {
+                  const current = index + 1;
+                  const isActive = step === current;
+                  return (
+                    <StepItem key={label}>
+                      <StepCircle active={isActive}>{current}</StepCircle>
+                      <StepLabel active={isActive}>{label}</StepLabel>
+                    </StepItem>
+                  );
+                })}
+              </StepWrap>
 
-            <form onSubmit={handleNext}>
-              {step === 1 ? (
-                <>
-                  <Card>
-                    <CardTitle>기본 정보</CardTitle>
-                    <Fields>
-                      <Field>
-                        <Label>
-                          이름 <Required hasError={Boolean(basicErrors.name)}>*</Required>
-                        </Label>
-                        <Input
-                          placeholder="홍길동"
-                          value={values.name}
-                          hasError={Boolean(basicErrors.name)}
-                          isFocused={focusedField === "name"}
-                          hasValue={Boolean(values.name.trim())}
-                          onFocus={() => setFocusedField("name")}
-                          onBlur={() => handleBasicBlur("name")}
-                          onChange={(event) => handleBasicChange("name", event.target.value)}
-                        />
-                        {basicErrors.name ? <FieldError>{basicErrors.name}</FieldError> : null}
-                      </Field>
-                      <Field>
-                        <Label>
-                          이메일 <Required hasError={Boolean(basicErrors.email)}>*</Required>
-                        </Label>
-                        <Hint>합격 결과 안내 이메일이 발송됩니다.</Hint>
-                        <Input
-                          placeholder="test@email.com"
-                          value={values.email}
-                          hasError={Boolean(basicErrors.email)}
-                          isFocused={focusedField === "email"}
-                          hasValue={Boolean(values.email.trim())}
-                          onFocus={() => setFocusedField("email")}
-                          onBlur={() => handleBasicBlur("email")}
-                          onChange={(event) => handleBasicChange("email", event.target.value)}
-                        />
-                        {basicErrors.email ? <FieldError>{basicErrors.email}</FieldError> : null}
-                      </Field>
-                      <Field>
-                        <Label>
-                          휴대폰 번호 <Required hasError={Boolean(basicErrors.phone)}>*</Required>
-                        </Label>
-                        <Input
-                          placeholder="010-0000-0000"
-                          value={values.phone}
-                          hasError={Boolean(basicErrors.phone)}
-                          isFocused={focusedField === "phone"}
-                          hasValue={Boolean(values.phone.trim())}
-                          onFocus={() => setFocusedField("phone")}
-                          onBlur={() => handleBasicBlur("phone")}
-                          onChange={(event) => handleBasicChange("phone", event.target.value)}
-                        />
-                        {basicErrors.phone ? <FieldError>{basicErrors.phone}</FieldError> : null}
-                      </Field>
-                      <Field>
-                        <Label>
-                          생년월일 <Required hasError={Boolean(basicErrors.birth)}>*</Required>
-                        </Label>
-                        <Input
-                          placeholder="YYYY / MM / DD"
-                          value={values.birth}
-                          hasError={Boolean(basicErrors.birth)}
-                          isFocused={focusedField === "birth"}
-                          hasValue={Boolean(values.birth.trim())}
-                          onFocus={() => setFocusedField("birth")}
-                          onBlur={() => handleBasicBlur("birth")}
-                          onChange={(event) => handleBasicChange("birth", event.target.value)}
-                        />
-                        {basicErrors.birth ? <FieldError>{basicErrors.birth}</FieldError> : null}
-                      </Field>
-                      <Field>
-                        <Label>
-                          거주지역 <Required hasError={Boolean(basicErrors.region)}>*</Required>
-                        </Label>
-                        <Input
-                          placeholder="선택해주세요."
-                          value={values.region}
-                          hasError={Boolean(basicErrors.region)}
-                          isFocused={focusedField === "region"}
-                          hasValue={Boolean(values.region.trim())}
-                          onFocus={() => setFocusedField("region")}
-                          onBlur={() => handleBasicBlur("region")}
-                          onChange={(event) => handleBasicChange("region", event.target.value)}
-                        />
-                        {basicErrors.region ? <FieldError>{basicErrors.region}</FieldError> : null}
-                      </Field>
-                    </Fields>
-                  </Card>
+              <form onSubmit={handleNext}>
+                {step === 1 ? (
+                  <>
+                    <Card>
+                      <CardTitle>기본 정보</CardTitle>
+                      <Fields>
+                        <Field>
+                          <Label>
+                            이름 <Required hasError={Boolean(basicErrors.name)}>*</Required>
+                          </Label>
+                          <Input
+                            placeholder="홍길동"
+                            value={values.name}
+                            hasError={Boolean(basicErrors.name)}
+                            isFocused={focusedField === "name"}
+                            hasValue={Boolean(values.name.trim())}
+                            onFocus={() => setFocusedField("name")}
+                            onBlur={() => handleBasicBlur("name")}
+                            onChange={(event) => handleBasicChange("name", event.target.value)}
+                          />
+                          {basicErrors.name ? <FieldError>{basicErrors.name}</FieldError> : null}
+                        </Field>
+                        <Field>
+                          <Label>
+                            이메일 <Required hasError={Boolean(basicErrors.email)}>*</Required>
+                          </Label>
+                          <Hint>합격 결과 안내 이메일이 발송됩니다.</Hint>
+                          <Input
+                            placeholder="test@email.com"
+                            value={values.email}
+                            hasError={Boolean(basicErrors.email)}
+                            isFocused={focusedField === "email"}
+                            hasValue={Boolean(values.email.trim())}
+                            onFocus={() => setFocusedField("email")}
+                            onBlur={() => handleBasicBlur("email")}
+                            onChange={(event) => handleBasicChange("email", event.target.value)}
+                          />
+                          {basicErrors.email ? <FieldError>{basicErrors.email}</FieldError> : null}
+                        </Field>
+                        <Field>
+                          <Label>
+                            휴대폰 번호 <Required hasError={Boolean(basicErrors.phone)}>*</Required>
+                          </Label>
+                          <Input
+                            placeholder="010-0000-0000"
+                            value={values.phone}
+                            hasError={Boolean(basicErrors.phone)}
+                            isFocused={focusedField === "phone"}
+                            hasValue={Boolean(values.phone.trim())}
+                            onFocus={() => setFocusedField("phone")}
+                            onBlur={() => handleBasicBlur("phone")}
+                            onChange={(event) => handleBasicChange("phone", event.target.value)}
+                          />
+                          {basicErrors.phone ? <FieldError>{basicErrors.phone}</FieldError> : null}
+                        </Field>
+                        <Field>
+                          <Label>
+                            생년월일 <Required hasError={Boolean(basicErrors.birth)}>*</Required>
+                          </Label>
+                          <Input
+                            placeholder="YYYY / MM / DD"
+                            value={values.birth}
+                            hasError={Boolean(basicErrors.birth)}
+                            isFocused={focusedField === "birth"}
+                            hasValue={Boolean(values.birth.trim())}
+                            onFocus={() => setFocusedField("birth")}
+                            onBlur={() => handleBasicBlur("birth")}
+                            onChange={(event) => handleBasicChange("birth", event.target.value)}
+                          />
+                          {basicErrors.birth ? <FieldError>{basicErrors.birth}</FieldError> : null}
+                        </Field>
+                        <Field>
+                          <Label>
+                            거주지역 <Required hasError={Boolean(basicErrors.region)}>*</Required>
+                          </Label>
+                          <Input
+                            placeholder="선택해주세요."
+                            value={values.region}
+                            hasError={Boolean(basicErrors.region)}
+                            isFocused={focusedField === "region"}
+                            hasValue={Boolean(values.region.trim())}
+                            onFocus={() => setFocusedField("region")}
+                            onBlur={() => handleBasicBlur("region")}
+                            onChange={(event) => handleBasicChange("region", event.target.value)}
+                          />
+                          {basicErrors.region ? (
+                            <FieldError>{basicErrors.region}</FieldError>
+                          ) : null}
+                        </Field>
+                      </Fields>
+                    </Card>
 
-                  <Card style={{ minHeight: "420px" }}>
-                    <CardTitle>개인정보 수집 및 이용 동의</CardTitle>
-                    <PrivacyBox>
-                      {`수집 항목: 이름, 이메일, 휴대폰 번호, 생년월일, 거주 지역, 지원 파트, 지원 내용
+                    <Card style={{ minHeight: "420px" }}>
+                      <CardTitle>개인정보 수집 및 이용 동의</CardTitle>
+                      <PrivacyBox>
+                        {`수집 항목: 이름, 이메일, 휴대폰 번호, 생년월일, 거주 지역, 지원 파트, 지원 내용
 수집 목적: 지원자 심사 및 선발, 결과 안내, 활동 안내
 보유 기간: 지원 결과 발표 후 6개월 보관 후 즉시 파기
 
 위 개인정보 수집·이용에 동의하지 않을 권리가 있으며, 미동의 시 지원이 불가합니다. 수집된 정보는 제3자에게 제공되지 않습니다.`}
-                    </PrivacyBox>
-                    <Agreement
-                      type="button"
-                      checked={values.agreedToPrivacy}
-                      onClick={() =>
-                        setValues((prev) => ({ ...prev, agreedToPrivacy: !prev.agreedToPrivacy }))
-                      }
-                    >
-                      <AgreementCheck checked={values.agreedToPrivacy} aria-hidden>
-                        <AgreementCheckIcon
-                          visible={values.agreedToPrivacy}
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 14 11"
-                          fill="none"
-                        >
-                          <path
-                            d="M1 5.5L5 9.5L13 1.5"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </AgreementCheckIcon>
-                      </AgreementCheck>
-                      <AgreementText>개인정보 수집 및 이용에 동의합니다</AgreementText>
-                      <AgreementRequiredDot aria-hidden />
-                    </Agreement>
+                      </PrivacyBox>
+                      <Agreement
+                        type="button"
+                        checked={values.agreedToPrivacy}
+                        onClick={() =>
+                          setValues((prev) => ({ ...prev, agreedToPrivacy: !prev.agreedToPrivacy }))
+                        }
+                      >
+                        <AgreementCheck checked={values.agreedToPrivacy} aria-hidden>
+                          <AgreementCheckIcon
+                            visible={values.agreedToPrivacy}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 14 11"
+                            fill="none"
+                          >
+                            <path
+                              d="M1 5.5L5 9.5L13 1.5"
+                              stroke="white"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </AgreementCheckIcon>
+                        </AgreementCheck>
+                        <AgreementText>개인정보 수집 및 이용에 동의합니다</AgreementText>
+                        <AgreementRequiredDot aria-hidden />
+                      </Agreement>
+                    </Card>
+                  </>
+                ) : null}
+
+                {step === 2 ? (
+                  <Card>
+                    <CardTitle>지원 파트</CardTitle>
+                    <Fields style={{ maxWidth: "100%", marginTop: "28px" }}>
+                      <Label>
+                        지원할 파트를 선택해주세요. <Required>*</Required>
+                      </Label>
+                      <ChipGrid>
+                        {PART_OPTIONS.map((option) => (
+                          <Chip
+                            type="button"
+                            key={option}
+                            selected={values.part === option}
+                            onClick={() => setValues((prev) => ({ ...prev, part: option }))}
+                          >
+                            {option}
+                          </Chip>
+                        ))}
+                      </ChipGrid>
+                      {values.part ? (
+                        <PartDescription>
+                          {PART_DESCRIPTIONS[values.part as (typeof PART_OPTIONS)[number]]}
+                        </PartDescription>
+                      ) : null}
+                    </Fields>
                   </Card>
-                </>
-              ) : null}
+                ) : null}
 
-              {step === 2 ? (
-                <Card>
-                  <CardTitle>지원 파트</CardTitle>
-                  <Fields style={{ maxWidth: "100%", marginTop: "28px" }}>
-                    <Label>
-                      지원할 파트를 선택해주세요. <Required>*</Required>
-                    </Label>
-                    <ChipGrid>
-                      {PART_OPTIONS.map((option) => (
-                        <Chip
-                          type="button"
-                          key={option}
-                          selected={values.part === option}
-                          onClick={() => setValues((prev) => ({ ...prev, part: option }))}
-                        >
-                          {option}
-                        </Chip>
-                      ))}
-                    </ChipGrid>
-                    {values.part ? (
-                      <PartDescription>
-                        {PART_DESCRIPTIONS[values.part as (typeof PART_OPTIONS)[number]]}
-                      </PartDescription>
-                    ) : null}
-                  </Fields>
-                </Card>
-              ) : null}
-
-              {step === 3 ? (
-                <>
-                  <h3
-                    style={{
-                      marginTop: 56,
-                      marginBottom: 20,
-                      fontSize: 24,
-                      lineHeight: "30px",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {partTitle}
-                  </h3>
-                  <AnswerHeader>
-                    <p
+                {step === 3 ? (
+                  <>
+                    <h3
                       style={{
-                        margin: 0,
-                        color: colors.primary,
+                        marginTop: 56,
+                        marginBottom: 20,
                         fontSize: 24,
                         lineHeight: "30px",
                         fontWeight: 500,
                       }}
                     >
-                      Q1
-                    </p>
-                    <p style={{ margin: 0, fontSize: 24, lineHeight: "30px", fontWeight: 500 }}>
-                      가장 애착이 가는 작업물을 소개해주세요. 포트폴리오 링크를 포함하거나 과정을
-                      상세히 설명해주세요.
-                    </p>
-                  </AnswerHeader>
-                  <AnswerBody>
-                    <TextArea
-                      placeholder="1,000자 이내로 입력해주세요."
-                      value={values.essay}
-                      onChange={(event) =>
-                        setValues((prev) => ({ ...prev, essay: event.target.value }))
-                      }
-                    />
-                  </AnswerBody>
-
-                  <div style={{ marginTop: 20 }}>
+                      {partTitle}
+                    </h3>
                     <AnswerHeader>
                       <p
                         style={{
@@ -936,122 +917,151 @@ export const RecruitApplySection = () => {
                           fontWeight: 500,
                         }}
                       >
-                        포트폴리오 선택
+                        Q1
                       </p>
                       <p style={{ margin: 0, fontSize: 24, lineHeight: "30px", fontWeight: 500 }}>
-                        PDF 파일 또는 링크를 첨부해주세요. (최대 10MB, PDF만 가능)
+                        가장 애착이 가는 작업물을 소개해주세요. 포트폴리오 링크를 포함하거나 과정을
+                        상세히 설명해주세요.
                       </p>
                     </AnswerHeader>
-                    <AnswerBody style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                      <UploadBox>
-                        <HiddenFile
-                          type="file"
-                          accept="application/pdf"
-                          onChange={(event) =>
-                            setValues((prev) => ({
-                              ...prev,
-                              portfolioFile: event.target.files?.[0] ?? null,
-                            }))
-                          }
-                        />
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="46"
-                          height="57"
-                          viewBox="0 0 46 57"
-                          fill="none"
-                        >
-                          <path
-                            d="M11.5 2H29.6L44 16.4V55H2V2H11.5Z"
-                            stroke="#CAD5E2"
-                            strokeWidth="3"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M29 2V16.5H43.5"
-                            stroke="#CAD5E2"
-                            strokeWidth="3"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                        {values.portfolioFile
-                          ? values.portfolioFile.name
-                          : "PDF 파일을 첨부해주세요. (최대 10MB, PDF만 가능)"}
-                      </UploadBox>
-                      <Input
-                        placeholder="포트폴리오 링크를 입력해주세요. (https://)"
-                        value={values.portfolioLink}
+                    <AnswerBody>
+                      <TextArea
+                        placeholder="1,000자 이내로 입력해주세요."
+                        value={values.essay}
                         onChange={(event) =>
-                          setValues((prev) => ({ ...prev, portfolioLink: event.target.value }))
+                          setValues((prev) => ({ ...prev, essay: event.target.value }))
                         }
                       />
                     </AnswerBody>
-                  </div>
-                </>
-              ) : null}
 
-              {step === 4 ? (
-                <Card>
-                  <CardTitle>기타 정보</CardTitle>
-                  <Fields style={{ maxWidth: "100%", marginTop: "28px" }}>
-                    <Label>
-                      DDD를 알게 된 경로 <Required>*</Required>
-                    </Label>
-                    <ChipGrid>
-                      {CHANNEL_OPTIONS.map((option) => (
-                        <Chip
-                          type="button"
-                          key={option}
-                          selected={values.channels.includes(option)}
-                          onClick={() => toggleChannel(option)}
+                    <div style={{ marginTop: 20 }}>
+                      <AnswerHeader>
+                        <p
+                          style={{
+                            margin: 0,
+                            color: colors.primary,
+                            fontSize: 24,
+                            lineHeight: "30px",
+                            fontWeight: 500,
+                          }}
                         >
-                          {option}
-                        </Chip>
-                      ))}
-                    </ChipGrid>
-                  </Fields>
-                </Card>
-              ) : null}
-
-              {error ? <ErrorText>{error}</ErrorText> : null}
-
-              <ButtonRow>
-                {step > 1 ? (
-                  <ActionButton type="button" onClick={handlePrev}>
-                    이전 <Arrow back />
-                  </ActionButton>
+                          포트폴리오 선택
+                        </p>
+                        <p style={{ margin: 0, fontSize: 24, lineHeight: "30px", fontWeight: 500 }}>
+                          PDF 파일 또는 링크를 첨부해주세요. (최대 10MB, PDF만 가능)
+                        </p>
+                      </AnswerHeader>
+                      <AnswerBody style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                        <UploadBox>
+                          <HiddenFile
+                            type="file"
+                            accept="application/pdf"
+                            onChange={(event) =>
+                              setValues((prev) => ({
+                                ...prev,
+                                portfolioFile: event.target.files?.[0] ?? null,
+                              }))
+                            }
+                          />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="46"
+                            height="57"
+                            viewBox="0 0 46 57"
+                            fill="none"
+                          >
+                            <path
+                              d="M11.5 2H29.6L44 16.4V55H2V2H11.5Z"
+                              stroke="#CAD5E2"
+                              strokeWidth="3"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M29 2V16.5H43.5"
+                              stroke="#CAD5E2"
+                              strokeWidth="3"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          {values.portfolioFile
+                            ? values.portfolioFile.name
+                            : "PDF 파일을 첨부해주세요. (최대 10MB, PDF만 가능)"}
+                        </UploadBox>
+                        <Input
+                          placeholder="포트폴리오 링크를 입력해주세요. (https://)"
+                          value={values.portfolioLink}
+                          onChange={(event) =>
+                            setValues((prev) => ({ ...prev, portfolioLink: event.target.value }))
+                          }
+                        />
+                      </AnswerBody>
+                    </div>
+                  </>
                 ) : null}
-                <ActionButton type="submit" primary full>
-                  다음 <Arrow />
-                </ActionButton>
-              </ButtonRow>
-            </form>
-          </>
-        ) : (
-          <SuccessWrap>
-            <img src={successIcon.src} alt="" width={180} height={180} />
-            <div>
-              <SuccessTitle>지원서가 제출됐어요.</SuccessTitle>
-              <p
-                style={{
-                  marginBottom: "160px",
-                  fontSize: "28px",
-                  lineHeight: "32px",
-                  fontWeight: 600,
-                  color: "#d4d4d4",
-                }}
-              >
-                검토 후 입력하신 이메일로 결과를 안내드릴게요.
-                <br />
-                DDD와 함께할 날을 기대하고 있을게요 :)
-              </p>
-            </div>
-            <ActionButton primary full onClick={() => setStep(1)}>
-              완료
-            </ActionButton>
-          </SuccessWrap>
-        )}
-      </Container>
+
+                {step === 4 ? (
+                  <Card>
+                    <CardTitle>기타 정보</CardTitle>
+                    <Fields style={{ maxWidth: "100%", marginTop: "28px" }}>
+                      <Label>
+                        DDD를 알게 된 경로 <Required>*</Required>
+                      </Label>
+                      <ChipGrid>
+                        {CHANNEL_OPTIONS.map((option) => (
+                          <Chip
+                            type="button"
+                            key={option}
+                            selected={values.channels.includes(option)}
+                            onClick={() => toggleChannel(option)}
+                          >
+                            {option}
+                          </Chip>
+                        ))}
+                      </ChipGrid>
+                    </Fields>
+                  </Card>
+                ) : null}
+
+                {error ? <ErrorText>{error}</ErrorText> : null}
+
+                <ButtonRow>
+                  {step > 1 ? (
+                    <ActionButton type="button" onClick={handlePrev}>
+                      이전 <Arrow back />
+                    </ActionButton>
+                  ) : null}
+                  <ActionButton type="submit" primary full>
+                    다음 <Arrow />
+                  </ActionButton>
+                </ButtonRow>
+              </form>
+            </>
+          ) : (
+            <SuccessWrap>
+              <img src={successIcon.src} alt="" width={180} height={180} />
+              <div>
+                <SuccessTitle>지원서가 제출됐어요.</SuccessTitle>
+                <p
+                  style={{
+                    marginBottom: "160px",
+                    fontSize: "28px",
+                    lineHeight: "32px",
+                    fontWeight: 600,
+                    color: "#d4d4d4",
+                  }}
+                >
+                  검토 후 입력하신 이메일로 결과를 안내드릴게요.
+                  <br />
+                  DDD와 함께할 날을 기대하고 있을게요 :)
+                </p>
+              </div>
+              <ActionButton primary full onClick={() => setStep(1)}>
+                완료
+              </ActionButton>
+            </SuccessWrap>
+          )}
+        </Container>
+      </ContainerPadding>
     </PageSection>
   );
 };

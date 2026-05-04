@@ -31,5 +31,6 @@ export const assets = {
     tistory: "/images/Tistory.png",
     medium: "/images/Medium.png",
     brunch: "/images/Brunch.png",
+    instagram: "/images/Instagram.png",
   },
 } as const;

@@ -5,6 +5,8 @@ import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
 import { ApiError } from "@ddd/api";
 import { subscribeEarlyNotificationWithActiveCohort } from "@/lib/web-api";
+import successIcon from "@/public/images/success.png";
+import modalImageIcon from "@/public/images/modal_image.png";
 
 export const PRE_ALERT_MODAL_OPEN_EVENT = "ddd:open-pre-alert-modal";
 
@@ -21,11 +23,6 @@ type ModalStep = "form" | "success" | "confirm-close";
 const INITIAL_VALUES: FormValues = {
   email: "",
 };
-
-const MODAL_DECORATION_IMAGE =
-  "https://www.figma.com/api/mcp/asset/8acad552-df88-46ca-8a7f-0a09b34f367d";
-const MODAL_SUCCESS_IMAGE =
-  "https://www.figma.com/api/mcp/asset/7cbb49bf-a374-453a-9c95-c1c69fddc903";
 
 const Overlay = styled.div<{ open: boolean }>(({ open }) => ({
   position: "fixed",
@@ -87,9 +84,17 @@ const Header = styled.div({
 const Title = styled.h2({
   margin: 0,
   color: "#202325",
-  fontSize: "clamp(20px, calc(2.77vw + 9.60px), 40px)",
-  lineHeight: "clamp(25px, calc(3.54vw + 11.72px), 50px)",
+  fontSize: "40px",
+  lineHeight: "50px",
   fontWeight: fontWeights.bold,
+  "@media (max-width: 1024px)": {
+    fontSize: "34px",
+    lineHeight: "45px",
+  },
+  "@media (max-width: 375px)": {
+    fontSize: "20px",
+    lineHeight: "25px",
+  },
 });
 
 const FloatingCloseArea = styled.div({
@@ -146,10 +151,6 @@ const Description = styled.p({
   maxWidth: "686px",
 
   "@media (max-width: 1024px)": {
-    fontSize: "22px",
-    lineHeight: "28px",
-  },
-  "@media (max-width: 768px)": {
     fontSize: "20px",
     lineHeight: "25px",
     maxWidth: "297px",
@@ -171,8 +172,9 @@ const Decoration = styled.img({
   objectFit: "cover",
   opacity: 0.3,
   pointerEvents: "none",
+  background: `url(${modalImageIcon.src}) / cover no-repeat`,
 
-  "@media (max-width: 768px)": {
+  "@media (max-width: 1024px)": {
     width: "102px",
     height: "102px",
   },
@@ -320,7 +322,6 @@ const SuccessWrap = styled.div({
   alignItems: "center",
   justifyContent: "center",
   gap: "20px",
-  padding: "0 80px",
   minHeight: "383px",
 
   "@media (max-width: 375px)": {
@@ -343,11 +344,23 @@ const SuccessImage = styled.img({
 const SuccessTitle = styled.h3({
   margin: 0,
   color: "#1e1e1e",
-  fontSize: "clamp(20px, calc(2.77vw + 9.60px), 40px)",
-  lineHeight: "clamp(25px, calc(3.54vw + 11.72px), 50px)",
+  fontSize: "40px",
+  lineHeight: "50px",
   fontWeight: fontWeights.bold,
   textAlign: "center",
   whiteSpace: "pre-line",
+  "@media (max-width: 1024px)": {
+    fontSize: "34px",
+    lineHeight: "45px",
+  },
+  "@media (max-width: 768px)": {
+    fontSize: "30px",
+    lineHeight: "36px",
+  },
+  "@media (max-width: 375px)": {
+    fontSize: "20px",
+    lineHeight: "25px",
+  },
 });
 
 const SuccessDescription = styled.p({
@@ -359,8 +372,12 @@ const SuccessDescription = styled.p({
   textAlign: "center",
 
   "@media (max-width: 1024px)": {
-    fontSize: "15px",
-    lineHeight: "19px",
+    fontSize: "14px",
+    lineHeight: "18px",
+  },
+  "@media (max-width: 768px)": {
+    fontSize: "13px",
+    lineHeight: "16px",
   },
   "@media (max-width: 375px)": {
     fontSize: "12px",
@@ -378,6 +395,10 @@ const SuccessTimerText = styled.p({
 
   "@media (max-width: 1024px)": {
     fontSize: "11px",
+    lineHeight: "14px",
+  },
+  "@media (max-width: 768px)": {
+    fontSize: "10px",
     lineHeight: "14px",
   },
   "@media (max-width: 375px)": {
@@ -415,9 +436,17 @@ const ConfirmHeader = styled.div({
 const ConfirmTitle = styled.h3({
   margin: 0,
   color: "#202325",
-  fontSize: "clamp(20px, calc(2.77vw + 9.60px), 40px)",
-  lineHeight: "clamp(25px, calc(3.54vw + 11.72px), 50px)",
+  fontSize: "40px",
+  lineHeight: "50px",
   fontWeight: fontWeights.bold,
+  "@media (max-width: 1024px)": {
+    fontSize: "34px",
+    lineHeight: "45px",
+  },
+  "@media (max-width: 375px)": {
+    fontSize: "20px",
+    lineHeight: "25px",
+  },
 });
 
 const ConfirmDescription = styled.p({
@@ -429,8 +458,8 @@ const ConfirmDescription = styled.p({
   whiteSpace: "pre-line",
 
   "@media (max-width: 1024px)": {
-    fontSize: "22px",
-    lineHeight: "28px",
+    fontSize: "25px",
+    lineHeight: "25px",
   },
   "@media (max-width: 375px)": {
     fontSize: "16px",
@@ -617,7 +646,7 @@ export const PreAlertModal = () => {
                   <Title>14기 모집 알림 신청</Title>
                   <Description>DDD 14기 모집이 시작되면 가장 먼저 알려드릴게요.</Description>
                 </div>
-                <Decoration src={MODAL_DECORATION_IMAGE} alt="" />
+                <Decoration src={modalImageIcon.src} alt="" />
               </Header>
 
               <Form onSubmit={onSubmit}>
@@ -657,7 +686,7 @@ export const PreAlertModal = () => {
           {step === "success" && (
             <>
               <SuccessWrap>
-                <SuccessImage src={MODAL_SUCCESS_IMAGE} alt="" />
+                <SuccessImage src={successIcon.src} alt="" />
                 <SuccessTitle>{"14기 모집 알림 신청이\n완료되었어요!"}</SuccessTitle>
                 <SuccessDescription>DDD 크루 모집 시, 이메일로 알려드릴게요.</SuccessDescription>
                 <SuccessTimerText>3초 뒤에 자동으로 화면이 닫힙니다.</SuccessTimerText>
