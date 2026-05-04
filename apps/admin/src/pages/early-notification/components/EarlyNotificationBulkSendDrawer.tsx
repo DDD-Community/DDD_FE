@@ -8,6 +8,7 @@ import { Button, Drawer, Input, TextArea, toast } from "@heroui/react"
 import { earlyNotificationKeys, useSendBulkEarlyNotification } from "@ddd/api"
 
 import { useIsMobile } from "@/shared/hooks/useIsMobile"
+import { FormField } from "@/shared/ui/FormField"
 
 import { buildEmailTemplate } from "../lib/buildEmailTemplate"
 
@@ -168,18 +169,3 @@ export const EarlyNotificationBulkSendDrawer = ({
   )
 }
 
-const FormField = ({
-  label,
-  error,
-  children,
-}: {
-  label: string
-  error?: string
-  children: React.ReactNode
-}) => (
-  <div className="space-y-1.5">
-    <label className="text-xs font-medium text-gray-700">{label}</label>
-    {children}
-    {error && <p className="text-xs text-red-500">{error}</p>}
-  </div>
-)
