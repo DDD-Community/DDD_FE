@@ -1,9 +1,9 @@
 import { Input, ListBox, Select } from "@heroui/react"
 
-import { FlexBox } from "@/shared/ui/FlexBox"
 import type { CohortDto, ProjectPlatform } from "@ddd/api"
 
-import { PLATFORM_LABEL, PLATFORM_OPTIONS } from "../constants"
+import { PLATFORM_LABEL, PLATFORM_OPTIONS } from "@/entities/project"
+import { FlexBox } from "@/shared/ui/FlexBox"
 
 export type PlatformFilterValue = ProjectPlatform | "ALL"
 export type CohortFilterValue = number | "ALL"

@@ -1,9 +1,9 @@
 import { Button, Table } from "@heroui/react"
 
-import { cn } from "@/shared/lib/cn"
 import type { CohortDto, ProjectDto, ProjectPlatform } from "@ddd/api"
 
-import { PLATFORM_LABEL } from "../constants"
+import { PLATFORM_LABEL } from "@/entities/project"
+import { cn } from "@/shared/lib/cn"
 
 type ProjectsTableProps = {
   projects: ProjectDto[]
@@ -21,7 +21,7 @@ export const ProjectsTable = ({
   return (
     <Table>
       <Table.ScrollContainer>
-        <Table.Content aria-label="프로젝트 목록" className="min-w-[900px]">
+        <Table.Content aria-label="프로젝트 목록" className="min-w-225">
           <Table.Header>
             <Table.Column>썸네일</Table.Column>
             <Table.Column isRowHeader>서비스명</Table.Column>
@@ -57,7 +57,7 @@ export const ProjectsTable = ({
                   </span>
                 </Table.Cell>
                 <Table.Cell>
-                  <span className="text-muted-foreground line-clamp-1 max-w-[220px] text-xs">
+                  <span className="text-muted-foreground line-clamp-1 max-w-55 text-xs">
                     {project.description}
                   </span>
                 </Table.Cell>
@@ -96,7 +96,7 @@ export const ProjectsTable = ({
 const Thumbnail = ({ src, alt }: { src?: string; alt: string }) => {
   if (!src) {
     return (
-      <div className="bg-muted flex h-10 w-10 items-center justify-center rounded text-xs text-gray-400">
+      <div className="flex h-10 w-10 items-center justify-center rounded bg-muted text-xs text-gray-400">
         N/A
       </div>
     )
