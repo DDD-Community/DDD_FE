@@ -1,18 +1,15 @@
 import { Calendar, DateField, DatePicker, Input } from "@heroui/react"
-import { Controller } from "react-hook-form"
-import type { Control, UseFormRegister } from "react-hook-form"
+import { Controller, useFormContext } from "react-hook-form"
 
-import { CURRICULUM_WEEK_COUNT } from "../constants"
-import type { SemesterRegisterForm } from "../types"
+import { toCalendarDate } from "@/shared/lib/toDateValue"
+
+import { CURRICULUM_WEEK_COUNT } from "../../../constants"
+import type { SemesterRegisterForm } from "../../../types"
 
 import { SectionTitle } from "./shared"
 
-interface Props {
-  control: Control<SemesterRegisterForm>
-  register: UseFormRegister<SemesterRegisterForm>
-}
-
-export function CurriculumSection({ control, register }: Props) {
+export function CurriculumSection() {
+  const { control, register } = useFormContext<SemesterRegisterForm>()
   return (
     <section className="space-y-4">
       <SectionTitle>커리큘럼</SectionTitle>
@@ -28,7 +25,7 @@ export function CurriculumSection({ control, register }: Props) {
               render={({ field }) => (
                 <DatePicker
                   className="w-1/2"
-                  value={null}
+                  value={toCalendarDate(field.value)}
                   onChange={(date) => field.onChange(date?.toString() ?? "")}
                 >
                   <DateField.Group fullWidth>
@@ -41,7 +38,7 @@ export function CurriculumSection({ control, register }: Props) {
                       </DatePicker.Trigger>
                     </DateField.Suffix>
                   </DateField.Group>
-                  <DatePicker.Popover>
+                  <DatePicker.Popover placement="bottom start">
                     <Calendar aria-label={`${index + 1}주차 날짜`}>
                       <Calendar.Header>
                         <Calendar.YearPickerTrigger>

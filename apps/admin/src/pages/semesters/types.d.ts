@@ -23,8 +23,6 @@ export type CurriculumWeek = {
 export type SemesterRegisterForm = {
   cohortNumber: string
   status: CohortStatus
-  recruitStartDate: string
-  recruitEndDate: string
   process: ProcessSchedule
   curriculum: CurriculumWeek[]
   applicationForms: Record<CohortPartName, string[]>

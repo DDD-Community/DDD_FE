@@ -5,21 +5,35 @@ import {
   DateRangePicker,
   RangeCalendar,
 } from "@heroui/react"
-import { Controller } from "react-hook-form"
-import type { Control, UseFormSetValue } from "react-hook-form"
+import { Controller, useFormContext, useWatch } from "react-hook-form"
 
+import { toCalendarDate, toDateRangeValue } from "@/shared/lib/toDateValue"
 import { GridBox } from "@/shared/ui/GridBox"
 
-import type { SemesterRegisterForm } from "../types"
+import type { SemesterRegisterForm } from "../../../types"
 
 import { FormField, SectionTitle } from "./shared"
 
-interface Props {
-  control: Control<SemesterRegisterForm>
-  setValue: UseFormSetValue<SemesterRegisterForm>
-}
+export function ProcessSection() {
+  const { control, setValue } = useFormContext<SemesterRegisterForm>()
 
-export function ProcessSection({ control, setValue }: Props) {
+  const documentAcceptStart = useWatch({
+    control,
+    name: "process.documentAcceptStartDate",
+  })
+  const documentAcceptEnd = useWatch({
+    control,
+    name: "process.documentAcceptEndDate",
+  })
+  const interviewStart = useWatch({
+    control,
+    name: "process.interviewStartDate",
+  })
+  const interviewEnd = useWatch({
+    control,
+    name: "process.interviewEndDate",
+  })
+
   return (
     <section className="space-y-4">
       <SectionTitle>프로세스 일정</SectionTitle>
@@ -27,17 +41,17 @@ export function ProcessSection({ control, setValue }: Props) {
         <FormField label="서류 접수">
           <DateRangePicker
             className="w-full"
-            value={null}
+            value={toDateRangeValue(documentAcceptStart, documentAcceptEnd)}
             onChange={(value) => {
               setValue(
                 "process.documentAcceptStartDate",
                 value?.start.toString() ?? "",
-                { shouldDirty: true },
+                { shouldDirty: true }
               )
               setValue(
                 "process.documentAcceptEndDate",
                 value?.end.toString() ?? "",
-                { shouldDirty: true },
+                { shouldDirty: true }
               )
             }}
           >
@@ -55,7 +69,7 @@ export function ProcessSection({ control, setValue }: Props) {
                 </DateRangePicker.Trigger>
               </DateField.Suffix>
             </DateField.Group>
-            <DateRangePicker.Popover>
+            <DateRangePicker.Popover placement="bottom start">
               <RangeCalendar aria-label="서류 접수 기간">
                 <RangeCalendar.Header>
                   <RangeCalendar.YearPickerTrigger>
@@ -87,7 +101,7 @@ export function ProcessSection({ control, setValue }: Props) {
             render={({ field }) => (
               <DatePicker
                 className="w-full"
-                value={null}
+                value={toCalendarDate(field.value)}
                 onChange={(date) => field.onChange(date?.toString() ?? "")}
               >
                 <DateField.Group fullWidth>
@@ -100,7 +114,7 @@ export function ProcessSection({ control, setValue }: Props) {
                     </DatePicker.Trigger>
                   </DateField.Suffix>
                 </DateField.Group>
-                <DatePicker.Popover>
+                <DatePicker.Popover placement="bottom start">
                   <Calendar aria-label="서류 발표">
                     <Calendar.Header>
                       <Calendar.YearPickerTrigger>
@@ -130,17 +144,17 @@ export function ProcessSection({ control, setValue }: Props) {
         <FormField label="인터뷰 날짜">
           <DateRangePicker
             className="w-full"
-            value={null}
+            value={toDateRangeValue(interviewStart, interviewEnd)}
             onChange={(value) => {
               setValue(
                 "process.interviewStartDate",
                 value?.start.toString() ?? "",
-                { shouldDirty: true },
+                { shouldDirty: true }
               )
               setValue(
                 "process.interviewEndDate",
                 value?.end.toString() ?? "",
-                { shouldDirty: true },
+                { shouldDirty: true }
               )
             }}
           >
@@ -158,7 +172,7 @@ export function ProcessSection({ control, setValue }: Props) {
                 </DateRangePicker.Trigger>
               </DateField.Suffix>
             </DateField.Group>
-            <DateRangePicker.Popover>
+            <DateRangePicker.Popover placement="bottom start">
               <RangeCalendar aria-label="인터뷰 기간">
                 <RangeCalendar.Header>
                   <RangeCalendar.YearPickerTrigger>
@@ -190,7 +204,7 @@ export function ProcessSection({ control, setValue }: Props) {
             render={({ field }) => (
               <DatePicker
                 className="w-full"
-                value={null}
+                value={toCalendarDate(field.value)}
                 onChange={(date) => field.onChange(date?.toString() ?? "")}
               >
                 <DateField.Group fullWidth>
@@ -203,7 +217,7 @@ export function ProcessSection({ control, setValue }: Props) {
                     </DatePicker.Trigger>
                   </DateField.Suffix>
                 </DateField.Group>
-                <DatePicker.Popover>
+                <DatePicker.Popover placement="bottom start">
                   <Calendar aria-label="최종 발표">
                     <Calendar.Header>
                       <Calendar.YearPickerTrigger>

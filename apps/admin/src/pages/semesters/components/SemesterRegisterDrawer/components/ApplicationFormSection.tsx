@@ -1,23 +1,19 @@
 import { Button, Tabs, TextArea } from "@heroui/react"
 import { PlusSignIcon, X } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import type { UseFormSetValue, UseFormWatch } from "react-hook-form"
+import { useFormContext, useWatch } from "react-hook-form"
 
 import type { CohortPartName } from "@ddd/api"
 
 import { PART_LABEL, SEMESTER_PARTS } from "@/entities/cohort"
 
-import type { SemesterRegisterForm } from "../types"
+import type { SemesterRegisterForm } from "../../../types"
 
 import { SectionTitle } from "./shared"
 
-interface Props {
-  watch: UseFormWatch<SemesterRegisterForm>
-  setValue: UseFormSetValue<SemesterRegisterForm>
-}
-
-export function ApplicationFormSection({ watch, setValue }: Props) {
-  const applicationForms = watch("applicationForms")
+export function ApplicationFormSection() {
+  const { control, setValue } = useFormContext<SemesterRegisterForm>()
+  const applicationForms = useWatch({ control, name: "applicationForms" })
 
   const updateQuestion = (
     part: CohortPartName,

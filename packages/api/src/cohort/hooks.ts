@@ -2,11 +2,11 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { cohortQueries, cohortMutations, cohortPublicQueries } from "./queries";
 import type {
   GetCohortParams,
-  PatchUpdateCohortParams,
-  PatchUpdateCohortRequest,
-  DeleteCohortParams,
-  PutUpdateCohortPartsParams,
-  PutUpdateCohortPartsRequest,
+  // PatchUpdateCohortParams,
+  // PatchUpdateCohortRequest,
+  // DeleteCohortParams,
+  // PutUpdateCohortPartsParams,
+  // PutUpdateCohortPartsRequest,
 } from "./types";
 
 /**
@@ -63,8 +63,7 @@ export const useDeleteCohort = () => useMutation(cohortMutations.deleteCohort())
  * const { mutate: updateCohortParts, isPending } = useUpdateCohortParts()
  * updateCohortParts({ params: { id: 1 }, payload: { parts: [...] } })
  */
-export const useUpdateCohortParts = () =>
-  useMutation(cohortMutations.updateCohortParts());
+export const useUpdateCohortParts = () => useMutation(cohortMutations.updateCohortParts());
 
 /**
  * 현재 활성 기수 조회 훅 (GET /api/v1/cohorts/active — public)
