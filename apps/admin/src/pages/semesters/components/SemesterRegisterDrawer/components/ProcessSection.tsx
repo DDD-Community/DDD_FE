@@ -7,12 +7,12 @@ import {
 } from "@heroui/react"
 import { Controller, useFormContext, useWatch } from "react-hook-form"
 
-import { toCalendarDate, toDateRangeValue } from "@/shared/lib/toDateValue"
+import { FormField } from "@/shared/ui/FormField"
 import { GridBox } from "@/shared/ui/GridBox"
+import { Section } from "@/shared/ui/Section"
+import { toCalendarDate, toDateRangeValue } from "@/shared/lib/toDateValue"
 
 import type { SemesterRegisterForm } from "../../../types"
-
-import { FormField, SectionTitle } from "./shared"
 
 export function ProcessSection() {
   const { control, setValue } = useFormContext<SemesterRegisterForm>()
@@ -35,8 +35,7 @@ export function ProcessSection() {
   })
 
   return (
-    <section className="space-y-4">
-      <SectionTitle>프로세스 일정</SectionTitle>
+    <Section title="프로세스 일정">
       <GridBox className="grid-cols-2 gap-5">
         <FormField label="서류 접수">
           <DateRangePicker
@@ -244,6 +243,6 @@ export function ProcessSection() {
           />
         </FormField>
       </GridBox>
-    </section>
+    </Section>
   )
 }

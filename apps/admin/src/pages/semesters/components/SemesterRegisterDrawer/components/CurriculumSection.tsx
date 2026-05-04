@@ -1,18 +1,16 @@
 import { Calendar, DateField, DatePicker, Input } from "@heroui/react"
 import { Controller, useFormContext } from "react-hook-form"
 
+import { Section } from "@/shared/ui/Section"
 import { toCalendarDate } from "@/shared/lib/toDateValue"
 
 import { CURRICULUM_WEEK_COUNT } from "../../../constants"
 import type { SemesterRegisterForm } from "../../../types"
 
-import { SectionTitle } from "./shared"
-
 export function CurriculumSection() {
   const { control, register } = useFormContext<SemesterRegisterForm>()
   return (
-    <section className="space-y-4">
-      <SectionTitle>커리큘럼</SectionTitle>
+    <Section title="커리큘럼">
       <div className="space-y-3">
         {Array.from({ length: CURRICULUM_WEEK_COUNT }, (_, index) => (
           <div key={index} className="flex items-center gap-2">
@@ -71,6 +69,6 @@ export function CurriculumSection() {
           </div>
         ))}
       </div>
-    </section>
+    </Section>
   )
 }

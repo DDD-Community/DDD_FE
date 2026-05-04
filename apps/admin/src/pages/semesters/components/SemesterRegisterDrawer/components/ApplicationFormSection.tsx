@@ -6,10 +6,9 @@ import { useFormContext, useWatch } from "react-hook-form"
 import type { CohortPartName } from "@ddd/api"
 
 import { PART_LABEL, SEMESTER_PARTS } from "@/entities/cohort"
+import { Section } from "@/shared/ui/Section"
 
 import type { SemesterRegisterForm } from "../../../types"
-
-import { SectionTitle } from "./shared"
 
 export function ApplicationFormSection() {
   const { control, setValue } = useFormContext<SemesterRegisterForm>()
@@ -52,8 +51,7 @@ export function ApplicationFormSection() {
   }
 
   return (
-    <section className="space-y-4">
-      <SectionTitle>파트별 지원서 양식</SectionTitle>
+    <Section title="파트별 지원서 양식">
       <Tabs>
         <Tabs.ListContainer>
           <Tabs.List aria-label="파트별 지원서">
@@ -107,6 +105,6 @@ export function ApplicationFormSection() {
           </Tabs.Panel>
         ))}
       </Tabs>
-    </section>
+    </Section>
   )
 }

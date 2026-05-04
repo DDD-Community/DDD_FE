@@ -1,18 +1,17 @@
 import { Input, ListBox, Select } from "@heroui/react"
 import { Controller, useFormContext } from "react-hook-form"
 
+import { FormField } from "@/shared/ui/FormField"
 import { GridBox } from "@/shared/ui/GridBox"
+import { Section } from "@/shared/ui/Section"
 
 import { STATUS_OPTIONS } from "../../../constants"
 import type { SemesterRegisterForm } from "../../../types"
 
-import { FormField, SectionTitle } from "./shared"
-
 export function BasicInfoSection() {
   const { control, register } = useFormContext<SemesterRegisterForm>()
   return (
-    <section className="space-y-4">
-      <SectionTitle>기본 정보</SectionTitle>
+    <Section title="기본 정보">
       <GridBox className="grid-cols-2 gap-5">
         <FormField label="기수">
           <Input
@@ -58,6 +57,6 @@ export function BasicInfoSection() {
           />
         </FormField>
       </GridBox>
-    </section>
+    </Section>
   )
 }
