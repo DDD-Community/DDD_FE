@@ -23,9 +23,12 @@ const Title = styled.h2({
   margin: 0,
   color: colors.textInverse,
   textAlign: "center",
-  fontSize: "clamp(28px, calc(1.54vw + 22.22px), 40px)",
-  lineHeight: "clamp(32px, calc(2.47vw + 22.76px), 50px)",
+  fontSize: "40px",
+  lineHeight: "50px",
   fontWeight: fontWeights.bold,
+  "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
+  "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
+  "@media (max-width: 375px)": { fontSize: "20px", lineHeight: "25px" },
 });
 
 const List = styled.div({
@@ -45,48 +48,49 @@ const Item = styled.article({
   borderRadius: "30px",
   boxShadow: "inset 3px 3px 25px 0 rgba(146, 146, 146, 0.25)",
   padding: "40px",
-  display: "grid",
-  gridTemplateColumns: "120px 1fr",
+  display: "flex",
   alignItems: "center",
+  gap: "56px",
 
-  "@media (max-width: 768px)": { gridTemplateColumns: "100px 1fr", gap: "28px", padding: "28px" },
+  "@media (max-width: 768px)": { padding: "40px" },
   "@media (max-width: 375px)": {
-    gridTemplateColumns: "54px 1fr",
-    gap: "14px",
-    borderRadius: "20px",
-    padding: "20px 16px",
+    padding: "24px",
+    gap: "40px",
   },
 });
 
 const Step = styled.p({
   margin: 0,
   color: "#90a1b9",
-  fontSize: "clamp(24px, calc(4.93vw + 5.51px), 64px)",
-  lineHeight: "clamp(28px, calc(5.55vw + 7.19px), 75px)",
+  fontSize: "64px",
+  lineHeight: "75px",
   fontWeight: fontWeights.bold,
-  "@media (max-width: 768px)": { fontSize: "48px", lineHeight: "56px" },
-  "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "28px" },
+  "@media (max-width: 1024px)": { fontSize: "54px", lineHeight: "65px" },
+  "@media (max-width: 768px)": { fontSize: "42px", lineHeight: "52px" },
+  "@media (max-width: 375px)": { fontSize: "38px", lineHeight: "48px" },
 });
 
 const Label = styled.p({
   margin: 0,
   color: "#90a1b9",
-  fontSize: "clamp(14px, calc(1.849vw + 7.07px), 28px)",
-  lineHeight: "clamp(18px, calc(1.849vw + 11.07px), 32px)",
+  fontSize: "28px",
+  lineHeight: "32px",
   fontWeight: fontWeights.semiBold,
-  "@media (max-width: 768px)": { fontSize: "24px", lineHeight: "28px" },
-  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
+  "@media (max-width: 1024px)": { fontSize: "24px", lineHeight: "30px" },
+  "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
+  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
 });
 
 const DateText = styled.p({
   margin: 0,
   marginTop: "10px",
   color: colors.textInverse,
-  fontSize: "clamp(14px, calc(3.082vw + 2.44px), 40px)",
-  lineHeight: "clamp(18px, calc(3.699vw + 4.13px), 50px)",
+  fontSize: "40px ",
+  lineHeight: "50px",
   fontWeight: fontWeights.bold,
-  "@media (max-width: 768px)": { fontSize: "28px", lineHeight: "36px" },
-  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px", marginTop: "6px" },
+  "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
+  "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
+  "@media (max-width: 575px)": { fontSize: "20px", lineHeight: "25px", marginTop: "6px" },
 });
 
 export const RecruitScheduleSection = () => {

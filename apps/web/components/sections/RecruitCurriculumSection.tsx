@@ -26,9 +26,12 @@ const Title = styled.h2({
   margin: 0,
   textAlign: "center",
   color: colors.textInverse,
-  fontSize: "clamp(28px, calc(1.54vw + 22.22px), 40px)",
-  lineHeight: "clamp(32px, calc(2.47vw + 22.76px), 50px)",
+  fontSize: "40px",
+  lineHeight: "50px",
   fontWeight: fontWeights.bold,
+  "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
+  "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
+  "@media (max-width: 375px)": { fontSize: "20px", lineHeight: "25px" },
 });
 
 const Grid = styled.div({
@@ -36,6 +39,7 @@ const Grid = styled.div({
   display: "grid",
   gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
   gap: "24px",
+  width: "100%",
 
   "@media (max-width: 768px)": { gridTemplateColumns: "1fr" },
   "@media (max-width: 375px)": { marginTop: "20px", gap: "8px" },
@@ -65,10 +69,11 @@ const Week = styled.p({
   margin: 0,
   color: "#90a1b9",
   fontSize: "20px",
-  lineHeight: "25px",
+  lineHeight: "28px",
   fontWeight: fontWeights.medium,
 
   "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
+  "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "20px" },
   "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
@@ -79,8 +84,9 @@ const DateText = styled.p({
   lineHeight: "30px",
   fontWeight: fontWeights.medium,
 
-  "@media (max-width: 1024px)": { fontSize: "22px", lineHeight: "28px" },
-  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
+  "@media (max-width: 1024px)": { fontSize: "20px", lineHeight: "25px" },
+  "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "24px" },
+  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
 });
 
 const ItemTitle = styled.h3({
@@ -90,9 +96,9 @@ const ItemTitle = styled.h3({
   lineHeight: "50px",
   fontWeight: fontWeights.bold,
 
-  "@media (max-width: 1024px)": { fontSize: "38px", lineHeight: "48px" },
-  "@media (max-width: 768px)": { fontSize: "34px", lineHeight: "42px" },
-  "@media (max-width: 375px)": { fontSize: "20px", lineHeight: "25px", marginTop: "8px" },
+  "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
+  "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
+  "@media (max-width: 375px)": { fontSize: "20px", lineHeight: "25px" },
 });
 
 const Description = styled.p({
@@ -102,9 +108,9 @@ const Description = styled.p({
   lineHeight: "30px",
   fontWeight: fontWeights.medium,
 
-  "@media (max-width: 1024px)": { fontSize: "22px", lineHeight: "28px" },
-  "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
-  "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "16px", marginTop: "8px" },
+  "@media (max-width: 1024px)": { fontSize: "20px", lineHeight: "25px" },
+  "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "24px" },
+  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
 });
 
 const Floating3D = styled.img({

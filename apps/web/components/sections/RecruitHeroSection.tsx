@@ -70,6 +70,7 @@ const Label = styled.p({
   fontSize: "20px",
   lineHeight: "28px",
   fontWeight: fontWeights.medium,
+  marginTop: "120px",
   "@media (max-width: 1024px)": {
     fontSize: "18px",
     lineHeight: "23px",
@@ -85,6 +86,9 @@ const Label = styled.p({
 });
 
 const Title = styled.h1({
+  margin: 0,
+  maxWidth: "100%",
+  whiteSpace: "pre-line",
   fontSize: "130px",
   lineHeight: "130px",
   fontWeight: fontWeights.bold,
@@ -100,12 +104,8 @@ const Title = styled.h1({
     lineHeight: "110px",
   },
   "@media (max-width: 768px)": {
-    fontSize: "90px",
-    lineHeight: "100px",
-  },
-  "@media (max-width: 375px)": {
-    fontSize: "45px",
-    lineHeight: "50px",
+    fontSize: "clamp(45px, calc(45px + (100vw - 375px) * 45 / 393), 90px)",
+    lineHeight: "clamp(50px, calc(50px + (100vw - 375px) * 50 / 393), 100px)",
   },
 });
 

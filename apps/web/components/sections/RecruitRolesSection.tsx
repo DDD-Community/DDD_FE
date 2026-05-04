@@ -50,7 +50,7 @@ const Grid = styled.div({
   "@media (max-width: 768px)": {
     gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 525px)": {
     gridTemplateColumns: "1fr",
     gap: "12px",
   },
@@ -78,7 +78,6 @@ const Card = styled.article<{ isRecruitOpen: boolean }>(({ isRecruitOpen }) => (
     : {}),
 
   "@media (max-width: 375px)": {
-    minHeight: "185px",
     padding: "20px",
     borderRadius: "24px",
   },
@@ -87,18 +86,19 @@ const Card = styled.article<{ isRecruitOpen: boolean }>(({ isRecruitOpen }) => (
 const RoleName = styled.h3({
   margin: 0,
   color: colors.textInverse,
-  fontSize: "clamp(24px, calc(0.3083vw + 22.84px), 28px)",
-  lineHeight: "clamp(28px, calc(0.3083vw + 26.84px), 32px)",
+  fontSize: "28px",
+  lineHeight: "32px",
   fontWeight: fontWeights.semiBold,
-  "@media (max-width: 768px)": { fontSize: "24px", lineHeight: "28px" },
-  "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "28px" },
+  "@media (max-width: 1024px)": { fontSize: "24px", lineHeight: "30px" },
+  "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
+  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
 });
 
 const RoleDescription = styled.p<{ isRecruitOpen: boolean }>(({ isRecruitOpen }) => ({
   margin: 0,
   color: colors.mainLight,
   fontSize: "20px",
-  lineHeight: "25px",
+  lineHeight: "28px",
   fontWeight: fontWeights.medium,
   maxHeight: 0,
   opacity: 0,
@@ -117,7 +117,7 @@ const RoleDescription = styled.p<{ isRecruitOpen: boolean }>(({ isRecruitOpen })
     : {}),
 
   "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
-  "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "22px" },
+  "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "20px" },
   "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
 }));
 
