@@ -1,4 +1,3 @@
-// apps/admin/src/pages/reminders/RemindersDataView.tsx
 import { useMemo } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
@@ -16,19 +15,19 @@ import {
   type StatusFilterOption,
 } from "./constants"
 
-type RemindersDataViewProps = {
+type EarlyNotificationDataViewProps = {
   cohortId: number
   cohorts: CohortDto[]
   searchText: string
   statusFilter: StatusFilterOption
 }
 
-export const RemindersDataView = ({
+export const EarlyNotificationDataView = ({
   cohortId,
   cohorts,
   searchText,
   statusFilter,
-}: RemindersDataViewProps) => {
+}: EarlyNotificationDataViewProps) => {
   const { data: reminders } = useSuspenseQuery(
     earlyNotificationQueries.getAdminEarlyNotifications({
       params: { cohortId },

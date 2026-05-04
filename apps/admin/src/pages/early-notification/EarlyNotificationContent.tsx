@@ -1,4 +1,3 @@
-// apps/admin/src/pages/reminders/RemindersContent.tsx
 import { Suspense, useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { useSuspenseQuery } from "@tanstack/react-query"
@@ -15,7 +14,7 @@ import { ErrorFallback } from "@/shared/ui/ErrorFallback"
 import { CohortsAreaSkeleton } from "./components/CohortsAreaSkeleton"
 import { RemindersBulkSendDrawer } from "./components/RemindersBulkSendDrawer"
 import { RemindersToolbar } from "./components/RemindersToolbar"
-import { RemindersDataView } from "./RemindersDataView"
+import { EarlyNotificationDataView } from "./EarlyNotificationDataView"
 import { downloadRemindersCsv } from "./lib/downloadRemindersCsv"
 import type { StatusFilterOption } from "./constants"
 
@@ -31,7 +30,7 @@ const pickActiveCohortId = (cohorts: CohortDto[]): number | null => {
   return sorted[0]?.id ?? null
 }
 
-type RemindersContentProps = {
+type EarlyNotificationContentProps = {
   searchText: string
   statusFilter: StatusFilterOption
   overrideCohortId: number | null
@@ -40,14 +39,14 @@ type RemindersContentProps = {
   onCohortChange: (id: number) => void
 }
 
-export const RemindersContent = ({
+export const EarlyNotificationContent = ({
   searchText,
   statusFilter,
   overrideCohortId,
   onSearchChange,
   onStatusFilterChange,
   onCohortChange,
-}: RemindersContentProps) => {
+}: EarlyNotificationContentProps) => {
   const { data: cohorts } = useSuspenseQuery(cohortQueries.getCohorts())
   const [isBulkSendOpen, setIsBulkSendOpen] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
@@ -107,7 +106,7 @@ export const RemindersContent = ({
         />
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           <Suspense fallback={<CohortsAreaSkeleton />}>
-            <RemindersDataView
+            <EarlyNotificationDataView
               cohortId={effectiveCohortId}
               cohorts={cohorts}
               searchText={searchText}

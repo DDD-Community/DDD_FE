@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router"
 import LoginPage from "./login/LoginPage"
 import SemestersPage from "./semesters/SemestersPage"
-import RemindersPage from "./reminders/RemindersPage"
+import EarlyNotificationPage from "./early-notification/EarlyNotificationPage"
 import ProjectsPage from "./projects/ProjectsPage"
 import BlogPostsPage from "./blog-posts/BlogPostsPage"
 import { ErrorPage } from "./error/ErrorPage"
@@ -32,7 +32,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/reminders",
-        element: <RemindersPage />,
+        element: <EarlyNotificationPage />,
         errorElement: <ErrorPage />,
       },
       {

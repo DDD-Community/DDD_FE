@@ -1,4 +1,3 @@
-// apps/admin/src/pages/reminders/RemindersPage.tsx
 import { Suspense, useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 
@@ -6,10 +5,10 @@ import { ErrorFallback } from "@/shared/ui/ErrorFallback"
 
 import { CohortsAreaSkeleton } from "./components/CohortsAreaSkeleton"
 import { TitleSection } from "./components/Sections"
-import { RemindersContent } from "./RemindersContent"
+import { EarlyNotificationContent } from "./EarlyNotificationContent"
 import type { StatusFilterOption } from "./constants"
 
-export default function RemindersPage() {
+export default function EarlyNotificationPage() {
   const [searchText, setSearchText] = useState("")
   const [statusFilter, setStatusFilter] =
     useState<StatusFilterOption>("전체")
@@ -22,7 +21,7 @@ export default function RemindersPage() {
       <TitleSection />
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Suspense fallback={<CohortsAreaSkeleton />}>
-          <RemindersContent
+          <EarlyNotificationContent
             searchText={searchText}
             statusFilter={statusFilter}
             overrideCohortId={overrideCohortId}
