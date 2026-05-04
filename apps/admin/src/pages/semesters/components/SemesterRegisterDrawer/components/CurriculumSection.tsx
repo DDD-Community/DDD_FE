@@ -22,6 +22,7 @@ export function CurriculumSection() {
               name={`curriculum.${index}.date`}
               render={({ field }) => (
                 <DatePicker
+                  aria-label={`${index + 1}주차 날짜`}
                   className="w-1/2"
                   value={toCalendarDate(field.value)}
                   onChange={(date) => field.onChange(date?.toString() ?? "")}
@@ -62,6 +63,7 @@ export function CurriculumSection() {
               )}
             />
             <Input
+              aria-label={`${index + 1}주차 내용`}
               placeholder="내용 입력"
               className="w-full"
               {...register(`curriculum.${index}.description`)}

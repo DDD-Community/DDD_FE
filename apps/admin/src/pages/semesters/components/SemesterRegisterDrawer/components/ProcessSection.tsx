@@ -99,6 +99,7 @@ export function ProcessSection() {
             name="process.documentResultDate"
             render={({ field }) => (
               <DatePicker
+                aria-label="서류 발표"
                 className="w-full"
                 value={toCalendarDate(field.value)}
                 onChange={(date) => field.onChange(date?.toString() ?? "")}
@@ -202,6 +203,7 @@ export function ProcessSection() {
             name="process.finalResultDate"
             render={({ field }) => (
               <DatePicker
+                aria-label="최종 발표"
                 className="w-full"
                 value={toCalendarDate(field.value)}
                 onChange={(date) => field.onChange(date?.toString() ?? "")}

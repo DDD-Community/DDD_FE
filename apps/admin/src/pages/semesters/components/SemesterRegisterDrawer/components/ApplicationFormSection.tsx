@@ -1,3 +1,4 @@
+import { useId } from "react"
 import { Button, Tabs, TextArea } from "@heroui/react"
 import { PlusSignIcon, X } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -13,6 +14,7 @@ import type { SemesterRegisterForm } from "../../../types"
 export function ApplicationFormSection() {
   const { control, setValue } = useFormContext<SemesterRegisterForm>()
   const applicationForms = useWatch({ control, name: "applicationForms" })
+  const baseLabelId = useId()
 
   const updateQuestion = (
     part: CohortPartName,
@@ -66,33 +68,40 @@ export function ApplicationFormSection() {
 
         {SEMESTER_PARTS.map((part) => (
           <Tabs.Panel key={part} id={part} className="space-y-3 py-4">
-            {applicationForms[part].map((question, qIndex) => (
-              <div key={qIndex} className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-foreground">
-                    질문 {qIndex + 1}
-                  </label>
-                  {applicationForms[part].length > 1 && (
-                    <Button
-                      isIconOnly
-                      variant="outline"
-                      size="sm"
-                      onPress={() => removeQuestion(part, qIndex)}
+            {applicationForms[part].map((question, qIndex) => {
+              const labelId = `${baseLabelId}-${part}-${qIndex}`
+              return (
+                <div key={qIndex} className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label
+                      id={labelId}
+                      className="text-sm font-medium text-foreground"
                     >
-                      <HugeiconsIcon icon={X} />
-                    </Button>
-                  )}
+                      질문 {qIndex + 1}
+                    </label>
+                    {applicationForms[part].length > 1 && (
+                      <Button
+                        isIconOnly
+                        variant="outline"
+                        size="sm"
+                        onPress={() => removeQuestion(part, qIndex)}
+                      >
+                        <HugeiconsIcon icon={X} />
+                      </Button>
+                    )}
+                  </div>
+                  <TextArea
+                    aria-labelledby={labelId}
+                    placeholder="질문을 입력하세요"
+                    className="w-full resize-none"
+                    value={question}
+                    onChange={(e) =>
+                      updateQuestion(part, qIndex, e.target.value)
+                    }
+                  />
                 </div>
-                <TextArea
-                  placeholder="질문을 입력하세요"
-                  className="w-full resize-none"
-                  value={question}
-                  onChange={(e) =>
-                    updateQuestion(part, qIndex, e.target.value)
-                  }
-                />
-              </div>
-            ))}
+              )
+            })}
             <Button
               size="sm"
               variant="outline"
