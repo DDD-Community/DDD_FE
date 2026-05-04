@@ -143,68 +143,66 @@ export const BlogPostFormDrawer = ({
   const thumbnailUrl = useWatch({ control, name: "thumbnail" })
 
   return (
-    <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
-      <Drawer.Backdrop>
-        <Drawer.Content placement={isMobile ? "bottom" : "right"}>
-          <Drawer.Dialog
-            className={!isMobile ? "w-full max-w-1/2 bg-gray-50" : ""}
-          >
-            <Drawer.Header>
-              <Drawer.Heading className="text-lg font-semibold">
-                {mode === "create" ? "블로그 등록" : "블로그 수정"}
-              </Drawer.Heading>
-            </Drawer.Header>
+    <Drawer.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Drawer.Content placement={isMobile ? "bottom" : "right"}>
+        <Drawer.Dialog
+          className={!isMobile ? "w-full max-w-1/2 bg-gray-50" : ""}
+        >
+          <Drawer.Header>
+            <Drawer.Heading className="text-lg font-semibold">
+              {mode === "create" ? "블로그 등록" : "블로그 수정"}
+            </Drawer.Heading>
+          </Drawer.Header>
 
-            <Drawer.Body className="flex-1 space-y-6 overflow-y-auto">
-              <Section title="블로그 정보">
-                <FormField label="썸네일 이미지">
-                  <ThumbnailUploader
-                    url={thumbnailUrl}
-                    isUploading={uploadFile.isPending}
-                    onSelect={handleThumbnailUpload}
-                    onClear={() =>
-                      setValue("thumbnail", "", { shouldValidate: true })
-                    }
-                  />
-                </FormField>
+          <Drawer.Body className="flex-1 space-y-6 overflow-y-auto">
+            <Section title="블로그 정보">
+              <FormField label="썸네일 이미지">
+                <ThumbnailUploader
+                  url={thumbnailUrl}
+                  isUploading={uploadFile.isPending}
+                  onSelect={handleThumbnailUpload}
+                  onClear={() =>
+                    setValue("thumbnail", "", { shouldValidate: true })
+                  }
+                />
+              </FormField>
 
-                <FormField label="제목" error={errors.title?.message}>
-                  <Input
-                    {...register("title")}
-                    placeholder="블로그 포스트 제목"
-                  />
-                </FormField>
+              <FormField label="제목" error={errors.title?.message}>
+                <Input
+                  {...register("title")}
+                  placeholder="블로그 포스트 제목"
+                />
+              </FormField>
 
-                <FormField label="본문 일부" error={errors.excerpt?.message}>
-                  <TextArea
-                    {...register("excerpt")}
-                    placeholder="목록에 노출될 본문 요약 (2~3문장)"
-                    className="min-h-24"
-                  />
-                </FormField>
+              <FormField label="본문 일부" error={errors.excerpt?.message}>
+                <TextArea
+                  {...register("excerpt")}
+                  placeholder="목록에 노출될 본문 요약 (2~3문장)"
+                  className="min-h-24"
+                />
+              </FormField>
 
-                <FormField
-                  label="외부 링크 URL"
-                  error={errors.externalUrl?.message}
-                >
-                  <Input
-                    {...register("externalUrl")}
-                    placeholder="https://brunch.co.kr/..."
-                  />
-                </FormField>
-              </Section>
-            </Drawer.Body>
+              <FormField
+                label="외부 링크 URL"
+                error={errors.externalUrl?.message}
+              >
+                <Input
+                  {...register("externalUrl")}
+                  placeholder="https://brunch.co.kr/..."
+                />
+              </FormField>
+            </Section>
+          </Drawer.Body>
 
-            <Drawer.Footer className="gap-2">
-              <Drawer.CloseTrigger />
-              <Button onPress={() => onSubmit()} isDisabled={isSubmitting}>
-                {isSubmitting ? "저장 중..." : "저장"}
-              </Button>
-            </Drawer.Footer>
-          </Drawer.Dialog>
-        </Drawer.Content>
-      </Drawer.Backdrop>
-    </Drawer>
+          <Drawer.Footer className="gap-2">
+            <Drawer.CloseTrigger />
+            <Button onPress={() => onSubmit()} isDisabled={isSubmitting}>
+              {isSubmitting ? "저장 중..." : "저장"}
+            </Button>
+          </Drawer.Footer>
+        </Drawer.Dialog>
+      </Drawer.Content>
+    </Drawer.Backdrop>
   )
 }
 

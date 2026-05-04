@@ -107,60 +107,58 @@ export const RemindersBulkSendDrawer = ({
   const isBusy = isSubmitting || isPending
 
   return (
-    <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
-      <Drawer.Backdrop>
-        <Drawer.Content placement={isMobile ? "bottom" : "right"}>
-          <Drawer.Dialog
-            className={!isMobile ? "w-full max-w-1/2 bg-gray-50" : ""}
-          >
-            <Drawer.Header>
-              <Drawer.Heading className="text-lg font-semibold">
-                사전 알림 발송
-              </Drawer.Heading>
-              <p className="text-muted-foreground text-sm">
-                {cohortName}에 등록된 모든 신청자에게 일괄 발송됩니다.
-              </p>
-            </Drawer.Header>
+    <Drawer.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Drawer.Content placement={isMobile ? "bottom" : "right"}>
+        <Drawer.Dialog
+          className={!isMobile ? "w-full max-w-1/2 bg-gray-50" : ""}
+        >
+          <Drawer.Header>
+            <Drawer.Heading className="text-lg font-semibold">
+              사전 알림 발송
+            </Drawer.Heading>
+            <p className="text-muted-foreground text-sm">
+              {cohortName}에 등록된 모든 신청자에게 일괄 발송됩니다.
+            </p>
+          </Drawer.Header>
 
-            <Drawer.Body className="flex-1 space-y-6 overflow-y-auto">
-              <FormField label="제목" error={errors.subject?.message}>
-                <Input
-                  {...register("subject")}
-                  placeholder="예: 14기 모집이 시작되었습니다"
-                />
-              </FormField>
+          <Drawer.Body className="flex-1 space-y-6 overflow-y-auto">
+            <FormField label="제목" error={errors.subject?.message}>
+              <Input
+                {...register("subject")}
+                placeholder="예: 14기 모집이 시작되었습니다"
+              />
+            </FormField>
 
-              <FormField label="본문" error={errors.message?.message}>
-                <TextArea
-                  {...register("message")}
-                  rows={8}
-                  placeholder="신청자에게 안내할 내용을 입력하세요. 줄바꿈은 그대로 적용됩니다."
-                  className="min-h-40"
-                />
-              </FormField>
+            <FormField label="본문" error={errors.message?.message}>
+              <TextArea
+                {...register("message")}
+                rows={8}
+                placeholder="신청자에게 안내할 내용을 입력하세요. 줄바꿈은 그대로 적용됩니다."
+                className="min-h-40"
+              />
+            </FormField>
 
-              <FormField label="버튼 라벨" error={errors.ctaLabel?.message}>
-                <Input {...register("ctaLabel")} placeholder="지원하기" />
-              </FormField>
+            <FormField label="버튼 라벨" error={errors.ctaLabel?.message}>
+              <Input {...register("ctaLabel")} placeholder="지원하기" />
+            </FormField>
 
-              <FormField label="버튼 링크 (URL)" error={errors.ctaUrl?.message}>
-                <Input
-                  {...register("ctaUrl")}
-                  placeholder="https://dddstudy.com/recruit"
-                />
-              </FormField>
-            </Drawer.Body>
+            <FormField label="버튼 링크 (URL)" error={errors.ctaUrl?.message}>
+              <Input
+                {...register("ctaUrl")}
+                placeholder="https://dddstudy.com/recruit"
+              />
+            </FormField>
+          </Drawer.Body>
 
-            <Drawer.Footer className="gap-2">
-              <Drawer.CloseTrigger />
-              <Button onPress={() => onSubmit()} isDisabled={isBusy}>
-                {isBusy ? "발송 중..." : "발송"}
-              </Button>
-            </Drawer.Footer>
-          </Drawer.Dialog>
-        </Drawer.Content>
-      </Drawer.Backdrop>
-    </Drawer>
+          <Drawer.Footer className="gap-2">
+            <Drawer.CloseTrigger />
+            <Button onPress={() => onSubmit()} isDisabled={isBusy}>
+              {isBusy ? "발송 중..." : "발송"}
+            </Button>
+          </Drawer.Footer>
+        </Drawer.Dialog>
+      </Drawer.Content>
+    </Drawer.Backdrop>
   )
 }
 
