@@ -8,7 +8,7 @@ export const EarlyNotificationTableSkeleton = () => {
       <Table.ScrollContainer>
         <Table.Content
           aria-label="사전 알림 목록 로딩 중"
-          className="min-w-[720px]"
+          className="min-w-180"
         >
           <Table.Header>
             <Table.Column isRowHeader>이메일</Table.Column>

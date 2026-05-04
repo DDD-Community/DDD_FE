@@ -29,7 +29,7 @@ export function DeleteCohortDialog({ cohort, isOpen, onClose }: Props) {
             <AlertDialog.Heading>기수를 삭제하시겠습니까?</AlertDialog.Heading>
           </AlertDialog.Header>
           <AlertDialog.Body>
-            <p>작성 중인 모든 정보가 사라지며, 이 작업은 되돌릴 수 없습니다.</p>
+            <p>작성된 모든 정보가 사라지며, 이 작업은 되돌릴 수 없습니다.</p>
           </AlertDialog.Body>
           <AlertDialog.Footer>
             <Button slot="close" variant="outline">

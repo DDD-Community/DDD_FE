@@ -8,7 +8,7 @@ export const BlogPostsTableSkeleton = () => {
       <Table.ScrollContainer>
         <Table.Content
           aria-label="블로그 목록 로딩 중"
-          className="min-w-[900px]"
+          className="min-w-225"
         >
           <Table.Header>
             <Table.Column>썸네일</Table.Column>

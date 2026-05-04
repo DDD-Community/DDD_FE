@@ -26,7 +26,7 @@ export const EarlyNotificationTable = ({
       <Table.ScrollContainer>
         <Table.Content
           aria-label="사전 알림 신청 목록"
-          className="min-w-[720px]"
+          className="min-w-180"
         >
           <Table.Header>
             <Table.Column isRowHeader>이메일</Table.Column>

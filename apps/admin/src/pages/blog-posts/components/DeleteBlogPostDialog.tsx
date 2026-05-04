@@ -37,7 +37,7 @@ export const DeleteBlogPostDialog = ({
   return (
     <AlertDialog.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
       <AlertDialog.Container>
-        <AlertDialog.Dialog className="sm:max-w-[400px]">
+        <AlertDialog.Dialog className="sm:max-w-100">
           <AlertDialog.CloseTrigger />
           <AlertDialog.Header>
             <AlertDialog.Icon status="danger" />

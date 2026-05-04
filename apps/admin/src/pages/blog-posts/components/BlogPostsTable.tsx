@@ -16,7 +16,7 @@ export const BlogPostsTable = ({
   return (
     <Table>
       <Table.ScrollContainer>
-        <Table.Content aria-label="블로그 목록" className="min-w-[900px]">
+        <Table.Content aria-label="블로그 목록" className="min-w-225">
           <Table.Header>
             <Table.Column>썸네일</Table.Column>
             <Table.Column isRowHeader>제목</Table.Column>
@@ -33,12 +33,12 @@ export const BlogPostsTable = ({
                   <Thumbnail src={post.thumbnail} alt={`${post.title} 썸네일`} />
                 </Table.Cell>
                 <Table.Cell>
-                  <span className="line-clamp-1 max-w-[200px] font-semibold">
+                  <span className="line-clamp-1 max-w-50 font-semibold">
                     {post.title}
                   </span>
                 </Table.Cell>
                 <Table.Cell>
-                  <span className="text-muted-foreground line-clamp-1 max-w-[240px] text-xs">
+                  <span className="text-muted-foreground line-clamp-1 max-w-60 text-xs">
                     {post.excerpt}
                   </span>
                 </Table.Cell>
@@ -47,7 +47,7 @@ export const BlogPostsTable = ({
                     href={post.externalUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="line-clamp-1 max-w-[180px] font-mono text-xs text-cyan-600 hover:underline"
+                    className="line-clamp-1 max-w-45 font-mono text-xs text-cyan-600 hover:underline"
                   >
                     {prettyHostname(post.externalUrl)}
                   </a>

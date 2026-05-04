@@ -45,7 +45,7 @@ export const ApplicationTable = ({
   return (
     <Table>
       <Table.ScrollContainer>
-        <Table.Content aria-label="지원자 목록" className="min-w-[900px]">
+        <Table.Content aria-label="지원자 목록" className="min-w-225">
           <Table.Header>
             <Table.Column isRowHeader>지원자명</Table.Column>
             <Table.Column>연락처</Table.Column>
