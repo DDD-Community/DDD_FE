@@ -19,6 +19,8 @@ import type {
 
 import { cn } from "@/shared/lib/cn"
 import { useIsMobile } from "@/shared/hooks/useIsMobile"
+import { FormField } from "@/shared/ui/FormField"
+import { Section } from "@/shared/ui/Section"
 
 // ───── Form schema ───────────────────────────────────────────────────────────
 
@@ -141,6 +143,7 @@ export const BlogPostFormDrawer = ({
   })
 
   const thumbnailUrl = useWatch({ control, name: "thumbnail" })
+  console.log("thumbnailUrl", thumbnailUrl)
 
   return (
     <Drawer.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -209,37 +212,6 @@ export const BlogPostFormDrawer = ({
 }
 
 // ───── Subcomponents ─────────────────────────────────────────────────────────
-
-const Section = ({
-  title,
-  children,
-}: {
-  title: string
-  children: React.ReactNode
-}) => (
-  <section className="space-y-4">
-    <h3 className="text-muted-foreground border-b border-gray-200 pb-2 text-xs font-semibold tracking-wider uppercase">
-      {title}
-    </h3>
-    {children}
-  </section>
-)
-
-const FormField = ({
-  label,
-  error,
-  children,
-}: {
-  label: string
-  error?: string
-  children: React.ReactNode
-}) => (
-  <div className="space-y-1.5">
-    <label className="text-xs font-medium text-gray-700">{label}</label>
-    {children}
-    {error && <p className="text-xs text-red-500">{error}</p>}
-  </div>
-)
 
 type ThumbnailUploaderProps = {
   url?: string
