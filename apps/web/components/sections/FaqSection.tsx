@@ -72,7 +72,7 @@ const Section = styled.section({
 
   "@media (max-width: 1024px)": { padding: "120px 80px" },
   "@media (max-width: 768px)": { padding: "100px 40px" },
-  "@media (max-width: 375px)": { padding: "80px 16px" },
+  "@media (max-width: 767px)": { padding: "80px 16px" },
 });
 
 const Inner = styled.div({
@@ -88,6 +88,9 @@ const TitleArea = styled.div({
   flexDirection: "column",
   gap: "24px",
   alignItems: "center",
+
+  // 375 의 Gutter 토큰은 12 다.
+  "@media (max-width: 767px)": { gap: "12px" },
 });
 
 const SectionLabel = styled.p({
@@ -104,7 +107,7 @@ const SectionLabel = styled.p({
     fontSize: "16px",
     lineHeight: "20px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "14px",
     lineHeight: "18px",
   },
@@ -124,7 +127,7 @@ const SectionTitle = styled.h2({
     fontSize: "28px",
     lineHeight: "34px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "16px",
     lineHeight: "20px",
   },
@@ -174,7 +177,7 @@ const AccordionQuestion = styled.dt({
     fontSize: "13px",
     lineHeight: "16px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "12px",
     lineHeight: "15px",
   },
@@ -223,7 +226,7 @@ const AccordionAnswer = styled.p({
     fontSize: "13px",
     lineHeight: "18px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "12px",
     lineHeight: "15px",
   },

@@ -12,7 +12,7 @@ const Section = styled.section({
 
   "@media (max-width: 1024px)": { padding: "80px 80px" },
   "@media (max-width: 768px)": { padding: "80px 40px" },
-  "@media (max-width: 375px)": { padding: "40px 16px" },
+  "@media (max-width: 767px)": { padding: "40px 16px" },
 });
 
 const Inner = styled.div({
@@ -31,7 +31,7 @@ const Title = styled.h2({
   fontWeight: fontWeights.bold,
   "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
   "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
-  "@media (max-width: 375px)": { fontSize: "20px", lineHeight: "25px" },
+  "@media (max-width: 767px)": { fontSize: "20px", lineHeight: "25px" },
 });
 
 const Grid = styled.div({
@@ -42,7 +42,7 @@ const Grid = styled.div({
   width: "100%",
 
   "@media (max-width: 768px)": { gridTemplateColumns: "1fr" },
-  "@media (max-width: 375px)": { marginTop: "20px", gap: "8px" },
+  "@media (max-width: 767px)": { marginTop: "20px", gap: "8px" },
 });
 
 const Item = styled.article({
@@ -59,7 +59,7 @@ const Item = styled.article({
   width: "100%",
   maxWidth: "100%",
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     minHeight: "187px",
     gridTemplateColumns: "minmax(0, 1fr) 60px",
     gap: "12px",
@@ -82,7 +82,7 @@ const Week = styled.p({
 
   "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
   "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "20px" },
-  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
+  "@media (max-width: 767px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
 const DateText = styled.p({
@@ -94,7 +94,7 @@ const DateText = styled.p({
 
   "@media (max-width: 1024px)": { fontSize: "20px", lineHeight: "25px" },
   "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "24px" },
-  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
+  "@media (max-width: 767px)": { fontSize: "16px", lineHeight: "20px" },
 });
 
 const ItemTitle = styled.h3({
@@ -106,7 +106,7 @@ const ItemTitle = styled.h3({
 
   "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
   "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
-  "@media (max-width: 375px)": { fontSize: "20px", lineHeight: "25px" },
+  "@media (max-width: 767px)": { fontSize: "20px", lineHeight: "25px" },
 });
 
 const Description = styled.p({
@@ -118,7 +118,7 @@ const Description = styled.p({
 
   "@media (max-width: 1024px)": { fontSize: "20px", lineHeight: "25px" },
   "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "24px" },
-  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
+  "@media (max-width: 767px)": { fontSize: "16px", lineHeight: "20px" },
 });
 
 const Floating3D = styled.img({
@@ -131,7 +131,7 @@ const Floating3D = styled.img({
   pointerEvents: "none",
 
   "@media (max-width: 768px)": { width: "420px", top: "46%" },
-  "@media (max-width: 375px)": { width: "220px", top: "56%" },
+  "@media (max-width: 767px)": { width: "220px", top: "56%" },
 });
 
 export const RecruitCurriculumSection = ({

@@ -20,7 +20,7 @@ const Section = styled.section({
   "@media (max-width: 768px)": {
     minHeight: "820px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     minHeight: "812px",
   },
 });
@@ -36,13 +36,16 @@ const BgImage = styled.div({
   },
 });
 
-const BgOverlay = styled.div({
-  position: "absolute",
-  inset: 0,
-  backdropFilter: "blur(5px)",
-  background: "rgba(12, 14, 15, 0.7)",
-});
-
+/*
+ * 암전 오버레이는 두지 않는다.
+ *
+ * 피그마 bg(2085:2389)는 `futuree_2 1` 원본 위에 Rectangle 8
+ * (blur 5px + rgba(12,14,15,0.7))을 덮지만, 레포의 hero-bg.jpg 는 그 합성 결과를
+ * 이미 구워둔 파일이다. 원본과 픽셀을 대조하면 `0.7×(12,14,15) + 0.3×원본` 가설의
+ * 평균 오차가 0.98/255(JPEG 노이즈 수준)로, 오버레이가 적용된 상태임이 확인된다.
+ * 여기서 한 겹 더 덮으면 두 번 어두워져 모집안내 히어로(RecruitHeroSection)와
+ * 배경이 달라진다.
+ */
 const Hero3D = styled.picture({
   position: "absolute",
   left: "50%",
@@ -69,7 +72,7 @@ const Hero3DImage = styled.img({
     width: "309px",
     height: "309px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     width: "185px",
     height: "185px",
   },
@@ -91,7 +94,7 @@ const Content = styled.div({
     gap: "28px",
     padding: "0 24px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     gap: "20px",
     padding: "0 16px",
   },
@@ -107,16 +110,23 @@ const HeadlineWrapper = styled.div({
 
 const GradientHeadline = styled.h1({
   fontFamily: "'Pretendard', sans-serif",
-  whiteSpace: "normal",
+  // 피그마는 줄바꿈을 텍스트에 고정해 두었다(1920: 2줄 / 375: 3줄).
+  // \n 을 살리되, 지정 폭을 넘치면 자연 줄바꿈으로 흘려보낸다.
+  whiteSpace: "pre-line",
   wordBreak: "keep-all",
   overflowWrap: "anywhere",
   maxWidth: "100%",
   width: "100%",
   fontWeight: fontWeights.bold,
-  background: "linear-gradient(180deg, rgba(255, 255, 255, 0.00) -3.04%, #FFF 95.35%)",
+  // 피그마 원안은 텍스트에 클리핑된 세로 알파 그라데이션이다(가로 방향 변화 없음).
+  // 상단이 거의 투명해 첫 줄 뒤의 3D 오브젝트가 비쳐 보이는 것이 의도된 연출이므로,
+  // RecruitHeroSection 의 타이틀과 동일한 스톱을 쓴다.
+  backgroundImage: "linear-gradient(180deg, rgba(255, 255, 255, 0.00) -3.04%, #FFF 95.35%)",
   backgroundClip: "text",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
+  // 글자가 컨텐츠 박스를 벗어날 때 기본값(repeat)이 다음 타일 상단을 찍어 밝은 띠를 만든다.
+  backgroundRepeat: "no-repeat",
   fontSize: "clamp(45px, 6.92vw + 1px, 130px)",
   lineHeight: "clamp(50px, 6.41vw + 7px, 130px)",
   "@media (max-width: 1024px)": {
@@ -127,17 +137,33 @@ const GradientHeadline = styled.h1({
     fontSize: "clamp(45px, 14.29vw - 20px, 90px)",
     lineHeight: "clamp(50px, 15.87vw - 20px, 100px)",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "45px",
     lineHeight: "50px",
   },
 });
 
+/**
+ * 375 프레임에서만 살아나는 줄바꿈.
+ *
+ * 헤드라인·서브타이틀 모두 피그마가 1920 에선 2줄, 375 에선 3줄로 끊어 두었고
+ * 늘어나는 한 줄의 위치가 서로 다르다. 공통 줄바꿈은 텍스트에 그대로 두고,
+ * 375 에서만 추가되는 줄바꿈을 이 컴포넌트로 표시한다.
+ */
+const MobileBreak = styled.br({
+  display: "none",
+
+  "@media (max-width: 767px)": {
+    display: "block",
+  },
+});
+
 const Subtitle = styled.p({
   fontFamily: "'Pretendard', sans-serif",
-  fontSize: "clamp(14px, calc(1.541vw + 8.22px), 28px)",
+  // clamp 하한은 375 브레이크포인트의 xl/Heading/Large (16/20) 다.
+  fontSize: "clamp(16px, calc(1.541vw + 8.22px), 20px)",
   fontWeight: fontWeights.semiBold,
-  lineHeight: "clamp(18px, calc(1.849vw + 11.07px), 32px)",
+  lineHeight: "clamp(20px, calc(1.849vw + 11.07px), 32px)",
   color: colors.textInverse,
 });
 
@@ -177,14 +203,13 @@ const CtaButton = styled(Link)({
     fontSize: "16px",
     lineHeight: "20px",
   },
-  "@media (max-width: 375px)": {
-    height: "56px",
-    width: "100%",
-    maxWidth: "280px",
+  "@media (max-width: 767px)": {
+    height: "48px",
     justifyContent: "center",
-    padding: "30px 40px",
+    padding: "0 40px",
     fontSize: "14px",
     lineHeight: "18px",
+    "& svg": { width: "20px", height: "20px" },
   },
 });
 
@@ -197,15 +222,20 @@ export const HeroSection = () => {
       <BgImage>
         <img src={assets.heroBg} alt="" />
       </BgImage>
-      <BgOverlay />
       <Hero3D>
         <Hero3DImage src={assets.hero3d} alt="" />
       </Hero3D>
       <Content>
         <HeadlineWrapper>
-          <GradientHeadline>일 잘하는 사람들은 어디서 성장하는 걸까요?</GradientHeadline>
+          <GradientHeadline>
+            {"일 잘하는 사람들은\n어디서 "}
+            <MobileBreak />
+            {"성장하는 걸까요?"}
+          </GradientHeadline>
           <Subtitle>
-            10년간 470명이 선택한 IT 사이드프로젝트 동아리 DDD.
+            {"10년간 470명이 선택한 "}
+            <MobileBreak />
+            IT 사이드프로젝트 동아리 DDD.
             <br />
             퇴근 후에도 성장하고 싶은 사람들이 여기 모입니다.
           </Subtitle>

@@ -22,7 +22,7 @@ const Section = styled.section({
 
   "@media (max-width: 1024px)": { padding: "120px 80px" },
   "@media (max-width: 768px)": { padding: "100px 40px" },
-  "@media (max-width: 375px)": { padding: "80px 16px" },
+  "@media (max-width: 767px)": { padding: "80px 16px" },
 });
 
 const Inner = styled.div({
@@ -32,6 +32,8 @@ const Inner = styled.div({
   flexDirection: "column",
   alignItems: "center",
   gap: "24px",
+
+  "@media (max-width: 767px)": { gap: "12px" },
 });
 
 const TitleArea = styled.div({
@@ -41,6 +43,9 @@ const TitleArea = styled.div({
   width: "100%",
   alignItems: "center",
   textAlign: "center",
+
+  // 375 의 Gutter 토큰은 12 다.
+  "@media (max-width: 767px)": { gap: "12px" },
 });
 
 const SectionLabel = styled.p({
@@ -57,7 +62,7 @@ const SectionLabel = styled.p({
     fontSize: "16px",
     lineHeight: "20px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "14px",
     lineHeight: "18px",
   },
@@ -77,7 +82,7 @@ const SectionTitle = styled.h2({
     fontSize: "20px",
     lineHeight: "25px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "16px",
     lineHeight: "20px",
   },
@@ -138,9 +143,12 @@ const ContactButton = styled(Link)({
     fontSize: "16px",
     lineHeight: "20px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
+    height: "48px",
+    padding: "0 40px",
     fontSize: "14px",
     lineHeight: "18px",
+    "& svg": { width: "20px", height: "20px" },
   },
 });
 

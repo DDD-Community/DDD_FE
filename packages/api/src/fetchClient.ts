@@ -11,7 +11,13 @@ import type { paths } from "./generated/api";
 export interface ApiConfig {
   baseUrl: string;
   credentials?: RequestCredentials;
-  refreshTokenPath?: string;
+  /**
+   * 401 을 받았을 때 한 번 시도할 refresh 엔드포인트.
+   *
+   * `null` 이면 refresh 를 아예 시도하지 않고 401 을 그대로 돌려준다 — 지원자
+   * 이메일 인증 세션처럼 refresh 계약이 없는 곳에서 헛요청과 재시도를 막는다.
+   */
+  refreshTokenPath?: string | null;
   onUnauthorized?: () => void;
 }
 
@@ -66,6 +72,32 @@ function toErrorCode(code: string | undefined): ErrorMessageKey {
   return (code ?? "UNKNOWN_ERROR") as ErrorMessageKey;
 }
 
+const HANGUL = /[가-힣]/;
+
+/**
+ * BE 에러를 화면에 띄울 ApiError 로 바꾼다.
+ *
+ * BE 는 일부 에러를 영문 그대로 내려주는데(401 → "Unauthorized"), 화면은 이 message 를
+ * 그대로 렌더하므로 사용자에게 영어가 노출된다. 그래서 한국어 문구가 아닌 원문은
+ * `ErrorMessage` 의 문구로 바꾼다.
+ *
+ * 반대로 한국어 원문은 그대로 쓴다 — BAD_REQUEST 의 message 는 `필드명: 사유` 형식이라
+ * (`applicantPhone: 휴대폰 번호 형식이 올바르지 않습니다.`) 코드별 고정 문구로 덮으면
+ * 어느 항목이 틀렸는지 알 수 없게 된다.
+ */
+function toApiError(
+  code: string | undefined,
+  message: string | undefined,
+  status: number,
+): ApiError {
+  const key = toErrorCode(code);
+  if (message && HANGUL.test(message)) return new ApiError(key, message);
+  return new ApiError(
+    key,
+    ErrorMessage[key] ?? message ?? `Request failed with status ${status}`,
+  );
+}
+
 class ApiClient {
   private client: OpenApiClient | null = null;
 
@@ -75,14 +107,20 @@ class ApiClient {
 
   configure(config: ApiConfig): void {
     const credentials = config.credentials ?? "include";
-    const refreshTokenPath = config.refreshTokenPath ?? "/api/v1/auth/refresh";
+    const refreshTokenPath =
+      config.refreshTokenPath === null
+        ? null
+        : (config.refreshTokenPath ?? "/api/v1/auth/refresh");
     const baseUrl = config.baseUrl;
     const origin =
       baseUrl || (typeof window !== "undefined" ? window.location.origin : "");
-    const refreshUrl = new URL(refreshTokenPath, origin).toString();
+    const refreshUrl = refreshTokenPath
+      ? new URL(refreshTokenPath, origin).toString()
+      : null;
     const onUnauthorized = config.onUnauthorized;
 
     const doRefresh = async (): Promise<void> => {
+      if (!refreshUrl) throw new Error("Token refresh is disabled");
       const res = await fetch(refreshUrl, { method: "POST", credentials });
       if (!res.ok) throw new Error("Token refresh failed");
     };
@@ -109,6 +147,10 @@ class ApiClient {
     const customFetch: typeof globalThis.fetch = async (input, init) => {
       const res = await fetch(input, init);
       if (res.status !== 401) return res;
+      if (!refreshUrl) {
+        onUnauthorized?.();
+        return res;
+      }
       try {
         await waitForRefresh();
       } catch {
@@ -175,10 +217,7 @@ class ApiClient {
 
     if (error !== undefined) {
       if (isBeWrapper(error)) {
-        throw new ApiError(
-          toErrorCode(error.code),
-          error.message ?? `Request failed with status ${response.status}`,
-        );
+        throw toApiError(error.code, error.message, response.status);
       }
       throw new ApiError(
         "UNKNOWN_ERROR",
@@ -192,7 +231,7 @@ class ApiClient {
     if (!isBeWrapper(data)) return data as R;
 
     if (data.code && data.code !== "SUCCESS") {
-      throw new ApiError(toErrorCode(data.code), data.message ?? "Request failed");
+      throw toApiError(data.code, data.message, response.status);
     }
 
     const payload = data.data ?? null;

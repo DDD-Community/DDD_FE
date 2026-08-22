@@ -10,11 +10,46 @@ import {
 import { ensureApiConfigured } from "./config";
 
 /**
+ * 지원자 이메일로 인증번호를 발송한다.
+ *
+ * 지원서 API(임시저장·조회·첨부·제출) 는 전부 인증 쿠키를 요구하므로 이 호출이
+ * 지원 플로우의 첫 단계다. 실패는 그대로 던져 화면이 사유를 보여주게 한다
+ * (재발송 쿨다운 60초, IP 당 10회/10분).
+ */
+export async function requestApplicationEmailVerification(email: string): Promise<void> {
+  ensureApiConfigured();
+  await applicationAPI.requestApplicationVerification({ payload: { email } });
+}
+
+/**
+ * 인증번호를 확인한다. 성공하면 브라우저에 `access_token` 쿠키가 심긴다.
+ *
+ * 쿠키는 httpOnly 라 JS 로 확인할 수 없다 — 인증 여부는 이 호출의 성공 여부로만
+ * 알 수 있고, 이후 401 이 나면 만료된 것으로 보고 재인증을 유도해야 한다.
+ */
+export async function confirmApplicationEmailVerification(
+  email: string,
+  code: string,
+): Promise<void> {
+  ensureApiConfigured();
+  await applicationAPI.confirmApplicationVerification({ payload: { email, code } });
+}
+
+/** 인증 쿠키가 없거나 만료됐을 때 BE 가 돌려주는 에러인지 판별한다. */
+export function isUnauthorizedError(error: unknown): boolean {
+  return error instanceof ApiError && error.code === "UNAUTHORIZED";
+}
+
+/**
  * 임시저장 응답 안의 answers 를 꺼낸다.
  *
  * BE OpenAPI 가 GET /applications/draft/{cohortPartId} 의 응답 schema 를
  * 정의하지 않아 generated 타입이 `void` 다. 실제 응답에는 `answers` 필드가 있어
  * 여기서 unknown 으로 받아 좁힌다.
+ *
+ * 404 APPLICATION_DRAFT_NOT_FOUND 는 "아직 임시저장이 없다" 는 정상 흐름이라 null
+ * 로 흡수하지만, 401 은 삼키지 않고 던진다 — 인증이 끊긴 채로 조용히 넘어가면
+ * 사용자가 다 작성한 뒤 제출 단계에서야 막힌다.
  */
 export async function fetchApplicationDraftAnswers(
   cohortPartId: number,
@@ -29,7 +64,8 @@ export async function fetchApplicationDraftAnswers(
       return answers as Record<string, unknown>;
     }
     return null;
-  } catch {
+  } catch (e) {
+    if (isUnauthorizedError(e)) throw e;
     return null;
   }
 }

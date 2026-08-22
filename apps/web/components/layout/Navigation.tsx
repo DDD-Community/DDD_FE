@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import type { CSSObject } from "@emotion/react";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
 import { useRecruitCtaClick, useRecruitStatus } from "@/components/providers/RecruitStatusProvider";
@@ -12,6 +13,49 @@ const NAV_LINKS = [
   { label: "프로젝트", href: "/project" },
   { label: "블로그", href: "/blog" },
 ] as const;
+
+/** 뒤 배경을 굴절시키는 유리 필터 */
+const GLASS_FILTER = "blur(24px) saturate(180%)";
+const GLASS_FILTER_STRONG = "blur(30px) saturate(185%)";
+
+/** backdrop-filter 미지원 브라우저용 폴백 (투명도를 낮춰 가독성 확보) */
+const NO_BACKDROP_SUPPORT =
+  "@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)))";
+
+/** 유리 가장자리에 맺히는 반사광(specular rim) */
+const glassRim: CSSObject = {
+  content: '""',
+  position: "absolute",
+  inset: 0,
+  borderRadius: "inherit",
+  padding: "1px",
+  background:
+    "linear-gradient(140deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.2) 28%, rgba(255, 255, 255, 0.05) 52%, rgba(255, 255, 255, 0.35) 76%, rgba(255, 255, 255, 0.9))",
+  WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+  WebkitMaskComposite: "xor",
+  mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+  maskComposite: "exclude",
+  pointerEvents: "none",
+};
+
+/** 표면 상단에 고이는 광택(gloss) */
+const glassGloss: CSSObject = {
+  content: '""',
+  position: "absolute",
+  top: "1px",
+  left: "1px",
+  right: "1px",
+  height: "48%",
+  borderRadius: "inherit",
+  background: "linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0))",
+  pointerEvents: "none",
+};
+
+/** 광택 레이어 위로 콘텐츠를 올리기 위한 레이어링 */
+const glassContent: CSSObject = {
+  position: "relative",
+  zIndex: 1,
+};
 
 const Header = styled.header({
   position: "fixed",
@@ -26,7 +70,7 @@ const Header = styled.header({
   "@media (max-width: 768px)": {
     padding: "16px 40px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     padding: "16px 16px",
   },
 });
@@ -57,19 +101,33 @@ const DesktopGroup = styled.div({
 });
 
 const NavPill = styled.nav({
+  position: "relative",
+  isolation: "isolate",
   display: "flex",
   alignItems: "center",
   gap: "2px",
-  background: "#FFF",
-  backdropFilter: "blur(14px) saturate(160%)",
-  WebkitBackdropFilter: "blur(14px) saturate(160%)",
-  border: "1px solid rgba(255, 255, 255, 0.35)",
-  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.45)",
-  borderRadius: "99px",
   padding: "4px",
+  borderRadius: "99px",
+  background: "linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.48))",
+  backdropFilter: GLASS_FILTER,
+  WebkitBackdropFilter: GLASS_FILTER,
+  boxShadow: [
+    "0 18px 40px rgba(2, 17, 31, 0.28)",
+    "0 2px 8px rgba(2, 17, 31, 0.12)",
+    "inset 0 1px 1px rgba(255, 255, 255, 0.75)",
+    "inset 0 -8px 18px rgba(255, 255, 255, 0.25)",
+  ].join(", "),
+
+  "&::before": glassRim,
+  "&::after": glassGloss,
+
+  [NO_BACKDROP_SUPPORT]: {
+    background: "rgba(255, 255, 255, 0.92)",
+  },
 });
 
 const NavItem = styled(Link)({
+  ...glassContent,
   display: "flex",
   alignItems: "center",
   padding: "12px 28px",
@@ -81,7 +139,8 @@ const NavItem = styled(Link)({
   color: colors.textPrimary,
   textDecoration: "none",
   whiteSpace: "nowrap",
-  transition: "background 0.15s",
+  transition:
+    "background 0.25s ease, box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
   "@media (max-width: 1024px)": {
     fontSize: "14px",
     lineHeight: "18px",
@@ -90,25 +149,37 @@ const NavItem = styled(Link)({
     fontSize: "13px",
     lineHeight: "16px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "12px",
     lineHeight: "14px",
   },
 
   "&:hover": {
-    background: "rgba(255, 255, 255, 0.4)",
+    background: "linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.5))",
+    boxShadow: "0 6px 16px rgba(2, 17, 31, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.95)",
+    transform: "translateY(-1px)",
+  },
+
+  "&:active": {
+    transform: "scale(0.97)",
+  },
+
+  "@media (prefers-reduced-motion: reduce)": {
+    transition: "none",
+    "&:hover, &:active": {
+      transform: "none",
+    },
   },
 });
 
+/** 히어로 CTA 와 동일한 솔리드 스타일 — 유리 재질 미적용 */
 const CtaButton = styled(Link)({
   display: "flex",
   alignItems: "center",
   height: "55px",
   padding: "12px 28px",
-  background: "rgba(46, 113, 255, 0.85)",
-  backdropFilter: "blur(14px) saturate(160%)",
-  WebkitBackdropFilter: "blur(14px) saturate(160%)",
   borderRadius: "99px",
+  background: colors.primary,
   color: colors.textInverse,
   fontFamily: "'Pretendard', sans-serif",
   fontSize: fontSizes.headingMedium,
@@ -126,12 +197,13 @@ const CtaButton = styled(Link)({
     lineHeight: "16px",
     display: "none",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "12px",
     lineHeight: "14px",
   },
+
   "&:hover": {
-    background: "rgba(31, 95, 224, 0.9)",
+    background: "#1f5fe0",
   },
 
   '&[aria-disabled="true"]': {
@@ -152,73 +224,122 @@ const MobileBar = styled.div({
 });
 
 const MobileMenuButton = styled.button({
+  position: "relative",
+  isolation: "isolate",
   borderRadius: "99px",
-  border: "1px solid #CAD5E2",
-  background: "#F1F5F9",
+  border: "none",
   display: "flex",
   padding: "12px",
   justifyContent: "center",
   alignItems: "center",
   gap: "2px",
+  cursor: "pointer",
+  background: "linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.5))",
+  backdropFilter: GLASS_FILTER,
+  WebkitBackdropFilter: GLASS_FILTER,
+  boxShadow: [
+    "0 12px 28px rgba(2, 17, 31, 0.26)",
+    "inset 0 1px 1px rgba(255, 255, 255, 0.75)",
+    "inset 0 -6px 14px rgba(255, 255, 255, 0.25)",
+  ].join(", "),
+  transition: "transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
+
+  "&::before": glassRim,
+  "&::after": glassGloss,
+
+  "& svg": glassContent,
+
+  "&:active": {
+    transform: "scale(0.94)",
+  },
+
+  [NO_BACKDROP_SUPPORT]: {
+    background: "rgba(255, 255, 255, 0.92)",
+  },
+
+  "@media (prefers-reduced-motion: reduce)": {
+    transition: "none",
+    "&:active": {
+      transform: "none",
+    },
+  },
 });
 
 const MobileDrawer = styled.nav<{ open: boolean }>(({ open }) => ({
   display: open ? "flex" : "none",
   position: "absolute",
+  isolation: "isolate",
   top: "84px",
   left: "16px",
   right: "16px",
-  background: "rgba(255, 255, 255, 0.65)",
-  backdropFilter: "blur(18px) saturate(160%)",
-  WebkitBackdropFilter: "blur(18px) saturate(160%)",
-  border: "1px solid rgba(255, 255, 255, 0.35)",
-  borderRadius: "20px",
+  borderRadius: "22px",
   padding: "12px",
   flexDirection: "column",
   gap: "8px",
-  boxShadow: "0 18px 40px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45)",
+  background: "linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.5))",
+  backdropFilter: GLASS_FILTER_STRONG,
+  WebkitBackdropFilter: GLASS_FILTER_STRONG,
+  boxShadow: [
+    "0 24px 60px rgba(2, 17, 31, 0.35)",
+    "inset 0 1px 1px rgba(255, 255, 255, 0.75)",
+    "inset 0 -10px 24px rgba(255, 255, 255, 0.22)",
+  ].join(", "),
   pointerEvents: "auto",
 
-  "@media (max-width: 375px)": {
+  "&::before": glassRim,
+  "&::after": { ...glassGloss, height: "38%" },
+
+  [NO_BACKDROP_SUPPORT]: {
+    background: "rgba(255, 255, 255, 0.94)",
+  },
+
+  "@media (max-width: 767px)": {
     top: "72px",
   },
 }));
 
 const MobileItem = styled(Link)({
+  ...glassContent,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   padding: "12px 14px",
-  borderRadius: "12px",
+  borderRadius: "14px",
   textDecoration: "none",
   color: colors.textPrimary,
   fontSize: "14px",
   lineHeight: "18px",
   fontWeight: fontWeights.medium,
+  transition: "background 0.2s ease",
 
   "&:active": {
-    background: "rgba(255, 255, 255, 0.35)",
+    background: "linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.5))",
+    boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.95)",
   },
 });
 
+/** 데스크톱 CTA 와 동일한 솔리드 스타일 — 유리 재질 미적용 */
 const MobileCta = styled(Link)({
+  ...glassContent,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   padding: "12px 14px",
-  borderRadius: "12px",
+  borderRadius: "14px",
   textDecoration: "none",
   background: colors.primary,
   color: colors.textInverse,
   fontSize: "14px",
   lineHeight: "18px",
   fontWeight: fontWeights.medium,
+  transition: "background 0.15s",
 
-  boxShadow: "0 10px 26px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.35)",
+  "&:active": {
+    background: "#1f5fe0",
+  },
 
   '&[aria-disabled="true"]': {
     background: colors.disabled,
-    boxShadow: "none",
     cursor: "default",
   },
 });

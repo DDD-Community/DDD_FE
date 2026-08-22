@@ -1,5 +1,8 @@
 import { api } from "../fetchClient";
 import type {
+  PostApplicationVerificationRequest,
+  PostApplicationVerificationConfirmRequest,
+  PostApplicationVerificationConfirmResponse,
   GetAdminApplicationsParams,
   GetAdminApplicationsResponse,
   GetAdminApplicationParams,
@@ -15,6 +18,30 @@ import type {
 } from "./types";
 
 export const applicationAPI = {
+  /**
+   * 지원자 이메일 인증번호 발송 - POST /api/v1/applications/verify/request
+   *
+   * 쿠키 없이 호출한다. 재발송은 60초 간격(429 VERIFICATION_COOLDOWN),
+   * 동일 IP 10회/10분 제한(429 TOO_MANY_REQUESTS).
+   */
+  requestApplicationVerification: ({ payload }: { payload: PostApplicationVerificationRequest }) =>
+    api.post("/api/v1/applications/verify/request", {
+      body: payload,
+    }) as unknown as Promise<void>,
+
+  /**
+   * 지원자 이메일 인증번호 확인 - POST /api/v1/applications/verify/confirm
+   *
+   * 성공하면 응답의 Set-Cookie 로 `access_token`(httpOnly, 30일) 이 심긴다.
+   * 이후 지원서 API 는 이 쿠키로 인증되므로 FE 가 따로 보관할 토큰은 없다.
+   */
+  confirmApplicationVerification: ({
+    payload,
+  }: {
+    payload: PostApplicationVerificationConfirmRequest;
+  }): Promise<PostApplicationVerificationConfirmResponse> =>
+    api.post("/api/v1/applications/verify/confirm", { body: payload }),
+
   /** 어드민 지원서 목록 - GET /api/v1/admin/applications */
   getAdminApplications: ({ params }: { params: GetAdminApplicationsParams }) =>
     api.get("/api/v1/admin/applications", {

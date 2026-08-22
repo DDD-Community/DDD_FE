@@ -10,7 +10,7 @@ const Section = styled.section({
 
   "@media (max-width: 1024px)": { padding: "80px 80px" },
   "@media (max-width: 768px)": { padding: "80px 40px" },
-  "@media (max-width: 375px)": { padding: "40px 16px" },
+  "@media (max-width: 767px)": { padding: "40px 16px" },
 });
 
 const Inner = styled.div({
@@ -28,7 +28,7 @@ const Title = styled.h2({
   fontWeight: fontWeights.bold,
   "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
   "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
-  "@media (max-width: 375px)": { fontSize: "20px", lineHeight: "25px" },
+  "@media (max-width: 767px)": { fontSize: "20px", lineHeight: "25px" },
 });
 
 const List = styled.div({
@@ -37,7 +37,7 @@ const List = styled.div({
   flexDirection: "column",
   gap: "24px",
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     marginTop: "20px",
     gap: "12px",
   },
@@ -53,9 +53,12 @@ const Item = styled.article({
   gap: "56px",
 
   "@media (max-width: 768px)": { padding: "40px" },
-  "@media (max-width: 375px)": {
+  // 375 프레임: 카드 패딩 24 / 라운드 20 / 번호-본문 간격 20, 번호는 본문 상단에 맞춘다.
+  "@media (max-width: 767px)": {
     padding: "24px",
-    gap: "40px",
+    borderRadius: "20px",
+    gap: "20px",
+    alignItems: "flex-start",
   },
 });
 
@@ -67,7 +70,7 @@ const Step = styled.p({
   fontWeight: fontWeights.bold,
   "@media (max-width: 1024px)": { fontSize: "54px", lineHeight: "65px" },
   "@media (max-width: 768px)": { fontSize: "42px", lineHeight: "52px" },
-  "@media (max-width: 375px)": { fontSize: "38px", lineHeight: "48px" },
+  "@media (max-width: 767px)": { fontSize: "38px", lineHeight: "48px" },
 });
 
 const Label = styled.p({
@@ -78,7 +81,7 @@ const Label = styled.p({
   fontWeight: fontWeights.semiBold,
   "@media (max-width: 1024px)": { fontSize: "24px", lineHeight: "30px" },
   "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
-  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
+  "@media (max-width: 767px)": { fontSize: "16px", lineHeight: "20px" },
 });
 
 const DateText = styled.p({
@@ -90,7 +93,7 @@ const DateText = styled.p({
   fontWeight: fontWeights.bold,
   "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
   "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
-  "@media (max-width: 575px)": { fontSize: "20px", lineHeight: "25px", marginTop: "6px" },
+  "@media (max-width: 767px)": { fontSize: "20px", lineHeight: "25px", marginTop: "10px" },
 });
 
 export const RecruitScheduleSection = ({

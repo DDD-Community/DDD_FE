@@ -259,7 +259,7 @@ export interface paths {
         };
         /**
          * 현재 활성 기수 조회
-         * @description 현재 모집 중이거나 활동 중인 기수 정보와 홈페이지 CTA 버튼 상태를 반환합니다.
+         * @description 홈페이지에 노출할 기수 정보와 CTA 버튼 상태를 반환합니다. 모집 중인 기수가 없으면 가장 최근 기수를 마감 상태로 반환하며, 기수가 하나도 없을 때만 빈 응답을 반환합니다.
          */
         get: operations["cohort_getPublicActive"];
         put?: never;
@@ -652,6 +652,46 @@ export interface paths {
          * @description 지원서를 최종 제출합니다. 제출 후 자동 안내 이메일이 발송됩니다.
          */
         post: operations["application_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applications/verify/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 지원자 이메일 인증번호 요청
+         * @description 입력한 이메일로 인증번호를 발송합니다.
+         */
+        post: operations["application_requestVerificationCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applications/verify/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 지원자 이메일 인증번호 확인
+         * @description 인증번호를 확인하고 지원자 세션 cookie를 발급합니다.
+         */
+        post: operations["application_confirmVerificationCode"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1559,6 +1599,34 @@ export interface components {
              * @example true
              */
             privacyAgreed: boolean;
+        };
+        ApplicationVerificationResponseDto: {
+            /**
+             * @description 인증된 지원자 이메일
+             * @example applicant@example.com
+             */
+            email: string;
+        };
+        RequestApplicationVerificationRequestDto: {
+            /**
+             * Format: email
+             * @description 지원자 이메일
+             * @example applicant@example.com
+             */
+            email: string;
+        };
+        ConfirmApplicationVerificationRequestDto: {
+            /**
+             * Format: email
+             * @description 지원자 이메일
+             * @example applicant@example.com
+             */
+            email: string;
+            /**
+             * @description 6자리 인증번호
+             * @example 123456
+             */
+            code: string;
         };
         SignedUrlRequestDto: {
             /**
@@ -3005,6 +3073,90 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    application_requestVerificationCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestApplicationVerificationRequestDto"];
+            };
+        };
+        responses: {
+            /** @description 인증번호 요청이 접수되었습니다. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 인증번호는 60초마다 요청할 수 있습니다. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example VERIFICATION_COOLDOWN */
+                        code?: string;
+                        /** @example 인증번호는 60초마다 요청할 수 있습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    application_confirmVerificationCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmApplicationVerificationRequestDto"];
+            };
+        };
+        responses: {
+            /** @description 이메일 인증이 완료되었습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["ApplicationVerificationResponseDto"];
+                    };
+                };
+            };
+            /** @description 인증번호가 만료되었거나 더 이상 사용할 수 없습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example VERIFICATION_CODE_EXPIRED */
+                        code?: string;
+                        /** @example 인증번호가 만료되었거나 더 이상 사용할 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
             };
         };
     };

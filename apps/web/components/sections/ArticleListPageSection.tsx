@@ -10,20 +10,23 @@ const Section = styled.section({
   background: "#fff",
 });
 
+// 피그마 Banner(1920×330)는 프로젝트/아티클이 같은 컴포넌트를 쓰며,
+// 배경 이미지 없이 가로 그라데이션만 깔린다.
 const Banner = styled.div({
-  padding: "160px 80px",
+  padding: "160px 80px 80px",
   position: "relative",
   overflow: "hidden",
   minHeight: "330px",
-  backgroundColor: "#02111f",
-  backgroundImage:
-    "linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%), url('https://www.figma.com/api/mcp/asset/6f928e32-36e6-4c5d-886d-63789ff48cea')",
-  backgroundSize: "cover",
-  backgroundPosition: "center",
+  background: "linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%)",
 
-  "@media (max-width: 1024px)": { padding: "160px 80px 80px", minHeight: "323px" },
+  "@media (max-width: 1024px)": { minHeight: "323px" },
   "@media (max-width: 768px)": { padding: "140px 40px 50px", minHeight: "300px" },
-  "@media (max-width: 375px)": { padding: "160px 16px 20px", minHeight: "300px" },
+  // 375 프레임은 2정거장 그라데이션이 반대 방향으로 깔린다.
+  "@media (max-width: 767px)": {
+    padding: "160px 16px 20px",
+    minHeight: "300px",
+    background: "linear-gradient(270deg, #072c3d 0%, #02101e 100%)",
+  },
 });
 
 const Heading = styled.div({
@@ -42,7 +45,7 @@ const BannerLabel = styled.p({
   fontWeight: fontWeights.semiBold,
   "@media (max-width: 1024px)": { fontSize: "24px", lineHeight: "30px" },
   "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
-  "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "15px" },
+  "@media (max-width: 767px)": { fontSize: "12px", lineHeight: "15px" },
 });
 
 const BannerTitle = styled.h1({
@@ -53,14 +56,14 @@ const BannerTitle = styled.h1({
   fontWeight: fontWeights.bold,
   "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
   "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
-  "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "30px" },
+  "@media (max-width: 767px)": { fontSize: "24px", lineHeight: "30px" },
 });
 
 const ContentSection = styled.div({
   padding: "80px 80px",
   "@media (max-width: 1024px)": { padding: "80px" },
   "@media (max-width: 768px)": { padding: "48px 40px" },
-  "@media (max-width: 375px)": { padding: "40px 16px" },
+  "@media (max-width: 767px)": { padding: "40px 16px" },
 });
 
 const Body = styled.div({
@@ -108,7 +111,7 @@ const Thumbnail = styled.img({
     height: "220px",
     borderRadius: "20px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     height: "222px",
     borderRadius: "25px",
   },
@@ -134,7 +137,7 @@ const Title = styled.h2({
   whiteSpace: "nowrap",
   "@media (max-width: 1024px)": { fontSize: "24px", lineHeight: "30px" },
   "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
-  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
+  "@media (max-width: 767px)": { fontSize: "16px", lineHeight: "20px" },
 });
 
 const Description = styled.p({
@@ -150,7 +153,7 @@ const Description = styled.p({
 
   "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
   "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "20px" },
-  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
+  "@media (max-width: 767px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
 const Pagination = styled.div({
@@ -190,10 +193,7 @@ const PaginationButton = styled.button<{ disabled?: boolean }>(({ disabled }) =>
   cursor: disabled ? "not-allowed" : "pointer",
 }));
 
-export const ArticleListPageSection = ({
-  initialItems = [],
-  initialNextCursor = null,
-}: Props) => {
+export const ArticleListPageSection = ({ initialItems = [], initialNextCursor = null }: Props) => {
   const [articleItems, setArticleItems] = useState<ArticleItem[]>(initialItems);
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
   const [cursorHistory, setCursorHistory] = useState<Array<string | null>>([null]);

@@ -13,5 +13,7 @@ export function ensureApiConfigured(): void {
   if (!baseUrl) {
     throw new Error("NEXT_PUBLIC_API_URL is not set.");
   }
-  configureApi(baseUrl);
+  // 지원자 세션(이메일 인증 쿠키)에는 refresh 계약이 없다. 기본값대로 두면 401 마다
+  // /auth/refresh 를 찔러보고 원 요청까지 재시도해 실패가 3배로 늘어난다.
+  configureApi(baseUrl, { refreshTokenPath: null });
 }

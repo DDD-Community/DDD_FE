@@ -28,11 +28,12 @@ export const recruitButtonLabelsByStatus: Record<
   RecruitStatus,
   { navigation: string; hero: string; role: string }
 > = {
-  // 모집 시작 전에는 "지원마감" 이 아니라 사전 알림으로 안내한다.
+  // 모집 시작 전에는 상단 CTA(네비/히어로) 로만 사전 알림을 안내한다.
+  // 직군 카드 버튼은 지원서로 이어지지 않는 비활성 버튼이므로 [지원 마감] 으로 둔다.
   preNotification: {
     navigation: "사전 알림 신청",
     hero: "사전 알림 신청하기",
-    role: "사전 알림 신청",
+    role: "지원 마감",
   },
   open: {
     navigation: "지원 신청",
@@ -44,12 +45,16 @@ export const recruitButtonLabelsByStatus: Record<
   closed: {
     navigation: "모집 종료",
     hero: "모집 종료",
-    role: "지원마감",
+    role: "지원 마감",
   },
 };
 
 export const recruitParts = [
-  { name: "Product Manager" },
+  {
+    name: "Product Manager",
+    description:
+      "사용자의 문제를 발견하고 서비스의 방향과 우선순위를 정해요. 다양한 직군과 협업하며 아이디어를 실제 사용자에게 닿는 서비스로 만들어요.",
+  },
   {
     name: "Product Designer",
     description:
@@ -95,8 +100,8 @@ const CURRICULUM_DESCRIPTIONS: Record<string, string> = {
   직군세션: "같은 직군 멤버들과 모여 각자의 경험과 고민을 나누고, 시야를 넓히는 네트워킹 데이에요",
   ut: "구현된 서비스를 중심으로 사용성 테스트를 진행하고 완성도를 높여요",
   ut세션: "구현된 서비스를 중심으로 사용성 테스트를 진행하고 완성도를 높여요",
-  "ut1차": "구현된 서비스를 중심으로 사용성 테스트를 진행하고 완성도를 높여요",
-  "ut2차": "구현된 서비스를 중심으로 다시 한 번 사용성 테스트를 진행하고 완성도를 높여요",
+  ut1차: "구현된 서비스를 중심으로 사용성 테스트를 진행하고 완성도를 높여요",
+  ut2차: "구현된 서비스를 중심으로 다시 한 번 사용성 테스트를 진행하고 완성도를 높여요",
   중간발표: "현재까지의 진행 상황과 서비스 방향을 공유하고, 피드백을 통해 방향성을 점검해요",
   티키타카: "프로젝트를 잠시 벗어나, 전체 멤버들과 자유롭게 소통하며 관계를 다지는 날이에요",
   티키타카데이: "프로젝트를 잠시 벗어나, 전체 멤버들과 자유롭게 소통하며 관계를 다지는 날이에요",

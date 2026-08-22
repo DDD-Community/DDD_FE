@@ -57,7 +57,7 @@ const Overlay = styled.div<{ open: boolean }>(({ open }) => ({
   "@media (max-width: 768px)": {
     paddingTop: "304px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     alignItems: "flex-start",
     padding: "225px 16px 16px",
   },
@@ -84,7 +84,7 @@ const ModalCard = styled.div({
     borderRadius: "30px",
     padding: "80px 40px 40px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     maxWidth: "343px",
     borderRadius: "20px",
     padding: "80px 12px 40px",
@@ -108,7 +108,7 @@ const Title = styled.h2({
     fontSize: "34px",
     lineHeight: "45px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "20px",
     lineHeight: "25px",
   },
@@ -129,7 +129,7 @@ const FloatingCloseArea = styled.div({
     right: "12px",
     top: "12px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     width: "60px",
     height: "60px",
     right: "8px",
@@ -151,7 +151,7 @@ const CloseButton = styled.button({
   alignItems: "center",
   justifyContent: "center",
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     width: "28px",
     height: "28px",
     fontSize: "14px",
@@ -173,7 +173,7 @@ const Description = styled.p({
     maxWidth: "297px",
   },
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "16px",
     lineHeight: "20px",
     maxWidth: "297px",
@@ -195,7 +195,7 @@ const Decoration = styled.img({
     width: "102px",
     height: "102px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     width: "86px",
     height: "86px",
     right: "2px",
@@ -209,7 +209,7 @@ const Form = styled.form({
   flexDirection: "column",
   gap: "20px",
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     marginTop: "40px",
   },
 });
@@ -264,7 +264,7 @@ const Input = styled.input<{ invalid?: boolean }>(({ invalid }) => ({
       lineHeight: "18px",
     },
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     "::placeholder": {
       fontSize: "10px",
       lineHeight: "13px",
@@ -325,7 +325,7 @@ const PrimaryButton = styled.button({
     fontSize: "18px",
     lineHeight: "23px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     height: "56px",
     padding: "30px 40px",
     fontSize: "14px",
@@ -341,7 +341,7 @@ const SuccessWrap = styled.div({
   gap: "20px",
   minHeight: "383px",
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     padding: "0 40px",
     minHeight: "300px",
   },
@@ -352,7 +352,7 @@ const SuccessImage = styled.img({
   height: "180px",
   objectFit: "cover",
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     width: "150px",
     height: "150px",
   },
@@ -374,7 +374,7 @@ const SuccessTitle = styled.h3({
     fontSize: "30px",
     lineHeight: "36px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "20px",
     lineHeight: "25px",
   },
@@ -396,7 +396,7 @@ const SuccessDescription = styled.p({
     fontSize: "13px",
     lineHeight: "16px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "12px",
     lineHeight: "15px",
   },
@@ -418,7 +418,7 @@ const SuccessTimerText = styled.p({
     fontSize: "10px",
     lineHeight: "14px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "9px",
     lineHeight: "12px",
   },
@@ -434,7 +434,7 @@ const ConfirmWrap = styled.div({
   padding: "0 80px",
   minHeight: "332px",
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     minHeight: "260px",
     padding: "0 20px",
     gap: "40px",
@@ -460,7 +460,7 @@ const ConfirmTitle = styled.h3({
     fontSize: "34px",
     lineHeight: "45px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "20px",
     lineHeight: "25px",
   },
@@ -478,7 +478,7 @@ const ConfirmDescription = styled.p({
     fontSize: "25px",
     lineHeight: "25px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "16px",
     lineHeight: "20px",
   },
@@ -490,7 +490,7 @@ const ConfirmActions = styled.div({
   flexDirection: "column",
   gap: "12px",
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     width: "100%",
   },
 });
@@ -512,7 +512,7 @@ const ConfirmPrimaryButton = styled.button({
     fontSize: "19px",
     lineHeight: "26px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     height: "56px",
     fontSize: "14px",
     lineHeight: "18px",
@@ -536,7 +536,7 @@ const ConfirmSecondaryButton = styled.button({
     fontSize: "19px",
     lineHeight: "26px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     height: "56px",
     fontSize: "14px",
     lineHeight: "18px",

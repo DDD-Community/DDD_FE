@@ -38,7 +38,7 @@ const StyledButton = styled.button({
     fontSize: '18px',
     lineHeight: '24px',
   },
-  '@media (max-width: 375px)': {
+  '@media (max-width: 767px)': {
     height: '56px',
     padding: '14px 24px',
     fontSize: '14px',

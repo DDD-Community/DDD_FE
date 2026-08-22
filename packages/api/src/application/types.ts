@@ -16,6 +16,36 @@ export type SubmitApplicationRequestDto = Omit<
   "answers"
 > & { answers: Record<string, unknown> };
 
+// ---------- 지원자 이메일 인증 ----------
+//
+// 지원서 API(임시저장·조회·첨부·제출)는 전부 이 인증으로 발급된 `access_token`
+// httpOnly 쿠키를 요구한다. 쿠키는 JS 로 읽을 수 없어 FE 가 보관하는 값은 없고,
+// 브라우저가 자동으로 실어 보낸다 (`credentials: "include"`).
+
+export type RequestApplicationVerificationRequestDto =
+  components["schemas"]["RequestApplicationVerificationRequestDto"];
+export type ConfirmApplicationVerificationRequestDto =
+  components["schemas"]["ConfirmApplicationVerificationRequestDto"];
+export type ApplicationVerificationResponseDto =
+  components["schemas"]["ApplicationVerificationResponseDto"];
+
+// POST /api/v1/applications/verify/request - 인증번호 발송 (204, 본문 없음)
+export type PostApplicationVerificationRequest =
+  RequestApplicationVerificationRequestDto;
+export type PostApplicationVerificationResponse = void;
+
+// POST /api/v1/applications/verify/confirm - 인증번호 확인 → access_token 쿠키 발급
+export type PostApplicationVerificationConfirmRequest =
+  ConfirmApplicationVerificationRequestDto;
+export type PostApplicationVerificationConfirmResponse =
+  ApplicationVerificationResponseDto;
+
+/** 인증번호 유효 시간 · 재발송 쿨다운 — BE 규칙과 동일 */
+export const APPLICATION_VERIFICATION_CODE_TTL_SECONDS = 10 * 60;
+export const APPLICATION_VERIFICATION_RESEND_COOLDOWN_SECONDS = 60;
+/** 인증번호 형식 — 숫자 6자리 */
+export const APPLICATION_VERIFICATION_CODE_PATTERN = /^\d{6}$/;
+
 // GET /api/v1/admin/applications - 어드민 지원서 목록 조회
 export type ApplicationGetAdminListParams =
   paths["/api/v1/admin/applications"]["get"]["parameters"]["query"];

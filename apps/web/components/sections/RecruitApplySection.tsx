@@ -3,19 +3,25 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import styled from "@emotion/styled";
-import { ApiError, isApplicationAttachment } from "@ddd/api";
+import { assets } from "@/constants/assets";
+import {
+  ApiError,
+  APPLICATION_VERIFICATION_CODE_PATTERN,
+  APPLICATION_VERIFICATION_CODE_TTL_SECONDS,
+  APPLICATION_VERIFICATION_RESEND_COOLDOWN_SECONDS,
+  isApplicationAttachment,
+} from "@ddd/api";
 import type { ApplicationAttachmentDto } from "@ddd/api";
 import { colors, fontWeights } from "@/constants/tokens";
 import successIcon from "@/public/images/success.png";
 import { fetchApplyParts, fetchApplyQuestions } from "@/lib/api/cohort";
+import { type ApplyPart, type ApplyPartOption, type ApplyQuestion } from "@/lib/mappers/cohort";
 import {
-  type ApplyPart,
-  type ApplyPartOption,
-  type ApplyQuestion,
-} from "@/lib/mappers/cohort";
-import {
+  confirmApplicationEmailVerification,
   fetchApplicationDraftAnswers,
+  isUnauthorizedError,
   openApplicationAttachment,
+  requestApplicationEmailVerification,
   saveRecruitApplicationDraft,
   submitRecruitApplication,
   uploadApplicationAttachment,
@@ -166,13 +172,17 @@ const Banner = styled.section({
   position: "relative",
   overflow: "hidden",
   backgroundColor: "#02111f",
-  backgroundImage:
-    "linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%), url('https://www.figma.com/api/mcp/asset/6f928e32-36e6-4c5d-886d-63789ff48cea')",
+  // 앞 레이어에 불투명 linear-gradient 가 깔려 있어서, url() 이 살아 있었더라도
+  // 이미지(우측 3D "D" 오브젝트 포함)는 통째로 가려졌다. 원본 래스터만 쓴다.
+  backgroundImage: `url('${assets.bannerBg}')`,
   backgroundSize: "cover",
-  backgroundPosition: "center",
+  // 배너 폭이 이미지 비율(1920x360)보다 좁아지면 cover 가 좌우를 잘라낸다. center 로 두면
+  // 오른쪽 끝의 3D "D" 오브젝트가 반쯤 잘리므로 오른쪽을 기준으로 붙인다.
+  // 좁은 화면에서는 D 가 화면을 다 차지해 제목과 겹쳐서, 그때만 center 로 되돌린다.
+  backgroundPosition: "right center",
   "@media (max-width: 1024px)": { padding: "160px 80px 80px" },
-  "@media (max-width: 768px)": { padding: "140px 40px 50px" },
-  "@media (max-width: 375px)": { padding: "160px 16px 20px" },
+  "@media (max-width: 768px)": { padding: "140px 40px 50px", backgroundPosition: "center" },
+  "@media (max-width: 767px)": { padding: "160px 16px 20px" },
 });
 
 const BannerInner = styled.div({
@@ -191,7 +201,7 @@ const BannerLabel = styled.p({
   fontWeight: fontWeights.semiBold,
   "@media (max-width: 1024px)": { fontSize: "24px", lineHeight: "30px" },
   "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
-  "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "15px" },
+  "@media (max-width: 767px)": { fontSize: "12px", lineHeight: "15px" },
 });
 
 const BannerTitle = styled.h1({
@@ -202,7 +212,7 @@ const BannerTitle = styled.h1({
   fontWeight: fontWeights.bold,
   "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px" },
   "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px" },
-  "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "30px", width: "265px" },
+  "@media (max-width: 767px)": { fontSize: "24px", lineHeight: "30px", width: "265px" },
 });
 
 const ContainerPadding = styled.div({
@@ -210,7 +220,7 @@ const ContainerPadding = styled.div({
   "@media (max-width: 768px)": {
     padding: "16px 40px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     padding: "16px 16px",
   },
 });
@@ -239,7 +249,7 @@ const FormDescription = styled.p({
   fontWeight: fontWeights.semiBold,
   "@media (max-width: 1024px)": { fontSize: "24px", lineHeight: "30px" },
   "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
-  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
+  "@media (max-width: 767px)": { fontSize: "16px", lineHeight: "20px" },
 });
 
 const StepWrap = styled.div({
@@ -250,7 +260,7 @@ const StepWrap = styled.div({
   marginTop: "50px",
   paddingTop: "10px",
   "@media (max-width: 768px)": { gap: "12px", marginTop: "36px" },
-  "@media (max-width: 375px)": { gap: "8px", marginTop: "28px" },
+  "@media (max-width: 767px)": { gap: "8px", marginTop: "28px" },
 });
 
 const StepLine = styled.div({
@@ -265,7 +275,7 @@ const StepLine = styled.div({
     left: "calc(16.667% + 16px)",
     right: "calc(16.667% + 16px)",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     top: "34px",
     left: "calc(16.667% + 12px)",
     right: "calc(16.667% + 12px)",
@@ -301,7 +311,7 @@ const StepCircle = styled.div<{ active: boolean }>(({ active }) => ({
     fontSize: "28px",
     lineHeight: "36px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     width: "48px",
     height: "48px",
     fontSize: "20px",
@@ -316,7 +326,7 @@ const StepLabel = styled.p<{ active: boolean }>(({ active }) => ({
   fontWeight: fontWeights.medium,
   color: active ? "#ffffff" : "#62748e",
   "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "24px" },
-  "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "16px" },
+  "@media (max-width: 767px)": { fontSize: "12px", lineHeight: "16px" },
 }));
 
 const Card = styled.section({
@@ -326,7 +336,7 @@ const Card = styled.section({
   padding: "80px",
   "@media (max-width: 1024px)": { padding: "56px 44px" },
   "@media (max-width: 768px)": { padding: "40px 24px" },
-  "@media (max-width: 375px)": { marginTop: "28px", padding: "24px 16px", borderRadius: "20px" },
+  "@media (max-width: 767px)": { marginTop: "28px", padding: "24px 16px", borderRadius: "20px" },
 });
 
 const CardTitle = styled.h3({
@@ -335,7 +345,7 @@ const CardTitle = styled.h3({
   lineHeight: "30px",
   fontWeight: fontWeights.medium,
   "@media (max-width: 768px)": { fontSize: "20px", lineHeight: "25px" },
-  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
+  "@media (max-width: 767px)": { fontSize: "16px", lineHeight: "20px" },
 });
 
 const Fields = styled.div({
@@ -344,7 +354,7 @@ const Fields = styled.div({
   display: "flex",
   flexDirection: "column",
   gap: "20px",
-  "@media (max-width: 375px)": { marginTop: "24px", gap: "14px" },
+  "@media (max-width: 767px)": { marginTop: "24px", gap: "14px" },
 });
 
 const Field = styled.label({
@@ -399,7 +409,7 @@ const Input = styled.input<{ hasError?: boolean; isFocused?: boolean; hasValue?:
         ? "0 0 0 3px rgba(255, 125, 125, 0.15)"
         : "0 0 0 3px rgba(46, 113, 255, 0.15)",
     },
-    "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px", height: "48px" },
+    "@media (max-width: 767px)": { fontSize: "16px", lineHeight: "20px", height: "48px" },
   }),
 );
 
@@ -416,7 +426,7 @@ const TextArea = styled.textarea({
   padding: "20px",
   resize: "vertical",
   "&::placeholder": { color: colors.textSecondary },
-  "@media (max-width: 375px)": { minHeight: "280px", fontSize: "16px", lineHeight: "24px" },
+  "@media (max-width: 767px)": { minHeight: "280px", fontSize: "16px", lineHeight: "24px" },
 });
 
 const FileDropLabel = styled.label<{ disabled?: boolean }>(({ disabled }) => ({
@@ -445,7 +455,7 @@ const FileDropTitle = styled.span({
   lineHeight: "28px",
   fontWeight: fontWeights.medium,
   color: colors.textPrimary,
-  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "24px" },
+  "@media (max-width: 767px)": { fontSize: "16px", lineHeight: "24px" },
 });
 
 const FileCard = styled.div({
@@ -457,7 +467,7 @@ const FileCard = styled.div({
   borderRadius: "10px",
   background: "#ffffff",
   padding: "20px",
-  "@media (max-width: 375px)": { padding: "14px", gap: "8px" },
+  "@media (max-width: 767px)": { padding: "14px", gap: "8px" },
 });
 
 const FileName = styled.p({
@@ -470,7 +480,7 @@ const FileName = styled.p({
   lineHeight: "28px",
   fontWeight: fontWeights.medium,
   color: colors.textPrimary,
-  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "24px" },
+  "@media (max-width: 767px)": { fontSize: "16px", lineHeight: "24px" },
 });
 
 const FileMeta = styled.p({
@@ -504,7 +514,7 @@ const PrivacyBox = styled.div({
   fontWeight: fontWeights.medium,
   whiteSpace: "pre-line",
   "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "24px" },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     marginTop: "16px",
     fontSize: "12px",
     lineHeight: "18px",
@@ -527,7 +537,7 @@ const Agreement = styled.button<{ checked: boolean }>(({ checked: _checked }) =>
   lineHeight: "18px",
   fontWeight: fontWeights.semiBold,
   textAlign: "left" as const,
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     marginTop: "12px",
     fontSize: "12px",
     lineHeight: "16px",
@@ -569,7 +579,7 @@ const AgreementRequiredDot = styled.span({
   display: "inline-block",
   marginLeft: "0px",
   transform: "translateY(0px)",
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     width: "4px",
     height: "4px",
   },
@@ -580,7 +590,7 @@ const ChipGrid = styled.div({
   display: "flex",
   gap: "20px",
   flexWrap: "wrap",
-  "@media (max-width: 375px)": { gap: "10px" },
+  "@media (max-width: 767px)": { gap: "10px" },
 });
 
 const Chip = styled.button<{ selected: boolean }>(({ selected }) => ({
@@ -595,18 +605,25 @@ const Chip = styled.button<{ selected: boolean }>(({ selected }) => ({
   cursor: "pointer",
   "@media (max-width: 1024px)": { fontSize: "22px", lineHeight: "28px", padding: "16px 26px" },
   "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "24px", padding: "12px 20px" },
-  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px", padding: "10px 14px" },
+  "@media (max-width: 767px)": { fontSize: "16px", lineHeight: "20px", padding: "10px 14px" },
 }));
 
+/** 파트마다 설명이 1~2줄로 갈려 선택할 때 카드 높이가 흔들리므로 2줄 높이를 미리 확보한다. */
 const PartDescription = styled.p({
   margin: "20px 0 0",
   color: "#ffffff",
   fontSize: "24px",
   lineHeight: "30px",
+  minHeight: "60px",
   fontWeight: fontWeights.semiBold,
-  "@media (max-width: 1024px)": { fontSize: "20px", lineHeight: "26px" },
-  "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "22px" },
-  "@media (max-width: 375px)": { marginTop: "14px", fontSize: "12px", lineHeight: "18px" },
+  "@media (max-width: 1024px)": { fontSize: "20px", lineHeight: "26px", minHeight: "52px" },
+  "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "22px", minHeight: "44px" },
+  "@media (max-width: 767px)": {
+    marginTop: "14px",
+    fontSize: "12px",
+    lineHeight: "18px",
+    minHeight: "36px",
+  },
 });
 
 const AnswerHeader = styled.div({
@@ -628,7 +645,7 @@ const ButtonRow = styled.div({
   display: "flex",
   gap: "20px",
   "@media (max-width: 768px)": { marginTop: "40px" },
-  "@media (max-width: 375px)": { marginTop: "28px", flexDirection: "column" },
+  "@media (max-width: 767px)": { marginTop: "28px", flexDirection: "column" },
 });
 
 const ActionButton = styled.button<{ primary?: boolean; full?: boolean }>(({ primary, full }) => ({
@@ -649,7 +666,7 @@ const ActionButton = styled.button<{ primary?: boolean; full?: boolean }>(({ pri
   justifyContent: "center",
   gap: "4px",
   "@media (max-width: 768px)": { height: "68px", fontSize: "18px", minWidth: "160px" },
-  "@media (max-width: 375px)": { height: "52px", width: "100%", fontSize: "16px", minWidth: 0 },
+  "@media (max-width: 767px)": { height: "52px", width: "100%", fontSize: "16px", minWidth: 0 },
 }));
 
 const Arrow = ({ back = false }: { back?: boolean }) => (
@@ -678,7 +695,7 @@ const SuccessWrap = styled.div({
   flexDirection: "column",
   alignItems: "center",
   textAlign: "center",
-  "@media (max-width: 375px)": { paddingTop: "20px", gap: "24px" },
+  "@media (max-width: 767px)": { paddingTop: "20px", gap: "24px" },
 });
 
 const SuccessTitle = styled.h3({
@@ -689,7 +706,7 @@ const SuccessTitle = styled.h3({
   marginBottom: "20px",
   marginTop: "40px",
   "@media (max-width: 768px)": { fontSize: "44px", lineHeight: "54px" },
-  "@media (max-width: 375px)": { fontSize: "32px", lineHeight: "40px" },
+  "@media (max-width: 767px)": { fontSize: "32px", lineHeight: "40px" },
 });
 
 const ErrorText = styled.p({
@@ -729,6 +746,170 @@ const FieldError = styled.p({
   fontWeight: fontWeights.medium,
 });
 
+const InlineRow = styled.div({
+  display: "flex",
+  gap: "8px",
+  alignItems: "flex-start",
+  "@media (max-width: 767px)": { flexDirection: "column" },
+});
+
+const InlineInputWrap = styled.div({
+  flex: 1,
+  minWidth: 0,
+});
+
+const VerifyButton = styled.button({
+  flexShrink: 0,
+  height: "54px",
+  padding: "0 20px",
+  borderRadius: "10px",
+  border: "none",
+  background: colors.primary,
+  color: "#ffffff",
+  fontSize: "16px",
+  lineHeight: "20px",
+  fontWeight: fontWeights.medium,
+  whiteSpace: "nowrap",
+  cursor: "pointer",
+  "&:disabled": { background: colors.disabled, cursor: "not-allowed" },
+  "@media (max-width: 767px)": { width: "100%", height: "48px", fontSize: "15px" },
+});
+
+const VerifiedRow = styled.div({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: "8px",
+  flexWrap: "wrap",
+});
+
+const VerifiedBadge = styled.p({
+  margin: "6px 0 0",
+  display: "flex",
+  alignItems: "center",
+  gap: "6px",
+  color: "#4ade80",
+  fontSize: "14px",
+  lineHeight: "18px",
+  fontWeight: fontWeights.medium,
+});
+
+const ResetVerifiedButton = styled.button({
+  flexShrink: 0,
+  margin: "6px 0 0",
+  padding: 0,
+  border: "none",
+  background: "transparent",
+  color: colors.slate300,
+  fontSize: "14px",
+  lineHeight: "18px",
+  fontWeight: fontWeights.medium,
+  textDecoration: "underline",
+  cursor: "pointer",
+});
+
+const SavedNotice = styled.p({
+  margin: "10px 0 0",
+  color: "#4ade80",
+  fontSize: "14px",
+  lineHeight: "18px",
+  fontWeight: fontWeights.medium,
+});
+
+const VerifyNotice = styled.p({
+  margin: "6px 0 0",
+  color: colors.slate300,
+  fontSize: "14px",
+  lineHeight: "18px",
+  fontWeight: fontWeights.regular,
+});
+
+const CodeLabelRow = styled.div({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: "8px",
+});
+
+const CodeTimer = styled.span({
+  color: "#ff7d7d",
+  fontSize: "14px",
+  lineHeight: "18px",
+  fontWeight: fontWeights.medium,
+  fontVariantNumeric: "tabular-nums",
+});
+
+/** 인증번호 남은 시간 표시 (mm:ss) */
+function formatCountdown(seconds: number): string {
+  const safe = Math.max(0, seconds);
+  const mm = String(Math.floor(safe / 60)).padStart(2, "0");
+  const ss = String(safe % 60).padStart(2, "0");
+  return `${mm}:${ss}`;
+}
+
+/**
+ * 인증 완료 이메일을 브라우저에 남겨 재방문 시 인증 단계를 건너뛴다.
+ *
+ * `access_token` 은 httpOnly 쿠키(30일)라 JS 로 살아있는지 확인할 방법이 없다.
+ * 그래서 이 값은 "직전에 인증했다" 는 힌트일 뿐이고, 쿠키가 먼저 만료되면 실제
+ * 요청이 401 로 떨어진다 — 그때 이 값을 지우고 재인증을 유도한다.
+ *
+ * 힌트에도 쿠키와 같은 수명을 준다. localStorage 는 만료가 없어서 인증 시각을
+ * 함께 남기지 않으면 쿠키가 죽은 지 한참 지난 방문에도 "인증 완료" 가 떠 있다가,
+ * 2단계에서 임시저장을 불러올 때에야 401 로 튕긴다.
+ */
+const VERIFIED_EMAIL_STORAGE_KEY = "ddd.apply.verifiedEmail";
+const VERIFIED_EMAIL_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+type StoredVerifiedEmail = { email: string; verifiedAt: number };
+
+function parseStoredVerifiedEmail(raw: string): StoredVerifiedEmail | null {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== "object" || parsed === null) return null;
+    const { email, verifiedAt } = parsed as Partial<StoredVerifiedEmail>;
+    if (typeof email !== "string" || !email) return null;
+    if (typeof verifiedAt !== "number" || !Number.isFinite(verifiedAt)) return null;
+    return { email, verifiedAt };
+  } catch {
+    // 시각 없이 이메일만 넣던 예전 형식 — 언제 인증했는지 알 수 없어 버린다.
+    return null;
+  }
+}
+
+function readStoredVerifiedEmail(): string | null {
+  if (typeof window === "undefined") return null;
+
+  let raw: string | null;
+  try {
+    raw = window.localStorage.getItem(VERIFIED_EMAIL_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+  if (!raw) return null;
+
+  const stored = parseStoredVerifiedEmail(raw);
+  if (!stored || Date.now() - stored.verifiedAt >= VERIFIED_EMAIL_TTL_MS) {
+    writeStoredVerifiedEmail(null);
+    return null;
+  }
+  return stored.email;
+}
+
+function writeStoredVerifiedEmail(email: string | null): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (email) {
+      const stored: StoredVerifiedEmail = { email, verifiedAt: Date.now() };
+      window.localStorage.setItem(VERIFIED_EMAIL_STORAGE_KEY, JSON.stringify(stored));
+    } else {
+      window.localStorage.removeItem(VERIFIED_EMAIL_STORAGE_KEY);
+    }
+  } catch {
+    // 시크릿 모드 등 저장이 막힌 환경 — 인증 자체는 쿠키로 동작하므로 무시한다.
+  }
+}
+
 const BIRTH_MIN_YEAR = 1900;
 
 /**
@@ -737,13 +918,16 @@ const BIRTH_MIN_YEAR = 1900;
  * fetch 는 네트워크 단절·CORS 차단 시 응답 없이 TypeError 로 reject 하므로,
  * 서버가 내려준 에러(ApiError)와 애초에 서버에 닿지 못한 경우를 나눠 안내한다.
  */
-const resolveBootstrapErrorMessage = (error: unknown): string => {
+const resolveErrorMessage = (error: unknown, fallback: string): string => {
   if (error instanceof ApiError) return error.message;
   if (error instanceof TypeError) {
     return "서버에 연결하지 못했어요. 네트워크 상태를 확인한 뒤 다시 시도해주세요.";
   }
-  return "모집 파트 정보를 불러오지 못했어요. 다시 시도해주세요.";
+  return fallback;
 };
+
+const resolveBootstrapErrorMessage = (error: unknown): string =>
+  resolveErrorMessage(error, "모집 파트 정보를 불러오지 못했어요. 다시 시도해주세요.");
 
 const BASIC_FIELD_FORMATTERS: Partial<Record<BasicField, (value: string) => string>> = {
   phone: formatPhoneInput,
@@ -883,15 +1067,166 @@ export const RecruitApplySection = () => {
   const [isBootstrapLoading, setIsBootstrapLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [draftNotice, setDraftNotice] = useState<string | null>(null);
   const [isLoadingDraft, setIsLoadingDraft] = useState(false);
   // 첨부 질문별 업로드 상태 — 키는 질문의 `key`
   const [uploadingKeys, setUploadingKeys] = useState<Record<string, boolean>>({});
   const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({});
+  // 이메일 인증 — 인증을 마쳐야 임시저장·첨부·제출이 모두 동작한다.
+  const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [code, setCode] = useState("");
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+  const [verifyNotice, setVerifyNotice] = useState<string | null>(null);
+  const [isRequestingCode, setIsRequestingCode] = useState(false);
+  const [isConfirmingCode, setIsConfirmingCode] = useState(false);
+  const [codeExpiresIn, setCodeExpiresIn] = useState(0);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  // 인증이 끊겨 1단계로 되돌린 경우, 재인증 후 돌아갈 단계
+  const [resumeStep, setResumeStep] = useState<Step | null>(null);
+  // 질문·임시저장 로딩 effect 를 다시 태우는 토큰
+  const [reloadToken, setReloadToken] = useState(0);
 
   const stepLabels = useMemo(() => ["기본 정보", "지원 파트", "지원서"], []);
 
   // 업로드가 끝나기 전에 제출하면 answers 에 첨부가 빠진 채로 나간다.
   const isUploadingAttachment = Object.values(uploadingKeys).some(Boolean);
+
+  // 인증은 이메일 단위다 — 인증 후 주소를 고치면 그 인증은 더 이상 유효하지 않다.
+  const normalizedEmail = values.email.trim().toLowerCase();
+  const isEmailVerified = verifiedEmail !== null && verifiedEmail === normalizedEmail;
+  const isCodeExpired = isCodeSent && codeExpiresIn <= 0;
+
+  // 재방문 시 인증을 반복시키지 않으려고 직전 인증 이메일을 복원한다. (쿠키 30일)
+  useEffect(() => {
+    const stored = readStoredVerifiedEmail();
+    if (!stored) return;
+    setVerifiedEmail(stored);
+    setValues((prev) => (prev.email ? prev : { ...prev, email: stored }));
+  }, []);
+
+  const isCountdownRunning = codeExpiresIn > 0 || resendCooldown > 0;
+  useEffect(() => {
+    if (!isCountdownRunning) return;
+    const timer = window.setInterval(() => {
+      setCodeExpiresIn((prev) => (prev > 0 ? prev - 1 : 0));
+      setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [isCountdownRunning]);
+
+  const resetVerificationCode = () => {
+    setIsCodeSent(false);
+    setCode("");
+    setCodeExpiresIn(0);
+    setResendCooldown(0);
+    setVerifyError(null);
+    setVerifyNotice(null);
+  };
+
+  /**
+   * 인증 힌트를 버리고 지원서를 빈 상태로 되돌린다.
+   *
+   * 공용 브라우저에서는 앞사람의 주소가 프리필된 채 "인증 완료" 로 보이고, 파트를
+   * 고르면 앞사람의 임시저장까지 그대로 열린다. 사용자가 직접 끊을 수단이 필요하다.
+   * 쿠키는 httpOnly 라 JS 로 못 지우지만, 인증 게이트가 임시저장·첨부·제출을 모두
+   * 막고 있어 다음 사람이 인증을 마치는 순간 서버가 새 쿠키로 덮어쓴다.
+   */
+  const handleResetVerifiedEmail = () => {
+    setVerifiedEmail(null);
+    writeStoredVerifiedEmail(null);
+    setValues(initialValues);
+    setBasicErrors({});
+    setBasicTouched({});
+    setUploadingKeys({});
+    setUploadErrors({});
+    setQuestions([]);
+    setQuestionsError(null);
+    setDraftNotice(null);
+    setResumeStep(null);
+    setError(null);
+    setStep(1);
+    resetVerificationCode();
+  };
+
+  /**
+   * 인증 쿠키가 끊긴 상태(401)를 처리한다.
+   *
+   * 만료는 예고 없이 오므로 작성 중이던 단계를 기억해뒀다가 재인증 후 되돌린다.
+   * 입력값은 `values` 에 그대로 남아 있어 다시 작성할 필요가 없다.
+   */
+  const handleUnauthorized = useCallback((interruptedStep: Step) => {
+    setVerifiedEmail(null);
+    writeStoredVerifiedEmail(null);
+    setIsCodeSent(false);
+    setCode("");
+    setCodeExpiresIn(0);
+    setResendCooldown(0);
+    setVerifyError(null);
+    setVerifyNotice(null);
+    setResumeStep(interruptedStep);
+    setStep(1);
+    setError(
+      "이메일 인증이 만료되었어요. 다시 인증하면 작성하던 내용 그대로 이어서 진행할 수 있어요.",
+    );
+  }, []);
+
+  const handleRequestCode = async () => {
+    const emailError = validateBasicField("email", values.email);
+    setBasicTouched((prev) => ({ ...prev, email: true }));
+    setBasicErrors((prev) => ({ ...prev, email: emailError ?? "" }));
+    if (emailError) return;
+
+    setVerifyError(null);
+    setVerifyNotice(null);
+    setIsRequestingCode(true);
+    try {
+      await requestApplicationEmailVerification(normalizedEmail);
+      setIsCodeSent(true);
+      setCode("");
+      setCodeExpiresIn(APPLICATION_VERIFICATION_CODE_TTL_SECONDS);
+      setResendCooldown(APPLICATION_VERIFICATION_RESEND_COOLDOWN_SECONDS);
+      setVerifyNotice(`${normalizedEmail} 으로 인증번호를 보냈어요. 메일함을 확인해주세요.`);
+    } catch (e) {
+      // 쿨다운은 서버가 판단한다 — 429 를 받으면 남은 시간만큼 버튼을 잠가 헛요청을 막는다.
+      if (e instanceof ApiError && e.code === "VERIFICATION_COOLDOWN") {
+        setResendCooldown(APPLICATION_VERIFICATION_RESEND_COOLDOWN_SECONDS);
+      }
+      setVerifyError(
+        resolveErrorMessage(e, "인증번호를 보내지 못했어요. 잠시 후 다시 시도해주세요."),
+      );
+    } finally {
+      setIsRequestingCode(false);
+    }
+  };
+
+  const handleConfirmCode = async () => {
+    if (!APPLICATION_VERIFICATION_CODE_PATTERN.test(code)) {
+      setVerifyError("인증번호 6자리를 입력해주세요.");
+      return;
+    }
+    setVerifyError(null);
+    setIsConfirmingCode(true);
+    try {
+      await confirmApplicationEmailVerification(normalizedEmail, code);
+      setVerifiedEmail(normalizedEmail);
+      writeStoredVerifiedEmail(normalizedEmail);
+      resetVerificationCode();
+      setError(null);
+      // 인증 만료로 되돌아온 경우라면 끊긴 지점으로 복귀시킨다.
+      if (resumeStep !== null) {
+        setStep(resumeStep);
+        setResumeStep(null);
+        // 2단계에서 끊겼다는 건 임시저장 조회가 401 로 실패했다는 뜻이라 다시 불러온다.
+        // 3단계는 이미 화면에 답변이 들어와 있어 재조회하면 방금 쓴 내용을 저장본으로 덮는다.
+        if (resumeStep === 2) setReloadToken((token) => token + 1);
+      }
+    } catch (e) {
+      setVerifyError(resolveErrorMessage(e, "인증에 실패했어요. 잠시 후 다시 시도해주세요."));
+    } finally {
+      setIsConfirmingCode(false);
+    }
+  };
 
   const cohortPartIdByOption = useMemo(
     () => new Map(applyParts.map((part) => [part.option, part.cohortPartId])),
@@ -968,6 +1303,10 @@ export const RecruitApplySection = () => {
           if (cancelled || !draft) return;
           const patch = parseDraftToFormValues(draft, loaded);
           setValues((prev) => ({ ...prev, ...patch }));
+        } catch (e) {
+          if (cancelled) return;
+          // 저장된 지원서가 없는 경우(404)는 여기까지 오지 않는다 — 남는 건 인증 만료뿐이다.
+          if (isUnauthorizedError(e)) handleUnauthorized(2);
         } finally {
           if (!cancelled) setIsLoadingDraft(false);
         }
@@ -985,7 +1324,7 @@ export const RecruitApplySection = () => {
     return () => {
       cancelled = true;
     };
-  }, [selectedCohortPartId]);
+  }, [selectedCohortPartId, handleUnauthorized, reloadToken]);
 
   /**
    * 제출·임시저장에 쓰는 answers.
@@ -1038,6 +1377,10 @@ export const RecruitApplySection = () => {
         setError("기본 정보를 다시 확인해주세요.");
         return false;
       }
+      if (!isEmailVerified) {
+        setError("이메일 인증을 완료해주세요.");
+        return false;
+      }
       if (!values.agreedToPrivacy) {
         setError("개인정보 수집 및 이용에 동의해주세요.");
         return false;
@@ -1087,6 +1430,11 @@ export const RecruitApplySection = () => {
       setError("기본 정보를 다시 확인해주세요.");
       return false;
     }
+    if (!isEmailVerified) {
+      setError("이메일 인증을 완료해주세요.");
+      setStep(1);
+      return false;
+    }
     if (!values.agreedToPrivacy) {
       setError("개인정보 수집 및 이용에 동의해주세요.");
       return false;
@@ -1117,7 +1465,13 @@ export const RecruitApplySection = () => {
       setError("선택한 파트의 모집 정보를 찾지 못했어요.");
       return;
     }
+    if (!isEmailVerified) {
+      setError("이메일 인증을 완료해야 임시저장할 수 있어요.");
+      setStep(1);
+      return;
+    }
     setError(null);
+    setDraftNotice(null);
     setIsSavingDraft(true);
     try {
       await saveRecruitApplicationDraft(selectedCohortPartId, {
@@ -1130,15 +1484,21 @@ export const RecruitApplySection = () => {
         part: values.part,
         ...buildAnswers(),
       });
+      setDraftNotice("작성 중인 지원서를 임시저장했어요.");
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : "임시저장에 실패했습니다.");
+      if (isUnauthorizedError(e)) {
+        handleUnauthorized(step);
+        return;
+      }
+      setError(resolveErrorMessage(e, "임시저장에 실패했어요. 잠시 후 다시 시도해주세요."));
     } finally {
       setIsSavingDraft(false);
     }
-  }, [values, selectedCohortPartId, buildAnswers]);
+  }, [values, selectedCohortPartId, buildAnswers, isEmailVerified, step, handleUnauthorized]);
 
   const handleNext = async (event: FormEvent) => {
     event.preventDefault();
+    setDraftNotice(null);
     if (isSubmitting || isBootstrapLoading) return;
     if (isUploadingAttachment) {
       setError("첨부 파일 업로드가 끝난 뒤에 진행할 수 있어요.");
@@ -1167,7 +1527,11 @@ export const RecruitApplySection = () => {
         });
         setStep(4);
       } catch (e) {
-        setError(e instanceof ApiError ? e.message : "제출에 실패했습니다.");
+        if (isUnauthorizedError(e)) {
+          handleUnauthorized(3);
+          return;
+        }
+        setError(resolveErrorMessage(e, "제출에 실패했어요. 잠시 후 다시 시도해주세요."));
       } finally {
         setIsSubmitting(false);
       }
@@ -1179,10 +1543,12 @@ export const RecruitApplySection = () => {
 
   const handlePrev = () => {
     setError(null);
+    setDraftNotice(null);
     setStep((prev) => (prev > 1 ? ((prev - 1) as Step) : prev));
   };
 
   const handleAnswerChange = (key: string, value: string) => {
+    setDraftNotice(null);
     setValues((prev) => ({ ...prev, answers: { ...prev.answers, [key]: value } }));
   };
 
@@ -1211,6 +1577,10 @@ export const RecruitApplySection = () => {
       const attachment = await uploadApplicationAttachment(file);
       setAttachment(key, attachment);
     } catch (e) {
+      if (isUnauthorizedError(e)) {
+        handleUnauthorized(3);
+        return;
+      }
       setUploadErrors((prev) => ({
         ...prev,
         [key]: e instanceof ApiError ? e.message : "파일 업로드에 실패했어요.",
@@ -1225,6 +1595,10 @@ export const RecruitApplySection = () => {
     try {
       await openApplicationAttachment(path);
     } catch (e) {
+      if (isUnauthorizedError(e)) {
+        handleUnauthorized(3);
+        return;
+      }
       setUploadErrors((prev) => ({
         ...prev,
         [key]: e instanceof ApiError ? e.message : "파일을 여는 데 실패했어요.",
@@ -1232,12 +1606,11 @@ export const RecruitApplySection = () => {
     }
   };
 
-  // 파트를 잠시 비웠다 되돌려 질문 로딩 effect 를 다시 태운다 (effect 의 단일 진입점 유지).
-  const reloadQuestions = () => {
-    const current = values.part;
-    setValues((prev) => ({ ...prev, part: null }));
-    setValues((prev) => ({ ...prev, part: current }));
-  };
+  // 질문 로딩 effect 의 단일 재진입점.
+  //
+  // 예전에는 part 를 null 로 비웠다 되돌려 effect 를 다시 태웠는데, 두 setValues 가
+  // 한 렌더에 배칭돼 part 가 결국 그대로라 effect 가 재실행되지 않았다(= 버튼 무반응).
+  const reloadQuestions = () => setReloadToken((token) => token + 1);
 
   // 파트 목록이 비어 있으면 파트 선택 이후 단계는 진행할 수 없다(기본 정보 입력은 계속 가능).
   const partsUnavailable = applyParts.length === 0;
@@ -1252,6 +1625,9 @@ export const RecruitApplySection = () => {
   const handleBasicChange = (field: BasicField, rawValue: string) => {
     const value = BASIC_FIELD_FORMATTERS[field]?.(rawValue) ?? rawValue;
     setValues((prev) => ({ ...prev, [field]: value }));
+    // 앞서 받은 인증번호는 이전 주소로 발송된 것이라 주소가 바뀌면 버린다.
+    // (`verifiedEmail` 은 남겨둔다 — 주소를 되돌리면 그 인증이 그대로 유효하다.)
+    if (field === "email") resetVerificationCode();
     if (!basicTouched[field]) return;
     const nextError = validateBasicField(field, value);
     setBasicErrors((prev) => ({ ...prev, [field]: nextError ?? "" }));
@@ -1349,23 +1725,105 @@ export const RecruitApplySection = () => {
                           />
                           {basicErrors.name ? <FieldError>{basicErrors.name}</FieldError> : null}
                         </Field>
-                        <Field>
+                        <Field as="div">
                           <Label>
                             이메일 <Required hasError={Boolean(basicErrors.email)}>*</Required>
                           </Label>
-                          <Hint>합격 결과 안내 이메일이 발송됩니다.</Hint>
-                          <Input
-                            placeholder="test@email.com"
-                            value={values.email}
-                            hasError={Boolean(basicErrors.email)}
-                            isFocused={focusedField === "email"}
-                            hasValue={Boolean(values.email.trim())}
-                            onFocus={() => setFocusedField("email")}
-                            onBlur={() => handleBasicBlur("email")}
-                            onChange={(event) => handleBasicChange("email", event.target.value)}
-                          />
+                          <Hint>
+                            합격 결과 안내 이메일이 발송됩니다. 지원서 임시저장·제출에 이메일 인증이
+                            필요해요.
+                          </Hint>
+                          <InlineRow>
+                            <InlineInputWrap>
+                              <Input
+                                placeholder="test@email.com"
+                                type="email"
+                                autoComplete="email"
+                                aria-label="이메일"
+                                value={values.email}
+                                hasError={Boolean(basicErrors.email)}
+                                isFocused={focusedField === "email"}
+                                hasValue={Boolean(values.email.trim())}
+                                onFocus={() => setFocusedField("email")}
+                                onBlur={() => handleBasicBlur("email")}
+                                onChange={(event) => handleBasicChange("email", event.target.value)}
+                              />
+                            </InlineInputWrap>
+                            {isEmailVerified ? null : (
+                              <VerifyButton
+                                type="button"
+                                onClick={() => void handleRequestCode()}
+                                disabled={isRequestingCode || resendCooldown > 0}
+                              >
+                                {isRequestingCode
+                                  ? "발송 중..."
+                                  : resendCooldown > 0
+                                    ? `재발송 ${resendCooldown}초`
+                                    : isCodeSent
+                                      ? "재발송"
+                                      : "인증번호 받기"}
+                              </VerifyButton>
+                            )}
+                          </InlineRow>
                           {basicErrors.email ? <FieldError>{basicErrors.email}</FieldError> : null}
+                          {isEmailVerified ? (
+                            <VerifiedRow>
+                              <VerifiedBadge>✓ 이메일 인증이 완료되었어요.</VerifiedBadge>
+                              <ResetVerifiedButton type="button" onClick={handleResetVerifiedEmail}>
+                                다른 이메일로 지원하기
+                              </ResetVerifiedButton>
+                            </VerifiedRow>
+                          ) : null}
+                          {!isEmailVerified && verifyNotice ? (
+                            <VerifyNotice>{verifyNotice}</VerifyNotice>
+                          ) : null}
                         </Field>
+
+                        {isCodeSent && !isEmailVerified ? (
+                          <Field as="div">
+                            <CodeLabelRow>
+                              <Label>
+                                인증번호 <Required hasError={Boolean(verifyError)}>*</Required>
+                              </Label>
+                              <CodeTimer>
+                                {isCodeExpired
+                                  ? "만료됨"
+                                  : `${formatCountdown(codeExpiresIn)} 남음`}
+                              </CodeTimer>
+                            </CodeLabelRow>
+                            <InlineRow>
+                              <InlineInputWrap>
+                                <Input
+                                  placeholder="6자리 숫자"
+                                  inputMode="numeric"
+                                  autoComplete="one-time-code"
+                                  maxLength={6}
+                                  aria-label="인증번호"
+                                  value={code}
+                                  hasError={Boolean(verifyError) || isCodeExpired}
+                                  hasValue={Boolean(code)}
+                                  onChange={(event) =>
+                                    setCode(event.target.value.replace(/\D/g, "").slice(0, 6))
+                                  }
+                                />
+                              </InlineInputWrap>
+                              <VerifyButton
+                                type="button"
+                                onClick={() => void handleConfirmCode()}
+                                disabled={isConfirmingCode || isCodeExpired}
+                              >
+                                {isConfirmingCode ? "확인 중..." : "확인"}
+                              </VerifyButton>
+                            </InlineRow>
+                            {isCodeExpired ? (
+                              <FieldError>
+                                인증번호가 만료되었어요. 재발송 후 다시 입력해주세요.
+                              </FieldError>
+                            ) : null}
+                          </Field>
+                        ) : null}
+
+                        {verifyError ? <FieldError>{verifyError}</FieldError> : null}
                         <Field>
                           <Label>
                             휴대폰 번호 <Required hasError={Boolean(basicErrors.phone)}>*</Required>
@@ -1548,12 +2006,8 @@ export const RecruitApplySection = () => {
                               attachment={attachmentOf(values.answers[question.key])}
                               isUploading={uploadingKeys[question.key] === true}
                               error={uploadErrors[question.key] || null}
-                              onSelect={(file) =>
-                                void handleAttachmentSelect(question.key, file)
-                              }
-                              onOpen={(path) =>
-                                void handleAttachmentOpen(question.key, path)
-                              }
+                              onSelect={(file) => void handleAttachmentSelect(question.key, file)}
+                              onOpen={(path) => void handleAttachmentOpen(question.key, path)}
                               onRemove={() => setAttachment(question.key, null)}
                             />
                           ) : (
@@ -1572,6 +2026,7 @@ export const RecruitApplySection = () => {
                 ) : null}
 
                 {error ? <ErrorText>{error}</ErrorText> : null}
+                {!error && draftNotice ? <SavedNotice>{draftNotice}</SavedNotice> : null}
 
                 <ButtonRow>
                   {step > 1 ? (

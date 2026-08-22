@@ -12,7 +12,7 @@ const ContentSection = styled.div({
   padding: "80px 80px",
   "@media (max-width: 1024px)": { padding: "40px 80px" },
   "@media (max-width: 768px)": { padding: "40px" },
-  "@media (max-width: 375px)": { padding: "40px 16px" },
+  "@media (max-width: 767px)": { padding: "40px 16px" },
 });
 
 const Banner = styled.div<{ src: string }>(({ src }) => ({
@@ -27,7 +27,7 @@ const Banner = styled.div<{ src: string }>(({ src }) => ({
 
   "@media (max-width: 1024px)": { padding: "160px 80px 80px" },
   "@media (max-width: 768px)": { padding: "140px 40px 50px", minHeight: "300px" },
-  "@media (max-width: 375px)": { padding: "160px 16px 20px", minHeight: "300px" },
+  "@media (max-width: 767px)": { padding: "160px 16px 20px", minHeight: "300px" },
 }));
 
 const BannerLabel = styled.p({
@@ -38,7 +38,7 @@ const BannerLabel = styled.p({
   fontWeight: fontWeights.semiBold,
 
   "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "20px" },
-  "@media (max-width: 375px)": { fontSize: "12px", lineHeight: "15px" },
+  "@media (max-width: 767px)": { fontSize: "12px", lineHeight: "15px" },
 });
 
 const BannerTitle = styled.h1({
@@ -48,7 +48,7 @@ const BannerTitle = styled.h1({
   lineHeight: "clamp(30px, calc(5.859375vw - 15px), 50px)",
   fontWeight: fontWeights.bold,
   "@media (max-width: 768px)": { fontSize: "24px", lineHeight: "30px" },
-  "@media (max-width: 375px)": { fontSize: "24px", lineHeight: "30px", maxWidth: "265px" },
+  "@media (max-width: 767px)": { fontSize: "24px", lineHeight: "30px", maxWidth: "265px" },
 });
 
 const Container = styled.div({
@@ -76,7 +76,7 @@ const Badge = styled.span<{ kind: "primary" | "gray" }>(({ kind }) => ({
 
   "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
   "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "20px" },
-  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
+  "@media (max-width: 767px)": { fontSize: "14px", lineHeight: "18px" },
 }));
 
 const Title = styled.h2({
@@ -86,7 +86,7 @@ const Title = styled.h2({
   lineHeight: "55px",
   fontWeight: fontWeights.bold,
   "@media (max-width: 1024px)": { fontSize: "38px", lineHeight: "45px" },
-  "@media (max-width: 375px)": { fontSize: "18px", lineHeight: "25.2px" },
+  "@media (max-width: 767px)": { fontSize: "18px", lineHeight: "25.2px" },
 });
 
 const LongDescription = styled.p({
@@ -98,7 +98,7 @@ const LongDescription = styled.p({
   fontWeight: fontWeights.medium,
 
   "@media (max-width: 1024px)": { fontSize: "14px", lineHeight: "18px" },
-  "@media (max-width: 375px)": { fontSize: "9px", lineHeight: "12px" },
+  "@media (max-width: 767px)": { fontSize: "9px", lineHeight: "12px" },
 });
 
 const TeamTitle = styled.h3({
@@ -110,7 +110,7 @@ const TeamTitle = styled.h3({
   fontWeight: fontWeights.bold,
   "@media (max-width: 1024px)": { fontSize: "34px", lineHeight: "45px", marginTop: "20px" },
   "@media (max-width: 768px)": { fontSize: "30px", lineHeight: "38px", marginTop: "16px" },
-  "@media (max-width: 375px)": { fontSize: "20px", lineHeight: "25px", marginTop: "12px" },
+  "@media (max-width: 767px)": { fontSize: "20px", lineHeight: "25px", marginTop: "12px" },
 });
 
 const MemberGrid = styled.div({
@@ -137,7 +137,7 @@ const MemberName = styled.span({
 
   "@media (max-width: 1024px)": { fontSize: "20px", lineHeight: "25px" },
   "@media (max-width: 768px)": { fontSize: "18px", lineHeight: "24px" },
-  "@media (max-width: 375px)": { fontSize: "16px", lineHeight: "20px" },
+  "@media (max-width: 767px)": { fontSize: "16px", lineHeight: "20px" },
 });
 
 const MemberRole = styled.span({
@@ -148,7 +148,7 @@ const MemberRole = styled.span({
 
   "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
   "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "20px" },
-  "@media (max-width: 375px)": { fontSize: "14px", lineHeight: "18px" },
+  "@media (max-width: 767px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
 const Pdf = styled.img({

@@ -37,7 +37,7 @@ const FooterWrapper = styled.footer({
   "@media (max-width: 768px)": {
     padding: "100px 80px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     background: "#000000",
     padding: "48px 16px 40px",
     minHeight: "unset",
@@ -62,7 +62,7 @@ const FooterTop = styled.div({
   padding: "0 20px",
   marginBottom: "80px",
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     flexDirection: "column",
     flexWrap: "nowrap",
     alignItems: "center",
@@ -78,7 +78,7 @@ const FooterSection = styled.div({
   flexDirection: "column",
   gap: "8px",
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     alignItems: "center",
     width: "100%",
   },
@@ -98,7 +98,7 @@ const FooterLabel = styled.p({
     fontSize: "11px",
     lineHeight: "15px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "10px",
     lineHeight: "13px",
     color: colors.slate500,
@@ -120,7 +120,7 @@ const FooterEmail = styled.p({
     lineHeight: "25px",
   },
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "16px",
     lineHeight: "20px",
     fontWeight: fontWeights.bold,
@@ -133,7 +133,7 @@ const SocialLinks = styled.div({
   alignItems: "center",
   gap: "16px",
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     display: "grid",
     width: "100%",
     gridTemplateColumns: "auto 1px auto",
@@ -197,7 +197,7 @@ const SocialLink = styled.a({
     opacity: 0.8,
   },
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "16px",
     lineHeight: "20px",
     fontWeight: fontWeights.bold,
@@ -209,7 +209,7 @@ const Divider = styled.span({
   height: "14px",
   background: colors.slate300,
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     height: "16px",
     background: colors.textInverse,
     alignSelf: "center",
@@ -224,7 +224,7 @@ const Copyright = styled.p({
   color: colors.textInverse,
   textAlign: "center",
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "11px",
     lineHeight: "15px",
     fontWeight: fontWeights.regular,

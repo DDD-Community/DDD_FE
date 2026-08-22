@@ -68,7 +68,7 @@ const CardTitle = styled.p({
     lineHeight: "25px",
   },
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "16px",
     lineHeight: "20px",
   },
@@ -93,7 +93,7 @@ const CardDescription = styled.p({
     lineHeight: "18px",
   },
 
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "12px",
     lineHeight: "15px",
   },
@@ -127,7 +127,7 @@ const CategoryBadge = styled.span({
     fontSize: "16px",
     lineHeight: "20px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "14px",
     lineHeight: "18px",
   },
@@ -154,7 +154,7 @@ const GenerationBadge = styled.span({
     fontSize: "16px",
     lineHeight: "20px",
   },
-  "@media (max-width: 375px)": {
+  "@media (max-width: 767px)": {
     fontSize: "14px",
     lineHeight: "18px",
   },
