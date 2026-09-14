@@ -7,9 +7,25 @@ import type {
 } from "@ddd/api";
 import type { RecruitStatus } from "@/constants/recruit";
 
-/** 지원서에서 노출하는 파트 목록 — 배열 순서가 곧 칩 노출 순서다. */
+/**
+ * 지원서에서 노출하는 파트 목록 — 배열 순서가 곧 칩 노출 순서다.
+ *
+ * 이 값은 화면 문구가 아니라 식별자다. 선택한 파트가 `answers.part` 로 지원서에 함께
+ * 저장되므로, 표기를 바꾸겠다고 값을 고치면 이미 제출된 지원서와 철자가 갈린다.
+ * 보여줄 문구는 `APPLY_PART_LABELS` 로 따로 둔다.
+ */
 export const APPLY_PART_OPTIONS = ["iOS", "AOS", "FE", "BE", "PM", "PD"] as const;
 export type ApplyPartOption = (typeof APPLY_PART_OPTIONS)[number];
+
+/** 화면에 표시할 문구. 값(AOS)과 표기(Android)가 다른 건 이것뿐이다. */
+export const APPLY_PART_LABELS: Record<ApplyPartOption, string> = {
+  iOS: "iOS",
+  AOS: "Android",
+  FE: "FE",
+  BE: "BE",
+  PM: "PM",
+  PD: "PD",
+};
 
 /** 지원 가능한(모집 오픈된) 파트 1건 — 칩 하나가 곧 cohortPartId 하나다. */
 export type ApplyPart = {
