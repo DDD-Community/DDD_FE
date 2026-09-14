@@ -15,7 +15,12 @@ import type { ApplicationAttachmentDto } from "@ddd/api";
 import { colors, fontWeights } from "@/constants/tokens";
 import successIcon from "@/public/images/success.png";
 import { fetchApplyParts, fetchApplyQuestions } from "@/lib/api/cohort";
-import { type ApplyPart, type ApplyPartOption, type ApplyQuestion } from "@/lib/mappers/cohort";
+import {
+  APPLY_PART_LABELS,
+  type ApplyPart,
+  type ApplyPartOption,
+  type ApplyQuestion,
+} from "@/lib/mappers/cohort";
 import {
   confirmApplicationEmailVerification,
   fetchApplicationDraftAnswers,
@@ -1963,7 +1968,7 @@ export const RecruitApplySection = () => {
                             selected={values.part === option}
                             onClick={() => setValues((prev) => ({ ...prev, part: option }))}
                           >
-                            {option}
+                            {APPLY_PART_LABELS[option]}
                           </Chip>
                         ))}
                       </ChipGrid>
