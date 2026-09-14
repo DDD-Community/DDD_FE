@@ -4,12 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { ProjectCard } from "@/components/ui/ProjectCard";
-import type { ProjectItem } from "@/constants/projects";
+import type { ProjectCategory, ProjectItem } from "@/constants/projects";
+import { PROJECT_CATEGORY_LABELS, PROJECT_CATEGORY_TABS } from "@/constants/projects";
 import { colors, fontSizes, fontWeights } from "@/constants/tokens";
-
-type ProjectCategory = "전체" | "iOS" | "AOS" | "WEB";
-
-const TABS: ProjectCategory[] = ["전체", "iOS", "AOS", "WEB"];
 
 const Section = styled.section({
   background: colors.background,
@@ -314,7 +311,7 @@ export const ProjectsSection = ({ items }: Props) => {
         </TitleArea>
         <TabsAndCards>
           <TabList role="tablist">
-            {TABS.map((tab) => (
+            {PROJECT_CATEGORY_TABS.map((tab) => (
               <TabButton
                 key={tab}
                 role="tab"
@@ -322,7 +319,7 @@ export const ProjectsSection = ({ items }: Props) => {
                 isActive={activeTab === tab}
                 onClick={() => setActiveTab(tab)}
               >
-                {tab}
+                {PROJECT_CATEGORY_LABELS[tab]}
               </TabButton>
             ))}
           </TabList>
@@ -333,7 +330,7 @@ export const ProjectsSection = ({ items }: Props) => {
                 title={project.title}
                 description={project.description}
                 thumbnail={project.thumbnail}
-                category={project.category}
+                category={PROJECT_CATEGORY_LABELS[project.category]}
                 generation={project.generation}
                 href={`/project/${project.id}`}
               />

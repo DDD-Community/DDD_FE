@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import styled from "@emotion/styled";
 import { colors, fontWeights, fontSizes, lineHeights } from "@/constants/tokens";
 import type { ProjectItem } from "@/constants/projects";
+import { PROJECT_CATEGORY_LABELS } from "@/constants/projects";
 
 // pdf.js 는 브라우저 전용이다. 서버 번들에 들어가면 webpack dev 가 vendor chunk 를
 // 참조만 하고 내보내지 않아 이 페이지 전체가 죽는다. ssr:false 로 서버 그래프에서 뺀다.
@@ -177,7 +178,7 @@ export const ProjectDetailSection = ({ project }: Props) => {
       <ContentSection>
         <Container>
           <BadgeRow>
-            <Badge kind="primary">{project.category}</Badge>
+            <Badge kind="primary">{PROJECT_CATEGORY_LABELS[project.category]}</Badge>
             <Badge kind="gray">{project.generation}</Badge>
           </BadgeRow>
           <Title>{project.detailTitle}</Title>

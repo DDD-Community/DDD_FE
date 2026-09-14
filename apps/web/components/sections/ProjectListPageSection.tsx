@@ -4,9 +4,8 @@ import { useState } from "react";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
 import type { ProjectCategory, ProjectItem } from "@/constants/projects";
+import { PROJECT_CATEGORY_LABELS, PROJECT_CATEGORY_TABS } from "@/constants/projects";
 import { fetchPublicProjectsPage } from "@/lib/api/project";
-
-const tabs: ProjectCategory[] = ["전체", "iOS", "AOS", "WEB"];
 
 const Section = styled.section({
   background: "#ffffff",
@@ -330,7 +329,7 @@ export const ProjectListPageSection = ({ initialItems = [], initialNextCursor = 
       <ContentSection>
         <Body>
           <TabList role="tablist" aria-label="프로젝트 카테고리">
-            {tabs.map((tab) => (
+            {PROJECT_CATEGORY_TABS.map((tab) => (
               <Tab
                 key={tab}
                 role="tab"
@@ -342,7 +341,7 @@ export const ProjectListPageSection = ({ initialItems = [], initialNextCursor = 
                   void loadFirstPage(tab);
                 }}
               >
-                {tab}
+                {PROJECT_CATEGORY_LABELS[tab]}
               </Tab>
             ))}
           </TabList>
@@ -358,7 +357,7 @@ export const ProjectListPageSection = ({ initialItems = [], initialNextCursor = 
                     <CardDescription>{project.description}</CardDescription>
                   </CardBody>
                   <BadgeRow>
-                    <Badge kind="primary">{project.category}</Badge>
+                    <Badge kind="primary">{PROJECT_CATEGORY_LABELS[project.category]}</Badge>
                     <Badge kind="gray">{project.generation}</Badge>
                   </BadgeRow>
                 </Card>
