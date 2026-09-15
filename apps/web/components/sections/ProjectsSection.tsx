@@ -229,7 +229,14 @@ const MoreButton = styled(Link)({
   },
 });
 
+/** 탭마다 보여줄 카드 수. 나머지는 "더 알아보기" 로 넘긴다. */
+const PREVIEW_LIMIT = 3;
+
 type Props = {
+  /**
+   * 전체 프로젝트 목록. 미리 잘라서 넘기면 안 된다.
+   * 탭 필터를 자른 결과에 적용하게 되어, 최신 3개에 없는 플랫폼 탭이 비어버린다.
+   */
   items: ProjectItem[];
 };
 
@@ -237,12 +244,10 @@ export const ProjectsSection = ({ items }: Props) => {
   const [activeTab, setActiveTab] = useState<ProjectCategory>("전체");
   const [activeSlide, setActiveSlide] = useState(0);
   const cardGridRef = useRef<HTMLDivElement | null>(null);
-  const sourceProjects: readonly ProjectItem[] = items;
 
-  const filteredProjects =
-    activeTab === "전체"
-      ? sourceProjects
-      : sourceProjects.filter((project) => project.category === activeTab);
+  const filteredProjects = (
+    activeTab === "전체" ? items : items.filter((project) => project.category === activeTab)
+  ).slice(0, PREVIEW_LIMIT);
 
   const updateActiveSlide = useCallback(() => {
     const container = cardGridRef.current;

@@ -15,14 +15,15 @@ import { fetchPublicProjectsPage } from "@/lib/api/project";
 const HOME_PREVIEW_LIMIT = 3;
 
 /**
- * 프로젝트를 미리보기 개수가 아니라 넉넉히 받아오는 이유 — BE 우회.
+ * 프로젝트는 미리보기 개수가 아니라 전부 받아온다. 이유가 두 가지다.
  *
- * `GET /api/v1/projects` 는 결과가 잘려 `nextCursor` 를 만들어야 하면 500 을 낸다.
- * (2026-09 기준 전체 9개일 때 `?limit=8` → 500, `?limit=9` → 200)
- * 미리보기 3개만 달라고 하면 반드시 잘리므로, 홈 전체가 500 으로 떨어졌다.
+ * 1. 탭 필터. 홈 섹션은 전체/iOS/Android/WEB 탭을 받은 목록 안에서 거른다.
+ *    최신 3개만 넘기면 거기 없는 플랫폼 탭은 항상 비어 보인다.
+ *    (2026-09 기준 최신 3개가 전부 iOS 라 WEB 탭이 비었다.) 3개로 자르는 건 섹션이 한다.
  *
- * 잘릴 일이 없도록 한 번에 다 받아서 앞의 3개만 쓴다. BE 가 고쳐지면 이 상수를 지우고
- * `HOME_PREVIEW_LIMIT` 을 그대로 넘기면 된다.
+ * 2. BE 우회. `GET /api/v1/projects` 는 결과가 잘려 `nextCursor` 를 만들어야 하면 500 을 낸다.
+ *    (전체 9개일 때 `?limit=8` → 500, `?limit=9` → 200) 그래서 탭마다 `platform` 으로
+ *    3개씩 따로 요청하는 방식도 지금은 쓸 수 없다.
  */
 const PROJECT_FETCH_LIMIT = 100;
 
@@ -54,7 +55,7 @@ export default async function HomePage() {
 async function loadProjectPreview(): Promise<ProjectItem[]> {
   try {
     const { items } = await fetchPublicProjectsPage({ limit: PROJECT_FETCH_LIMIT });
-    return items.slice(0, HOME_PREVIEW_LIMIT);
+    return items;
   } catch (error) {
     console.error("[home] 프로젝트 미리보기를 불러오지 못했다.", error);
     return [];
