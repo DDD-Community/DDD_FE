@@ -669,6 +669,9 @@ const ActionButton = styled.button<{ primary?: boolean; full?: boolean }>(({ pri
   alignItems: "center",
   justifyContent: "center",
   gap: "4px",
+  // 막아둔 버튼이 멀쩡해 보이면 사용자는 눌러보고 아무 일도 없는 것으로 받아들인다.
+  // RetryButton 과 같은 표기를 쓴다.
+  "&:disabled": { opacity: 0.5, cursor: "not-allowed" },
   "@media (max-width: 768px)": { height: "68px", fontSize: "18px", minWidth: "160px" },
   "@media (max-width: 767px)": { height: "52px", width: "100%", fontSize: "16px", minWidth: 0 },
 }));
@@ -1642,6 +1645,27 @@ export const RecruitApplySection = () => {
 
   // 파트 목록이 비어 있으면 파트 선택 이후 단계는 진행할 수 없다(기본 정보 입력은 계속 가능).
   const partsUnavailable = applyParts.length === 0;
+
+  /*
+    고른 파트의 지원서 양식을 받지 못한 상태.
+
+    파트 목록(`cohorts/active`)과 파트 상세(`cohorts/parts/{id}`)는 서로 다른 엔드포인트라
+    한쪽만 보고 판단할 수 없다. 모집 기간 밖에서는 목록에는 그대로 실려 오면서 상세만
+    404 가 되므로, 칩은 눌리는데 질문은 영영 오지 않는다. 모집이 끝난 뒤 공유된 지원
+    링크로 들어오면 이 경우다.
+
+    `partsUnavailable` 은 "고를 파트가 없다" 만 막아서 여기까지 걸러내지 못했고, 질문
+    로딩 실패는 3단계에서만 노출돼 왔다. 그래서 사용자는 기본 정보와 이메일 인증을
+    모두 마친 뒤에야 막혔다. 2단계에서 그 자리에 세운다.
+
+    조건을 `questionsError` 하나로 좁힌 이유는, 버튼을 막는 조건과 사유를 띄우는 조건이
+    갈리면 설명 없이 죽은 버튼만 남기 때문이다. 양식이 0건인 경우도 질문 로딩 쪽에서
+    같은 state 로 메시지를 채운다.
+
+    로딩 중은 제외한다 — 파트를 막 고른 직후에도 질문은 잠시 비어 있어서, 같이 보면
+    정상 흐름이 매번 실패로 한 번 깜빡인다.
+  */
+  const partFormUnavailable = Boolean(values.part) && !isLoadingQuestions && questionsError !== null;
   const partTitle = values.part ? `${values.part} 파트 지원서` : "지원서";
   const handleBasicBlur = (field: BasicField) => {
     setFocusedField((prev) => (prev === field ? null : prev));
@@ -1977,6 +2001,18 @@ export const RecruitApplySection = () => {
                           {PART_DESCRIPTIONS[values.part as ApplyPartOption]}
                         </PartDescription>
                       ) : null}
+                      {partFormUnavailable ? (
+                        <ConfigErrorWrap>
+                          <ErrorText style={{ textAlign: "center" }}>{questionsError}</ErrorText>
+                          <RetryButton
+                            type="button"
+                            onClick={() => reloadQuestions()}
+                            disabled={isLoadingQuestions}
+                          >
+                            다시 시도
+                          </RetryButton>
+                        </ConfigErrorWrap>
+                      ) : null}
                     </Fields>
                   </Card>
                 ) : null}
@@ -2080,7 +2116,9 @@ export const RecruitApplySection = () => {
                         isSubmitting ||
                         isBootstrapLoading ||
                         isUploadingAttachment ||
-                        partsUnavailable
+                        partsUnavailable ||
+                        // 질문을 못 받았으면 저장할 답도 없다. 빈 임시저장만 쌓인다.
+                        partFormUnavailable
                       }
                     >
                       {isSavingDraft ? "저장 중..." : "임시저장"}
@@ -2095,6 +2133,8 @@ export const RecruitApplySection = () => {
                       isBootstrapLoading ||
                       isUploadingAttachment ||
                       (step >= 2 && partsUnavailable) ||
+                      // 질문을 못 받은 파트로는 3단계로 넘어가 봐야 막다른 길이다.
+                      (step === 2 && partFormUnavailable) ||
                       (step === 3 && (isLoadingQuestions || questions.length === 0))
                     }
                   >
