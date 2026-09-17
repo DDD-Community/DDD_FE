@@ -20,6 +20,9 @@ const Card = styled.div({
   borderRadius: "30px",
   width: "100%",
   overflow: "hidden",
+  // 그리드 행 높이를 채운다. 늘어나는 건 CardLink 뿐이라 이게 없으면
+  // 짧은 카드 아래로 섹션 배경이 비친다.
+  flex: 1,
 });
 
 const Thumbnail = styled.div({
@@ -28,6 +31,11 @@ const Thumbnail = styled.div({
   aspectRatio: "1 / 1",
   flexShrink: 0,
   background: colors.categoryBg,
+
+  // Card 가 column flex 라 이 박스는 flex 아이템이고, min-height 가 auto 면
+  // 안쪽 img 의 원본 높이가 자동 최소 높이가 되어 위 aspectRatio 를 밀어낸다.
+  // 세로형 썸네일(예: 401×498)만 카드가 100px 쯤 길어져 그리드 높이가 어긋났다.
+  minHeight: 0,
 
   // img 가 inline 이면 baseline 아래 여백만큼 박스가 이미지보다 커져서
   // 썸네일 하단에 categoryBg 회색 띠가 드러난다. block 으로 그린다.
@@ -44,6 +52,7 @@ const CardBody = styled.div({
   flexDirection: "column",
   gap: "8px",
   padding: "20px 24px",
+  flex: 1,
 });
 
 const CardTexts = styled.div({
@@ -87,18 +96,23 @@ const CardDescription = styled.p({
   display: "-webkit-box",
   WebkitLineClamp: 2,
   WebkitBoxOrient: "vertical",
+  // 설명이 1줄인 카드와 2줄인 카드의 본문 높이가 달라지지 않도록 항상 2줄을 차지한다.
+  minHeight: "40px",
   "@media (max-width: 1024px)": {
     fontSize: "14px",
     lineHeight: "18px",
+    minHeight: "36px",
   },
   "@media (max-width: 768px)": {
     fontSize: "13px",
     lineHeight: "18px",
+    minHeight: "36px",
   },
 
   "@media (max-width: 767px)": {
     fontSize: "12px",
     lineHeight: "15px",
+    minHeight: "30px",
   },
 });
 
@@ -106,7 +120,9 @@ const BadgeRow = styled.div({
   display: "flex",
   gap: "8px",
   flexWrap: "wrap",
-  marginTop: "2px",
+  // 카드가 늘어나도 뱃지 줄은 카드 바닥에 붙어 나란히 정렬된다.
+  marginTop: "auto",
+  paddingTop: "2px",
 });
 
 const CategoryBadge = styled.span({
@@ -164,6 +180,7 @@ const GenerationBadge = styled.span({
 });
 
 const CardLink = styled(Link)({
+  display: "flex",
   textDecoration: "none",
   color: "inherit",
 });

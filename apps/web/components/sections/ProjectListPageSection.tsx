@@ -4,7 +4,14 @@ import { useState } from "react";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
 import type { ProjectCategory, ProjectItem } from "@/constants/projects";
-import { PROJECT_CATEGORY_LABELS, PROJECT_CATEGORY_TABS } from "@/constants/projects";
+import {
+  PROJECT_CATEGORY_LABELS,
+  PROJECT_CATEGORY_TABS,
+  PROJECT_LIST_PAGE_SIZE,
+} from "@/constants/projects";
+import { CursorPagination } from "@/components/ui/CursorPagination";
+import { EmptyNotice } from "@/components/ui/EmptyNotice";
+import { LoadErrorNotice } from "@/components/ui/LoadErrorNotice";
 import { fetchPublicProjectsPage } from "@/lib/api/project";
 
 const Section = styled.section({
@@ -143,6 +150,11 @@ const CardThumbnail = styled.div({
   width: "100%",
   background: colors.categoryBg,
 
+  // Card 가 column flex 라 min-height 가 auto 면 안쪽 img 의 원본 높이가
+  // 자동 최소 높이가 되어 위 aspectRatio 를 밀어낸다. 세로형 썸네일만
+  // 카드가 길어져 그리드 행 높이가 어긋났다. ProjectCard 와 같은 이유.
+  minHeight: 0,
+
   "& img": {
     width: "100%",
     height: "100%",
@@ -212,42 +224,12 @@ const Badge = styled.span<{ kind: "primary" | "gray" }>(({ kind }) => ({
   "@media (max-width: 767px)": { fontSize: "14px", lineHeight: "18px" },
 }));
 
-const Pagination = styled.div({
-  marginTop: "80px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "40px",
-  color: "#d4d4d4",
-  fontSize: "20px",
-  lineHeight: "25px",
-  fontWeight: fontWeights.medium,
-
-  "@media (max-width: 768px)": {
-    gap: "24px",
-    marginTop: "48px",
-    fontSize: "14px",
-    lineHeight: "18px",
-  },
-});
-
-const Arrow = styled.span({
-  color: "#cad5e2",
-  fontSize: "18px",
-});
-
 type Props = {
   initialItems?: ProjectItem[];
   initialNextCursor?: string | null;
+  /** 서버에서 그린 1페이지가 실패했는지. 실패한 채로 넘어오면 처음부터 안내 문구를 띄운다. */
+  initialLoadFailed?: boolean;
 };
-
-const PaginationButton = styled.button<{ disabled?: boolean }>(({ disabled }) => ({
-  border: "none",
-  background: "transparent",
-  color: disabled ? "#9aa8bb" : "#cad5e2",
-  fontSize: "18px",
-  cursor: disabled ? "not-allowed" : "pointer",
-}));
 
 const toApiPlatform = (tab: ProjectCategory): "IOS" | "AOS" | "WEB" | undefined => {
   if (tab === "전체") return undefined;
@@ -255,64 +237,114 @@ const toApiPlatform = (tab: ProjectCategory): "IOS" | "AOS" | "WEB" | undefined 
   return tab;
 };
 
-export const ProjectListPageSection = ({ initialItems = [], initialNextCursor = null }: Props) => {
+export const ProjectListPageSection = ({
+  initialItems = [],
+  initialNextCursor = null,
+  initialLoadFailed = false,
+}: Props) => {
   const [activeTab, setActiveTab] = useState<ProjectCategory>("전체");
   const [projectItems, setProjectItems] = useState<ProjectItem[]>(initialItems);
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
+  /** 지나온 페이지마다 그 페이지를 불러올 때 쓴 커서. 1페이지는 커서가 없어 null 이다. */
   const [cursorHistory, setCursorHistory] = useState<Array<string | null>>([null]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasLoadError, setHasLoadError] = useState(initialLoadFailed);
 
-  const loadFirstPage = async (tab: ProjectCategory) => {
+  // 현재 페이지는 히스토리 길이와 항상 같다. 따로 state 로 들고 있으면 둘이 어긋날 수 있다.
+  const currentPage = cursorHistory.length;
+  /**
+   * 번호로 그릴 수 있는 페이지 수.
+   *
+   * 커서 페이지네이션이라 전체 개수를 모른다. 지나온 페이지 + `nextCursor` 가 있으면
+   * 다음 한 칸까지가 지금 확실히 아는 전부다. 뒤로 더 있어도 가보기 전에는 그릴 수 없다.
+   */
+  const knownPageCount = currentPage + (nextCursor ? 1 : 0);
+
+  /*
+    로딩 중에는 안내를 내지 않는다. 탭을 누르면 `activeTab` 은 즉시 바뀌지만 목록은
+    응답이 와야 바뀌므로, 그 사이에 그리면 아직 확인하지도 않은 탭을 두고 "없어요" 라고
+    단언하게 된다. 실패는 LoadErrorNotice 가 맡으므로 여기서는 제외한다.
+  */
+  const isEmpty = projectItems.length === 0 && !isLoading && !hasLoadError;
+  const emptyMessage =
+    activeTab === "전체"
+      ? "아직 등록된 프로젝트가 없어요."
+      : `아직 등록된 ${PROJECT_CATEGORY_LABELS[activeTab]} 프로젝트가 없어요.`;
+
+  const goToPage = async (page: number) => {
+    if (isLoading || page === currentPage || page < 1 || page > knownPageCount) return;
+
+    // 앞쪽 페이지는 지나올 때 쓴 커서가 히스토리에 남아 있고, 아직 안 가본 다음 페이지는
+    // 방금 응답이 준 nextCursor 로만 갈 수 있다.
+    const cursor = page <= cursorHistory.length ? cursorHistory[page - 1] : nextCursor;
+
     setIsLoading(true);
+    setHasLoadError(false);
     try {
-      const page = await fetchPublicProjectsPage({
+      const loaded = await fetchPublicProjectsPage({
+        platform: toApiPlatform(activeTab),
+        limit: PROJECT_LIST_PAGE_SIZE,
+        cursor: cursor ?? undefined,
+      });
+      setProjectItems(loaded.items);
+      setNextCursor(loaded.nextCursor);
+      // 뒤로 갈 때는 건너뛴 뒤쪽 히스토리를 버린다. 남겨두면 없는 페이지 번호가 계속 뜬다.
+      setCursorHistory((prev) => [...prev.slice(0, page - 1), cursor]);
+    } catch (error) {
+      console.error("[project] 페이지를 불러오지 못했다.", error);
+      setHasLoadError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * 지금 탭·페이지를 그대로 다시 불러온다.
+   *
+   * 탭을 다시 눌러 재시도하게 두지 않는 이유는, 그 경로가 항상 1페이지로 돌아가기
+   * 때문이다. 3페이지에서 실패한 사람을 말없이 1페이지로 보내면 안 된다.
+   */
+  const retryCurrentPage = async () => {
+    if (isLoading) return;
+    const cursor = cursorHistory[cursorHistory.length - 1];
+    setIsLoading(true);
+    setHasLoadError(false);
+    try {
+      const loaded = await fetchPublicProjectsPage({
+        platform: toApiPlatform(activeTab),
+        limit: PROJECT_LIST_PAGE_SIZE,
+        cursor: cursor ?? undefined,
+      });
+      setProjectItems(loaded.items);
+      setNextCursor(loaded.nextCursor);
+    } catch (error) {
+      console.error("[project] 페이지를 다시 불러오지 못했다.", error);
+      setHasLoadError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const selectTab = async (tab: ProjectCategory) => {
+    if (isLoading || tab === activeTab) return;
+
+    const previousTab = activeTab;
+    setActiveTab(tab);
+    setIsLoading(true);
+    setHasLoadError(false);
+    try {
+      const loaded = await fetchPublicProjectsPage({
         platform: toApiPlatform(tab),
-        limit: 9,
+        limit: PROJECT_LIST_PAGE_SIZE,
       });
-      setProjectItems(page.items);
-      setNextCursor(page.nextCursor);
+      setProjectItems(loaded.items);
+      setNextCursor(loaded.nextCursor);
       setCursorHistory([null]);
-      setCurrentPage(1);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loadNextPage = async () => {
-    if (!nextCursor || isLoading) return;
-    setIsLoading(true);
-    try {
-      const page = await fetchPublicProjectsPage({
-        platform: toApiPlatform(activeTab),
-        limit: 9,
-        cursor: nextCursor,
-      });
-      setProjectItems(page.items);
-      setCursorHistory((prev) => [...prev, nextCursor]);
-      setNextCursor(page.nextCursor);
-      setCurrentPage((prev) => prev + 1);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loadPrevPage = async () => {
-    if (cursorHistory.length <= 1 || isLoading) return;
-    const prevHistory = [...cursorHistory];
-    prevHistory.pop();
-    const prevCursor = prevHistory[prevHistory.length - 1] ?? null;
-    setIsLoading(true);
-    try {
-      const page = await fetchPublicProjectsPage({
-        platform: toApiPlatform(activeTab),
-        limit: 9,
-        cursor: prevCursor ?? undefined,
-      });
-      setProjectItems(page.items);
-      setNextCursor(page.nextCursor);
-      setCursorHistory(prevHistory);
-      setCurrentPage((prev) => Math.max(1, prev - 1));
+    } catch (error) {
+      console.error("[project] 탭 목록을 불러오지 못했다.", error);
+      // 탭만 바뀌고 목록은 이전 탭 것이 남으면 화면이 거짓말을 한다. 선택을 되돌린다.
+      setActiveTab(previousTab);
+      setHasLoadError(true);
     } finally {
       setIsLoading(false);
     }
@@ -335,11 +367,7 @@ export const ProjectListPageSection = ({ initialItems = [], initialNextCursor = 
                 role="tab"
                 active={activeTab === tab}
                 aria-selected={activeTab === tab}
-                onClick={() => {
-                  if (activeTab === tab) return;
-                  setActiveTab(tab);
-                  void loadFirstPage(tab);
-                }}
+                onClick={() => void selectTab(tab)}
               >
                 {PROJECT_CATEGORY_LABELS[tab]}
               </Tab>
@@ -364,18 +392,21 @@ export const ProjectListPageSection = ({ initialItems = [], initialNextCursor = 
               </CardLink>
             ))}
           </Grid>
-          <Pagination aria-label="프로젝트 페이지네이션">
-            <PaginationButton
-              onClick={loadPrevPage}
-              disabled={cursorHistory.length <= 1 || isLoading}
-            >
-              <Arrow>‹</Arrow>
-            </PaginationButton>
-            <span style={{ color: "#525252" }}>{currentPage}</span>
-            <PaginationButton onClick={loadNextPage} disabled={!nextCursor || isLoading}>
-              <Arrow>›</Arrow>
-            </PaginationButton>
-          </Pagination>
+          {isEmpty ? <EmptyNotice message={emptyMessage} /> : null}
+          {hasLoadError ? (
+            <LoadErrorNotice
+              message="프로젝트를 불러오지 못했어요. 잠시 후 다시 시도해주세요."
+              onRetry={() => void retryCurrentPage()}
+              isRetrying={isLoading}
+            />
+          ) : null}
+          <CursorPagination
+            label="프로젝트 페이지네이션"
+            currentPage={currentPage}
+            pageCount={knownPageCount}
+            isLoading={isLoading}
+            onChange={(page) => void goToPage(page)}
+          />
         </Body>
       </ContentSection>
     </Section>

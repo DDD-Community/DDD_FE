@@ -3,7 +3,10 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
-import type { ArticleItem } from "@/constants/articles";
+import { ARTICLE_LIST_PAGE_SIZE, type ArticleItem } from "@/constants/articles";
+import { CursorPagination } from "@/components/ui/CursorPagination";
+import { EmptyNotice } from "@/components/ui/EmptyNotice";
+import { LoadErrorNotice } from "@/components/ui/LoadErrorNotice";
 import { fetchPublicArticlesPage } from "@/lib/api/blog";
 
 const Section = styled.section({
@@ -160,76 +163,86 @@ const Description = styled.p({
   "@media (max-width: 767px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
-const Pagination = styled.div({
-  marginTop: "80px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "40px",
-  color: "#d4d4d4",
-  fontSize: "20px",
-  lineHeight: "25px",
-  fontWeight: fontWeights.medium,
-
-  "@media (max-width: 768px)": {
-    marginTop: "48px",
-    gap: "24px",
-    fontSize: "14px",
-    lineHeight: "18px",
-  },
-});
-
-const Arrow = styled.span({
-  color: "#cad5e2",
-  fontSize: "18px",
-});
-
 type Props = {
   initialItems?: ArticleItem[];
   initialNextCursor?: string | null;
+  /** 서버에서 그린 1페이지가 실패했는지. 실패한 채로 넘어오면 처음부터 안내를 띄운다. */
+  initialLoadFailed?: boolean;
 };
 
-const PaginationButton = styled.button<{ disabled?: boolean }>(({ disabled }) => ({
-  border: "none",
-  background: "transparent",
-  color: disabled ? "#9aa8bb" : "#cad5e2",
-  fontSize: "18px",
-  cursor: disabled ? "not-allowed" : "pointer",
-}));
-
-export const ArticleListPageSection = ({ initialItems = [], initialNextCursor = null }: Props) => {
+export const ArticleListPageSection = ({
+  initialItems = [],
+  initialNextCursor = null,
+  initialLoadFailed = false,
+}: Props) => {
   const [articleItems, setArticleItems] = useState<ArticleItem[]>(initialItems);
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
+  /** 지나온 페이지마다 그 페이지를 불러올 때 쓴 커서. 1페이지는 커서가 없어 null 이다. */
   const [cursorHistory, setCursorHistory] = useState<Array<string | null>>([null]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasLoadError, setHasLoadError] = useState(initialLoadFailed);
 
-  const loadNextPage = async () => {
-    if (!nextCursor || isLoading) return;
+  // 현재 페이지는 히스토리 길이와 항상 같다. 따로 state 로 들고 있으면 둘이 어긋날 수 있다.
+  const currentPage = cursorHistory.length;
+  /**
+   * 번호로 그릴 수 있는 페이지 수.
+   *
+   * 커서 페이지네이션이라 전체 개수를 모른다. 지나온 페이지 + `nextCursor` 가 있으면
+   * 다음 한 칸까지가 지금 확실히 아는 전부다. 뒤로 더 있어도 가보기 전에는 그릴 수 없다.
+   */
+  const knownPageCount = currentPage + (nextCursor ? 1 : 0);
+
+  // 불러오는 중이거나 실패한 목록은 "없음" 이 아니다. 실패는 LoadErrorNotice 가 맡는다.
+  const isEmpty = articleItems.length === 0 && !isLoading && !hasLoadError;
+
+  const goToPage = async (page: number) => {
+    if (isLoading || page === currentPage || page < 1 || page > knownPageCount) return;
+
+    // 앞쪽 페이지는 지나올 때 쓴 커서가 히스토리에 남아 있고, 아직 안 가본 다음 페이지는
+    // 방금 응답이 준 nextCursor 로만 갈 수 있다.
+    const cursor = page <= cursorHistory.length ? cursorHistory[page - 1] : nextCursor;
+
     setIsLoading(true);
+    setHasLoadError(false);
     try {
-      const page = await fetchPublicArticlesPage({ cursor: nextCursor, limit: 4 });
-      setArticleItems(page.items);
-      setCursorHistory((prev) => [...prev, nextCursor]);
-      setNextCursor(page.nextCursor);
-      setCurrentPage((prev) => prev + 1);
+      const loaded = await fetchPublicArticlesPage({
+        cursor: cursor ?? undefined,
+        limit: ARTICLE_LIST_PAGE_SIZE,
+      });
+      setArticleItems(loaded.items);
+      setNextCursor(loaded.nextCursor);
+      // 뒤로 갈 때는 건너뛴 뒤쪽 히스토리를 버린다. 남겨두면 없는 페이지 번호가 계속 뜬다.
+      setCursorHistory((prev) => [...prev.slice(0, page - 1), cursor]);
+    } catch (error) {
+      // catch 가 없으면 실패가 조용히 삼켜져 버튼만 안 먹는 것처럼 보인다.
+      console.error("[blog] 페이지를 불러오지 못했다.", error);
+      setHasLoadError(true);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const loadPrevPage = async () => {
-    if (cursorHistory.length <= 1 || isLoading) return;
-    const prevHistory = [...cursorHistory];
-    prevHistory.pop();
-    const prevCursor = prevHistory[prevHistory.length - 1] ?? null;
+  /**
+   * 지금 페이지를 그대로 다시 불러온다.
+   *
+   * 첫 로드가 실패하면 목록이 비어 이전·다음 버튼도 눌릴 게 없다. 프로젝트 목록은
+   * 탭을 다시 눌러 재시도하지만 여기엔 탭이 없어, 안내의 재시도 버튼이 유일한 경로다.
+   */
+  const retryCurrentPage = async () => {
+    if (isLoading) return;
+    const cursor = cursorHistory[cursorHistory.length - 1];
     setIsLoading(true);
+    setHasLoadError(false);
     try {
-      const page = await fetchPublicArticlesPage({ cursor: prevCursor ?? undefined, limit: 4 });
+      const page = await fetchPublicArticlesPage({
+        cursor: cursor ?? undefined,
+        limit: ARTICLE_LIST_PAGE_SIZE,
+      });
       setArticleItems(page.items);
       setNextCursor(page.nextCursor);
-      setCursorHistory(prevHistory);
-      setCurrentPage((prev) => Math.max(1, prev - 1));
+    } catch (error) {
+      console.error("[blog] 페이지를 다시 불러오지 못했다.", error);
+      setHasLoadError(true);
     } finally {
       setIsLoading(false);
     }
@@ -265,18 +278,21 @@ export const ArticleListPageSection = ({ initialItems = [], initialNextCursor = 
               </Row>
             ))}
           </List>
-          <Pagination>
-            <PaginationButton
-              onClick={loadPrevPage}
-              disabled={cursorHistory.length <= 1 || isLoading}
-            >
-              <Arrow>‹</Arrow>
-            </PaginationButton>
-            <span style={{ color: "#525252" }}>{currentPage}</span>
-            <PaginationButton onClick={loadNextPage} disabled={!nextCursor || isLoading}>
-              <Arrow>›</Arrow>
-            </PaginationButton>
-          </Pagination>
+          {isEmpty ? <EmptyNotice message="아직 등록된 글이 없어요." /> : null}
+          {hasLoadError ? (
+            <LoadErrorNotice
+              message="글 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요."
+              onRetry={() => void retryCurrentPage()}
+              isRetrying={isLoading}
+            />
+          ) : null}
+          <CursorPagination
+            label="블로그 페이지네이션"
+            currentPage={currentPage}
+            pageCount={knownPageCount}
+            isLoading={isLoading}
+            onChange={(page) => void goToPage(page)}
+          />
         </Body>
       </ContentSection>
     </Section>
