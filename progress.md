@@ -30,7 +30,7 @@
 | 3.2 사전 알림 | 🔧 | 일괄 발송·CSV·캠페인(PAUSED↔SCHEDULED 전환·편집) ✅, 개별 발송 액션 컬럼 부재 (BE 엔드포인트 없음) |
 | 3.3 지원자 관리 | ✅ | 목록·필터·Drawer 상세·합격불합격 분기·면접일자 컬럼(슬롯 예약 join) 완료. 개인정보 동의 일자 표시 |
 | 3.3.5 면접 슬롯 | ✅ | `/interview-slots` 신설 — 기수·파트 필터 + CRUD + Drawer + Dialog. `INTERVIEW_SLOTS_NOT_READY` → `InterviewSlotsRequiredModal` 로 페이지 navigate. 예약자 목록·예약 취소는 `ReservationsDrawer` + `CancelReservationDialog` 로 완료 |
-| 3.4 프로젝트 DB | ✅ | 코드 완료 (브라우저 회귀 테스트 미실시) — PDF 업로드는 후속 |
+| 3.4 프로젝트 DB | ✅ | 코드 완료 — 파일 업로드는 저장 시점 업로드로 전환 (BE PR #100, 배포 후 `gen:api` 필요) |
 | 3.5 블로그 DB | ✅ | 코드 완료 (브라우저 회귀 테스트 미실시) |
 | 3.6 FAQ | ✅ | MVP 제외 결정 (FE 하드코딩) |
 | 5. 데이터 모델 타입 반영 | 🔧 | `@ddd/api` 생성 타입 도입 진행 중 — `pages/semesters/types.d.ts` 임시 타입 잔존 |
@@ -171,11 +171,11 @@
 - ✅ 플랫폼 필터 (서버) + 기수 필터 (클라이언트, `useCohorts` 매핑) + 서비스명 검색
 - ✅ "더 보기" 페이지네이션 (cursor 기반, `useInfiniteQuery`)
 - ✅ 새 프로젝트 등록/수정 Drawer (`ProjectFormDrawer.tsx`) — 썸네일 · 플랫폼 다중 · 서비스명 · 한줄설명 · 기수 · 참여자 N명, react-hook-form + Zod
-- ✅ 썸네일 이미지 업로드 (`useUploadFile({ category: 'project-thumbnail' })`)
+- ✅ 썸네일 이미지 업로드 — 선택 시 업로드하지 않고 저장 시 `POST /admin/projects/:id/thumbnail` (`projectMutations.uploadProjectThumbnail`)
 - ✅ 참여자 입력 (`useFieldArray` — 이름/파트/후기)
 - ✅ 삭제 확인 (`DeleteProjectDialog` — HeroUI `AlertDialog`) + `useDeleteProject`
 - ✅ 저장/삭제 토스트 (HeroUI v3 `toast`, [`docs/admin-toast.md`](./docs/admin-toast.md) 표준)
-- ⬜ PDF 업로드 (`useUploadFile({ category: 'project-pdf' })`) — 후속 스코프
+- ✅ PDF 업로드 — 저장 시 `POST /admin/projects/:id/pdf` (`projectMutations.uploadProjectPdf`). 파일 실패 시 프로젝트 재생성 없이 실패한 파일만 재시도
 - ⬜ 등록 시 `/projects/[id]` URL 자동 생성 (웹 연동) — 후속 스코프
 - ⬜ 브라우저 회귀 테스트 (실제 백엔드/MSW 연동 후)
 

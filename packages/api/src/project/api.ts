@@ -16,7 +16,37 @@ import type {
   PutUpdateProjectMembersParams,
   PutUpdateProjectMembersRequest,
   PutUpdateProjectMembersResponse,
+  PostUploadProjectAssetParams,
+  PostUploadProjectAssetRequest,
+  PostUploadProjectAssetResponse,
 } from "./types";
+
+type ProjectAssetPath =
+  | "/api/v1/admin/projects/{id}/pdf"
+  | "/api/v1/admin/projects/{id}/thumbnail";
+
+/**
+ * 파일 업로드와 프로젝트 연결을 서버가 한 요청으로 처리한다 (BE PR #100).
+ *
+ * 생성된 스펙(`generated/api.ts`)에 아직 두 경로가 없어 캐스트가 필요하다.
+ * BE 배포 후 `pnpm gen:api` 로 갱신하면 경로 캐스트를 걷어낸다.
+ * 런타임은 openapi-fetch 가 FormData 를 감지해 multipart 로 그대로 전송한다.
+ */
+function uploadProjectAsset(
+  path: ProjectAssetPath,
+  { params, payload }: {
+    params: PostUploadProjectAssetParams;
+    payload: PostUploadProjectAssetRequest;
+  },
+): Promise<PostUploadProjectAssetResponse> {
+  const formData = new FormData();
+  formData.append("file", payload.file);
+
+  return api.post(path as never, {
+    params: { path: { id: params.id } },
+    body: formData,
+  } as never) as unknown as Promise<PostUploadProjectAssetResponse>;
+}
 
 export const projectAPI = {
   /** 공개 프로젝트 목록 (cursor 페이지네이션) - GET /api/v1/projects */
@@ -78,4 +108,16 @@ export const projectAPI = {
       params: { path: { id: params.id } },
       body: payload,
     }) as unknown as Promise<PutUpdateProjectMembersResponse>,
+
+  /** 어드민 프로젝트 PDF 업로드·연결 - POST /api/v1/admin/projects/{id}/pdf (최대 20MB) */
+  uploadProjectPdf: (args: {
+    params: PostUploadProjectAssetParams;
+    payload: PostUploadProjectAssetRequest;
+  }) => uploadProjectAsset("/api/v1/admin/projects/{id}/pdf", args),
+
+  /** 어드민 프로젝트 썸네일 업로드·연결 - POST /api/v1/admin/projects/{id}/thumbnail (최대 5MB) */
+  uploadProjectThumbnail: (args: {
+    params: PostUploadProjectAssetParams;
+    payload: PostUploadProjectAssetRequest;
+  }) => uploadProjectAsset("/api/v1/admin/projects/{id}/thumbnail", args),
 };

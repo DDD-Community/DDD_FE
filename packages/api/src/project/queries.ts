@@ -16,6 +16,8 @@ import type {
   DeleteProjectParams,
   PutUpdateProjectMembersParams,
   PutUpdateProjectMembersRequest,
+  PostUploadProjectAssetParams,
+  PostUploadProjectAssetRequest,
 } from "./types";
 
 export const projectQueries = {
@@ -199,5 +201,49 @@ export const projectMutations = {
         params: PutUpdateProjectMembersParams;
         payload: PutUpdateProjectMembersRequest;
       }) => projectAPI.updateProjectMembers({ params, payload }),
+    }),
+
+  /**
+   * 프로젝트 PDF 업로드 mutation (어드민) - POST /admin/projects/{id}/pdf
+   *
+   * 호출 즉시 공개 페이지에 반영되므로 파일 선택 시점이 아니라 저장 시점에만 호출한다.
+   *
+   * @returns {MutationOptions} TanStack Query Mutation 옵션 객체
+   *
+   * @example
+   * const mutation = useMutation(projectMutations.uploadProjectPdf())
+   * mutation.mutate({ params: { id: 1 }, payload: { file } })
+   */
+  uploadProjectPdf: () =>
+    mutationOptions({
+      mutationFn: ({
+        params,
+        payload,
+      }: {
+        params: PostUploadProjectAssetParams;
+        payload: PostUploadProjectAssetRequest;
+      }) => projectAPI.uploadProjectPdf({ params, payload }),
+    }),
+
+  /**
+   * 프로젝트 썸네일 업로드 mutation (어드민) - POST /admin/projects/{id}/thumbnail
+   *
+   * 호출 즉시 공개 페이지에 반영되므로 파일 선택 시점이 아니라 저장 시점에만 호출한다.
+   *
+   * @returns {MutationOptions} TanStack Query Mutation 옵션 객체
+   *
+   * @example
+   * const mutation = useMutation(projectMutations.uploadProjectThumbnail())
+   * mutation.mutate({ params: { id: 1 }, payload: { file } })
+   */
+  uploadProjectThumbnail: () =>
+    mutationOptions({
+      mutationFn: ({
+        params,
+        payload,
+      }: {
+        params: PostUploadProjectAssetParams;
+        payload: PostUploadProjectAssetRequest;
+      }) => projectAPI.uploadProjectThumbnail({ params, payload }),
     }),
 };

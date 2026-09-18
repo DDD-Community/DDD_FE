@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Button, Drawer, Input, ListBox, Select } from "@heroui/react"
+import { Alert, Button, Drawer, Input, ListBox, Select } from "@heroui/react"
 import { PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -14,7 +14,13 @@ import {
 import type { CohortDto, ProjectDto, ProjectPlatform } from "@ddd/api"
 
 import { PLATFORM_LABEL, PLATFORM_OPTIONS } from "@/pages/projects/constants"
-import { buildProjectFormDefaults, projectFormSchema, type ProjectFormValues } from "@/pages/projects/lib/projectForm"
+import type { ProjectAssetKind } from "@/pages/projects/lib/projectAsset"
+import {
+  buildProjectFormDefaults,
+  PROJECT_ASSET_FIELD,
+  projectFormSchema,
+  type ProjectFormValues,
+} from "@/pages/projects/lib/projectForm"
 import { useCreateOrUpdateProjectFlow } from "@/pages/projects/hooks/useCreateOrUpdateProjectFlow"
 import { useIsMobile } from "@/shared/hooks/useIsMobile"
 import { cn } from "@/shared/lib/cn"
@@ -37,13 +43,13 @@ interface Props {
 
 const FORM_ID = "project-register-form"
 
-export const ProjectFormDrawer = ({
+export function ProjectFormDrawer({
   isOpen,
   onOpenChange,
   mode,
   project,
   cohorts,
-}: Props) => {
+}: Props) {
   const isMobile = useIsMobile()
 
   const methods = useForm<ProjectFormValues>({
@@ -65,15 +71,33 @@ export const ProjectFormDrawer = ({
     remove: removeMember,
   } = useFieldArray({ control, name: "members" })
 
-  useEffect(function resetFormOnOpen() {
-    if (isOpen) reset(buildProjectFormDefaults(project))
-  }, [isOpen, mode, project, reset])
+  // 업로드 응답(갱신된 프로젝트)으로 미리보기를 서버 URL 로 바꾸고 File 을 비운다.
+  // File 이 비면 성공한 파일은 재시도 대상에서 빠지고, 썸네일 object URL 도 해제된다.
+  function handleAssetUploaded(kind: ProjectAssetKind, uploaded: ProjectDto) {
+    const field = PROJECT_ASSET_FIELD[kind]
+    setValue(field.url, uploaded[field.url] ?? "")
+    setValue(field.file, null)
+  }
 
-  const { submit, isPending } = useCreateOrUpdateProjectFlow({
+  const {
+    submit,
+    resetFlow,
+    isPending,
+    hasAssetFailure,
+    assetFailures,
+    uploadingKinds,
+  } = useCreateOrUpdateProjectFlow({
     mode,
     targetId: project?.id ?? null,
+    onAssetUploaded: handleAssetUploaded,
     onSuccess: () => onOpenChange(false),
   })
+
+  useEffect(function resetFormOnOpen() {
+    if (!isOpen) return
+    reset(buildProjectFormDefaults(project))
+    resetFlow()
+  }, [isOpen, mode, project, reset, resetFlow])
 
   const onSubmit = handleSubmit((values) => submit(values))
 
@@ -104,13 +128,34 @@ export const ProjectFormDrawer = ({
           <Drawer.Body className="flex-1 space-y-6 overflow-y-auto">
             <FormProvider {...methods}>
               <form id={FORM_ID} onSubmit={onSubmit} className="space-y-6">
+                {hasAssetFailure ? (
+                  <Alert status="danger" role="alert">
+                    <Alert.Indicator />
+                    <Alert.Content>
+                      <Alert.Title>
+                        프로젝트는 저장됐지만 파일 업로드에 실패했어요
+                      </Alert.Title>
+                      <Alert.Description>
+                        아래 버튼을 누르면 실패한 파일만 다시 올려요. 프로젝트가
+                        중복으로 생기지 않아요.
+                      </Alert.Description>
+                    </Alert.Content>
+                  </Alert>
+                ) : null}
+
                 <Section title="프로젝트 정보">
                   <FormField label="썸네일 이미지">
-                    <ThumbnailUploader />
+                    <ThumbnailUploader
+                      isUploading={uploadingKinds.thumbnail}
+                      errorMessage={assetFailures.thumbnail}
+                    />
                   </FormField>
 
                   <FormField label="최종 발표 PDF">
-                    <PdfUploader />
+                    <PdfUploader
+                      isUploading={uploadingKinds.pdf}
+                      errorMessage={assetFailures.pdf}
+                    />
                   </FormField>
 
                   <FormField label="서비스명" error={errors.name?.message}>
@@ -217,7 +262,11 @@ export const ProjectFormDrawer = ({
           <Drawer.Footer className="gap-2">
             <Drawer.CloseTrigger />
             <Button type="submit" form={FORM_ID} isDisabled={isPending}>
-              {isPending ? "저장 중..." : "저장"}
+              {isPending
+                ? "저장 중..."
+                : hasAssetFailure
+                  ? "파일 다시 업로드"
+                  : "저장"}
             </Button>
           </Drawer.Footer>
         </Drawer.Dialog>
