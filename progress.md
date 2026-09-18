@@ -30,7 +30,7 @@
 | 3.2 사전 알림 | 🔧 | 일괄 발송·CSV·캠페인(PAUSED↔SCHEDULED 전환·편집) ✅, 개별 발송 액션 컬럼 부재 (BE 엔드포인트 없음) |
 | 3.3 지원자 관리 | ✅ | 목록·필터·Drawer 상세·합격불합격 분기·면접일자 컬럼(슬롯 예약 join) 완료. 개인정보 동의 일자 표시 |
 | 3.3.5 면접 슬롯 | ✅ | `/interview-slots` 신설 — 기수·파트 필터 + CRUD + Drawer + Dialog. `INTERVIEW_SLOTS_NOT_READY` → `InterviewSlotsRequiredModal` 로 페이지 navigate. 예약자 목록·예약 취소는 `ReservationsDrawer` + `CancelReservationDialog` 로 완료 |
-| 3.4 프로젝트 DB | ✅ | 코드 완료 — 파일 업로드는 저장 시점 업로드로 전환 (BE PR #100, 배포 후 `gen:api` 필요) |
+| 3.4 프로젝트 DB | ✅ | 코드 완료 — 파일 업로드는 저장 시점 업로드로 전환 (BE PR #100) |
 | 3.5 블로그 DB | ✅ | 코드 완료 (브라우저 회귀 테스트 미실시) |
 | 3.6 FAQ | ✅ | MVP 제외 결정 (FE 하드코딩) |
 | 5. 데이터 모델 타입 반영 | 🔧 | `@ddd/api` 생성 타입 도입 진행 중 — `pages/semesters/types.d.ts` 임시 타입 잔존 |

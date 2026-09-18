@@ -28,9 +28,9 @@ type ProjectAssetPath =
 /**
  * 파일 업로드와 프로젝트 연결을 서버가 한 요청으로 처리한다 (BE PR #100).
  *
- * 생성된 스펙(`generated/api.ts`)에 아직 두 경로가 없어 캐스트가 필요하다.
- * BE 배포 후 `pnpm gen:api` 로 갱신하면 경로 캐스트를 걷어낸다.
- * 런타임은 openapi-fetch 가 FormData 를 감지해 multipart 로 그대로 전송한다.
+ * 스펙은 multipart body 를 `{ file: string }`(format: binary) 로 표현하지만 실제로는
+ * FormData 를 보내야 하므로 body 만 캐스트한다. 런타임은 openapi-fetch 가 FormData 를
+ * 감지해 multipart 로 그대로 전송한다.
  */
 function uploadProjectAsset(
   path: ProjectAssetPath,
@@ -42,10 +42,10 @@ function uploadProjectAsset(
   const formData = new FormData();
   formData.append("file", payload.file);
 
-  return api.post(path as never, {
+  return api.post(path, {
     params: { path: { id: params.id } },
-    body: formData,
-  } as never) as unknown as Promise<PostUploadProjectAssetResponse>;
+    body: formData as never,
+  }) as unknown as Promise<PostUploadProjectAssetResponse>;
 }
 
 export const projectAPI = {
