@@ -37,6 +37,9 @@ export const ErrorMessage = {
   ATTACHMENT_NOT_OWNED: "본인이 업로드한 첨부만 사용할 수 있습니다.",
   FILE_NOT_FOUND: "만료되었거나 삭제된 파일입니다.",
   STORAGE_NOT_CONFIGURED: "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+  FILE_UPLOAD_FAILED: "업로드에 실패했습니다. 잠시 후 다시 시도해주세요.",
+
+  PROJECT_NOT_FOUND: "프로젝트를 찾을 수 없습니다.",
 
   EVALUATION_NOT_FOUND: "평가 정보를 찾을 수 없습니다.",
 

@@ -698,6 +698,158 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 프로젝트 전체 목록 조회
+         * @description 모든 프로젝트를 조회합니다.
+         */
+        get: operations["project_getAdminList"];
+        put?: never;
+        /**
+         * 프로젝트 생성
+         * @description 새로운 프로젝트를 생성합니다.
+         */
+        post: operations["project_createAdmin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/projects/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 프로젝트 상세 조회
+         * @description 특정 프로젝트의 상세 정보를 조회합니다.
+         */
+        get: operations["project_getAdminById"];
+        put?: never;
+        post?: never;
+        /**
+         * 프로젝트 삭제
+         * @description 프로젝트를 소프트 삭제합니다.
+         */
+        delete: operations["project_deleteAdminById"];
+        options?: never;
+        head?: never;
+        /**
+         * 프로젝트 수정
+         * @description 프로젝트 정보를 수정합니다.
+         */
+        patch: operations["project_updateAdminById"];
+        trace?: never;
+    };
+    "/api/v1/admin/projects/{id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * 프로젝트 참여자 수정
+         * @description 프로젝트 참여자 목록을 전체 교체합니다.
+         */
+        put: operations["project_updateMembersAdmin"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/projects/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 프로젝트 PDF 업로드
+         * @description PDF 를 올리고 같은 요청 안에서 프로젝트에 연결합니다. 기존 PDF 가 있으면 교체하고 이전 파일은 삭제합니다. 최대 20MB.
+         */
+        post: operations["project_uploadPdfAdmin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/projects/{id}/thumbnail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 프로젝트 썸네일 업로드
+         * @description 썸네일을 올리고 같은 요청 안에서 프로젝트에 연결합니다. 기존 썸네일이 있으면 교체하고 이전 파일은 삭제합니다. 최대 5MB.
+         */
+        post: operations["project_uploadThumbnailAdmin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 프로젝트 목록 조회
+         * @description 공개된 프로젝트 목록을 조회합니다. 플랫폼 필터를 지원합니다.
+         */
+        get: operations["project_getPublicList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 프로젝트 상세 조회
+         * @description 프로젝트 상세 정보를 조회합니다. 참여자 이름+파트, PDF URL을 포함합니다.
+         */
+        get: operations["project_getPublicById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/files/upload": {
         parameters: {
             query?: never;
@@ -865,6 +1017,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/interview-bookings/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 면접 예약 컨텍스트 조회
+         * @description 예약 토큰을 검증하고 지원자 이름·직군·기존 예약 정보를 반환합니다.
+         */
+        get: operations["interviewBooking_getContext"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/interview-bookings/slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 예약 가능한 면접 슬롯 목록
+         * @description 토큰에 담긴 직군의 시작 전 슬롯을 잔여석과 함께 반환합니다. 잔여석 0 은 마감 표시용으로 포함됩니다.
+         */
+        get: operations["interviewBooking_listSlots"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/interview-bookings/reservations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 면접 슬롯 예약
+         * @description 슬롯을 예약합니다. 서류합격 상태가 아니면 INTERVIEW_BOOKING_NOT_ELIGIBLE(403), 정원 마감 시 INTERVIEW_SLOT_FULL(409), 기존 예약 존재 시 INTERVIEW_RESERVATION_EXISTS(409) 를 반환합니다. 예약 후 지원자 변경은 불가합니다.
+         */
+        post: operations["interviewBooking_createReservation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/blog-posts": {
         parameters: {
             query?: never;
@@ -929,118 +1141,6 @@ export interface paths {
          * @description 공개된 블로그 게시글 목록을 커서 기반 페이지네이션으로 제공합니다.
          */
         get: operations["blog_getPublicList"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admin/projects": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 프로젝트 전체 목록 조회
-         * @description 모든 프로젝트를 조회합니다.
-         */
-        get: operations["project_getAdminList"];
-        put?: never;
-        /**
-         * 프로젝트 생성
-         * @description 새로운 프로젝트를 생성합니다.
-         */
-        post: operations["project_createAdmin"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admin/projects/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 프로젝트 상세 조회
-         * @description 특정 프로젝트의 상세 정보를 조회합니다.
-         */
-        get: operations["project_getAdminById"];
-        put?: never;
-        post?: never;
-        /**
-         * 프로젝트 삭제
-         * @description 프로젝트를 소프트 삭제합니다.
-         */
-        delete: operations["project_deleteAdminById"];
-        options?: never;
-        head?: never;
-        /**
-         * 프로젝트 수정
-         * @description 프로젝트 정보를 수정합니다.
-         */
-        patch: operations["project_updateAdminById"];
-        trace?: never;
-    };
-    "/api/v1/admin/projects/{id}/members": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * 프로젝트 참여자 수정
-         * @description 프로젝트 참여자 목록을 전체 교체합니다.
-         */
-        put: operations["project_updateMembersAdmin"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/projects": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 프로젝트 목록 조회
-         * @description 공개된 프로젝트 목록을 조회합니다. 플랫폼 필터를 지원합니다.
-         */
-        get: operations["project_getPublicList"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/projects/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 프로젝트 상세 조회
-         * @description 프로젝트 상세 정보를 조회합니다. 참여자 이름+파트, PDF URL을 포함합니다.
-         */
-        get: operations["project_getPublicById"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1639,200 +1739,6 @@ export interface components {
              */
             code: string;
         };
-        SignedUrlRequestDto: {
-            /**
-             * @description GCS 객체 경로 (카테고리 prefix로 시작해야 함)
-             * @example projects/thumbnails/abc.png
-             */
-            path: string;
-            /**
-             * @description 서명 URL 동작
-             * @example read
-             * @enum {string}
-             */
-            action: "read" | "write";
-            /**
-             * @description 만료 시간(초). 기본 600초, 최대 3600초
-             * @example 600
-             */
-            expiresInSeconds?: number;
-        };
-        InterviewReservationResponseDto: {
-            /**
-             * @description 예약 ID
-             * @example 1
-             */
-            id: number;
-            /**
-             * @description 슬롯 ID
-             * @example 1
-             */
-            slotId: number;
-            /**
-             * @description 지원서 ID
-             * @example 1
-             */
-            applicationFormId: number;
-            /** @description 구글 캘린더 이벤트 ID */
-            calendarEventId?: string | null;
-            /**
-             * Format: date-time
-             * @description 생성 일시
-             */
-            createdAt: string;
-        };
-        InterviewSlotResponseDto: {
-            /**
-             * @description ID
-             * @example 1
-             */
-            id: number;
-            /**
-             * @description 기수 ID
-             * @example 1
-             */
-            cohortId: number;
-            /**
-             * @description 기수 파트 ID
-             * @example 1
-             */
-            cohortPartId: number;
-            /**
-             * Format: date-time
-             * @description 시작 시간
-             */
-            startAt: string;
-            /**
-             * Format: date-time
-             * @description 종료 시간
-             */
-            endAt: string;
-            /**
-             * @description 수용 인원
-             * @example 1
-             */
-            capacity: number;
-            /** @description 장소 */
-            location?: string | null;
-            /** @description 설명 */
-            description?: string | null;
-            /**
-             * @description 현재 예약된 인원
-             * @example 0
-             */
-            reservedCount: number;
-            /** @description 예약 목록 */
-            reservations: components["schemas"]["InterviewReservationResponseDto"][];
-            /**
-             * Format: date-time
-             * @description 생성 일시
-             */
-            createdAt: string;
-        };
-        CreateInterviewSlotRequestDto: {
-            /**
-             * @description 기수 ID
-             * @example 1
-             */
-            cohortId: number;
-            /**
-             * @description 기수 파트 ID
-             * @example 1
-             */
-            cohortPartId: number;
-            /**
-             * Format: date-time
-             * @description 시작 시간
-             * @example 2026-05-01T14:00:00+09:00
-             */
-            startAt: string;
-            /**
-             * Format: date-time
-             * @description 종료 시간
-             * @example 2026-05-01T14:30:00+09:00
-             */
-            endAt: string;
-            /**
-             * @description 수용 인원 (기본 1)
-             * @default 1
-             */
-            capacity: number;
-            /**
-             * @description 장소
-             * @example 온라인 (Zoom)
-             */
-            location?: string;
-            /** @description 설명 */
-            description?: string;
-        };
-        UpdateInterviewSlotRequestDto: {
-            /**
-             * Format: date-time
-             * @description 시작 시간
-             */
-            startAt?: string;
-            /**
-             * Format: date-time
-             * @description 종료 시간
-             */
-            endAt?: string;
-            /** @description 수용 인원 */
-            capacity?: number;
-            /** @description 장소 */
-            location?: string;
-            /** @description 설명 */
-            description?: string;
-        };
-        CreateInterviewReservationRequestDto: {
-            /**
-             * @description 지원서 ID
-             * @example 1
-             */
-            applicationFormId: number;
-        };
-        CreateBlogPostRequestDto: {
-            /**
-             * @description 블로그 제목
-             * @example DDD 15기 활동 후기
-             */
-            title: string;
-            /**
-             * @description 블로그 요약
-             * @example DDD 15기에서의 경험을 공유합니다.
-             */
-            excerpt: string;
-            /**
-             * Format: uri
-             * @description 썸네일 URL
-             * @example https://example.com/thumbnail.png
-             */
-            thumbnail?: string;
-            /**
-             * Format: uri
-             * @description 외부 링크 URL
-             * @example https://medium.com/@ddd/post-1
-             */
-            externalUrl: string;
-        };
-        UpdateBlogPostRequestDto: {
-            /**
-             * @description 블로그 제목
-             * @example DDD 15기 활동 후기 (수정)
-             */
-            title?: string;
-            /** @description 블로그 요약 */
-            excerpt?: string;
-            /**
-             * Format: uri
-             * @description 썸네일 URL
-             */
-            thumbnail?: string;
-            /**
-             * Format: uri
-             * @description 외부 링크 URL
-             */
-            externalUrl?: string;
-        };
         ProjectMemberResponseDto: {
             /**
              * @description 참여자 이름
@@ -2038,6 +1944,213 @@ export interface components {
              * @description 생성 일시
              */
             createdAt: string;
+        };
+        SignedUrlRequestDto: {
+            /**
+             * @description GCS 객체 경로 (카테고리 prefix로 시작해야 함)
+             * @example projects/thumbnails/abc.png
+             */
+            path: string;
+            /**
+             * @description 서명 URL 동작
+             * @example read
+             * @enum {string}
+             */
+            action: "read" | "write";
+            /**
+             * @description 만료 시간(초). 기본 600초, 최대 3600초
+             * @example 600
+             */
+            expiresInSeconds?: number;
+        };
+        InterviewReservationResponseDto: {
+            /**
+             * @description 예약 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 슬롯 ID
+             * @example 1
+             */
+            slotId: number;
+            /**
+             * @description 지원서 ID
+             * @example 1
+             */
+            applicationFormId: number;
+            /** @description 구글 캘린더 이벤트 ID */
+            calendarEventId?: string | null;
+            /**
+             * Format: date-time
+             * @description 생성 일시
+             */
+            createdAt: string;
+        };
+        InterviewSlotResponseDto: {
+            /**
+             * @description ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 기수 ID
+             * @example 1
+             */
+            cohortId: number;
+            /**
+             * @description 기수 파트 ID
+             * @example 1
+             */
+            cohortPartId: number;
+            /**
+             * Format: date-time
+             * @description 시작 시간
+             */
+            startAt: string;
+            /**
+             * Format: date-time
+             * @description 종료 시간
+             */
+            endAt: string;
+            /**
+             * @description 수용 인원
+             * @example 1
+             */
+            capacity: number;
+            /**
+             * @description 장소
+             * @example https://meet.google.com/abc-defg-hij
+             */
+            location: string;
+            /** @description 설명 */
+            description?: string | null;
+            /**
+             * @description 현재 예약된 인원
+             * @example 0
+             */
+            reservedCount: number;
+            /** @description 예약 목록 */
+            reservations: components["schemas"]["InterviewReservationResponseDto"][];
+            /**
+             * Format: date-time
+             * @description 생성 일시
+             */
+            createdAt: string;
+        };
+        CreateInterviewSlotRequestDto: {
+            /**
+             * @description 기수 ID
+             * @example 1
+             */
+            cohortId: number;
+            /**
+             * @description 기수 파트 ID
+             * @example 1
+             */
+            cohortPartId: number;
+            /**
+             * Format: date-time
+             * @description 시작 시간
+             * @example 2026-05-01T14:00:00+09:00
+             */
+            startAt: string;
+            /**
+             * Format: date-time
+             * @description 종료 시간
+             * @example 2026-05-01T14:30:00+09:00
+             */
+            endAt: string;
+            /**
+             * @description 수용 인원 (기본 1)
+             * @default 1
+             */
+            capacity: number;
+            /**
+             * @description 장소. 예약 확정 시 지원자에게 메일과 캘린더 초대로 전달됩니다. 온라인 면접이면 미팅 링크를 넣으세요.
+             * @example https://meet.google.com/abc-defg-hij
+             */
+            location: string;
+            /** @description 설명 */
+            description?: string;
+        };
+        UpdateInterviewSlotRequestDto: {
+            /**
+             * Format: date-time
+             * @description 시작 시간
+             */
+            startAt?: string;
+            /**
+             * Format: date-time
+             * @description 종료 시간
+             */
+            endAt?: string;
+            /** @description 수용 인원 */
+            capacity?: number;
+            /**
+             * @description 장소. 부분 수정이라 생략할 수 있지만, 보낼 경우 빈 값은 허용하지 않습니다.
+             * @example https://meet.google.com/abc-defg-hij
+             */
+            location?: string;
+            /** @description 설명 */
+            description?: string;
+        };
+        CreateInterviewReservationRequestDto: {
+            /**
+             * @description 지원서 ID
+             * @example 1
+             */
+            applicationFormId: number;
+        };
+        CreateInterviewBookingRequestDto: {
+            /**
+             * @description 예약할 면접 슬롯 ID
+             * @example 7
+             */
+            slotId: number;
+        };
+        CreateBlogPostRequestDto: {
+            /**
+             * @description 블로그 제목
+             * @example DDD 15기 활동 후기
+             */
+            title: string;
+            /**
+             * @description 블로그 요약
+             * @example DDD 15기에서의 경험을 공유합니다.
+             */
+            excerpt: string;
+            /**
+             * Format: uri
+             * @description 썸네일 URL
+             * @example https://example.com/thumbnail.png
+             */
+            thumbnail?: string;
+            /**
+             * Format: uri
+             * @description 외부 링크 URL
+             * @example https://medium.com/@ddd/post-1
+             */
+            externalUrl: string;
+        };
+        UpdateBlogPostRequestDto: {
+            /**
+             * @description 블로그 제목
+             * @example DDD 15기 활동 후기 (수정)
+             */
+            title?: string;
+            /** @description 블로그 요약 */
+            excerpt?: string;
+            /**
+             * Format: uri
+             * @description 썸네일 URL
+             */
+            thumbnail?: string;
+            /**
+             * Format: uri
+             * @description 외부 링크 URL
+             */
+            externalUrl?: string;
         };
     };
     responses: never;
@@ -3171,6 +3284,553 @@ export interface operations {
             };
         };
     };
+    project_getAdminList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 프로젝트 목록 조회 성공. 참여자와 PDF URL 을 포함합니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["AdminProjectListResponseDto"][];
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    project_createAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateProjectRequestDto"];
+            };
+        };
+        responses: {
+            /** @description 프로젝트 생성 성공 */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["ProjectDetailResponseDto"];
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    project_getAdminById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 프로젝트 상세 조회 성공. 참여자와 PDF URL 을 포함합니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["ProjectDetailResponseDto"];
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 프로젝트를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example PROJECT_NOT_FOUND */
+                        code?: string;
+                        /** @example 프로젝트를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    project_deleteAdminById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 프로젝트 삭제 성공 */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 프로젝트를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example PROJECT_NOT_FOUND */
+                        code?: string;
+                        /** @example 프로젝트를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    project_updateAdminById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProjectRequestDto"];
+            };
+        };
+        responses: {
+            /** @description 프로젝트가 수정되었습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example 프로젝트가 수정되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 프로젝트를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example PROJECT_NOT_FOUND */
+                        code?: string;
+                        /** @example 프로젝트를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    project_updateMembersAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProjectMembersRequestDto"];
+            };
+        };
+        responses: {
+            /** @description 프로젝트 참여자가 수정되었습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example 프로젝트 참여자가 수정되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 프로젝트를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example PROJECT_NOT_FOUND */
+                        code?: string;
+                        /** @example 프로젝트를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    project_uploadPdfAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description 파일 업로드 및 프로젝트 연결 성공. 갱신된 프로젝트를 반환합니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["ProjectDetailResponseDto"];
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 프로젝트를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example PROJECT_NOT_FOUND */
+                        code?: string;
+                        /** @example 프로젝트를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    project_uploadThumbnailAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description 파일 업로드 및 프로젝트 연결 성공. 갱신된 프로젝트를 반환합니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["ProjectDetailResponseDto"];
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 프로젝트를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example PROJECT_NOT_FOUND */
+                        code?: string;
+                        /** @example 프로젝트를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    project_getPublicList: {
+        parameters: {
+            query?: {
+                /** @description 플랫폼 필터 (미지정 시 전체 조회) */
+                platform?: "IOS" | "AOS" | "WEB";
+                /** @description 다음 페이지 커서(base64url) */
+                cursor?: string;
+                /** @description 페이지 크기 */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 프로젝트 목록 조회 성공. meta 에 커서 정보를 포함합니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["ProjectListResponseDto"][];
+                        meta?: {
+                            /** @example null */
+                            nextCursor?: string | null;
+                            /** @example false */
+                            hasNext?: boolean;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    project_getPublicById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 프로젝트 상세 조회 성공. 참여자와 PDF URL 을 포함합니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["ProjectDetailResponseDto"];
+                    };
+                };
+            };
+            /** @description 프로젝트를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example PROJECT_NOT_FOUND */
+                        code?: string;
+                        /** @example 프로젝트를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
     storage_uploadFile: {
         parameters: {
             query: {
@@ -3665,6 +4325,61 @@ export interface operations {
             };
         };
     };
+    interviewBooking_getContext: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    interviewBooking_listSlots: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    interviewBooking_createReservation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInterviewBookingRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     blog_getAdminList: {
         parameters: {
             query?: never;
@@ -3783,419 +4498,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    project_getAdminList: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 프로젝트 목록 조회 성공. 참여자와 PDF URL 을 포함합니다. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example SUCCESS */
-                        code?: string;
-                        /** @example success */
-                        message?: string;
-                        data?: components["schemas"]["AdminProjectListResponseDto"][];
-                    };
-                };
-            };
-            /** @description access_token 쿠키가 없거나 만료되었습니다. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example UNAUTHORIZED */
-                        code?: string;
-                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-        };
-    };
-    project_createAdmin: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateProjectRequestDto"];
-            };
-        };
-        responses: {
-            /** @description 프로젝트 생성 성공 */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example SUCCESS */
-                        code?: string;
-                        /** @example success */
-                        message?: string;
-                        data?: components["schemas"]["ProjectDetailResponseDto"];
-                    };
-                };
-            };
-            /** @description access_token 쿠키가 없거나 만료되었습니다. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example UNAUTHORIZED */
-                        code?: string;
-                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-        };
-    };
-    project_getAdminById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 프로젝트 상세 조회 성공. 참여자와 PDF URL 을 포함합니다. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example SUCCESS */
-                        code?: string;
-                        /** @example success */
-                        message?: string;
-                        data?: components["schemas"]["ProjectDetailResponseDto"];
-                    };
-                };
-            };
-            /** @description access_token 쿠키가 없거나 만료되었습니다. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example UNAUTHORIZED */
-                        code?: string;
-                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-            /** @description 프로젝트를 찾을 수 없습니다. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example PROJECT_NOT_FOUND */
-                        code?: string;
-                        /** @example 프로젝트를 찾을 수 없습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-        };
-    };
-    project_deleteAdminById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 프로젝트 삭제 성공 */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description access_token 쿠키가 없거나 만료되었습니다. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example UNAUTHORIZED */
-                        code?: string;
-                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-            /** @description 프로젝트를 찾을 수 없습니다. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example PROJECT_NOT_FOUND */
-                        code?: string;
-                        /** @example 프로젝트를 찾을 수 없습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-        };
-    };
-    project_updateAdminById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateProjectRequestDto"];
-            };
-        };
-        responses: {
-            /** @description 프로젝트가 수정되었습니다. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example SUCCESS */
-                        code?: string;
-                        /** @example 프로젝트가 수정되었습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-            /** @description access_token 쿠키가 없거나 만료되었습니다. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example UNAUTHORIZED */
-                        code?: string;
-                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-            /** @description 프로젝트를 찾을 수 없습니다. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example PROJECT_NOT_FOUND */
-                        code?: string;
-                        /** @example 프로젝트를 찾을 수 없습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-        };
-    };
-    project_updateMembersAdmin: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateProjectMembersRequestDto"];
-            };
-        };
-        responses: {
-            /** @description 프로젝트 참여자가 수정되었습니다. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example SUCCESS */
-                        code?: string;
-                        /** @example 프로젝트 참여자가 수정되었습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-            /** @description access_token 쿠키가 없거나 만료되었습니다. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example UNAUTHORIZED */
-                        code?: string;
-                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-            /** @description 프로젝트를 찾을 수 없습니다. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example PROJECT_NOT_FOUND */
-                        code?: string;
-                        /** @example 프로젝트를 찾을 수 없습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-        };
-    };
-    project_getPublicList: {
-        parameters: {
-            query?: {
-                /** @description 플랫폼 필터 (미지정 시 전체 조회) */
-                platform?: "IOS" | "AOS" | "WEB";
-                /** @description 다음 페이지 커서(base64url) */
-                cursor?: string;
-                /** @description 페이지 크기 */
-                limit?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 프로젝트 목록 조회 성공. meta 에 커서 정보를 포함합니다. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example SUCCESS */
-                        code?: string;
-                        /** @example success */
-                        message?: string;
-                        data?: components["schemas"]["ProjectListResponseDto"][];
-                        meta?: {
-                            /** @example null */
-                            nextCursor?: string | null;
-                            /** @example false */
-                            hasNext?: boolean;
-                        };
-                    };
-                };
-            };
-        };
-    };
-    project_getPublicById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 프로젝트 상세 조회 성공. 참여자와 PDF URL 을 포함합니다. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example SUCCESS */
-                        code?: string;
-                        /** @example success */
-                        message?: string;
-                        data?: components["schemas"]["ProjectDetailResponseDto"];
-                    };
-                };
-            };
-            /** @description 프로젝트를 찾을 수 없습니다. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example PROJECT_NOT_FOUND */
-                        code?: string;
-                        /** @example 프로젝트를 찾을 수 없습니다. */
-                        message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
             };
         };
     };

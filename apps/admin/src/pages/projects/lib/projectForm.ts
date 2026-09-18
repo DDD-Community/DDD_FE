@@ -3,6 +3,7 @@ import { z } from "zod"
 import type { ProjectDto } from "@ddd/api"
 
 import { PART_OPTIONS, type ProjectPart } from "../constants"
+import type { ProjectAssetKind } from "./projectAsset"
 
 const memberSchema = z.object({
   name: z.string().min(1, "이름을 입력해 주세요."),
@@ -22,20 +23,25 @@ export const projectFormSchema = z.object({
     .string()
     .min(1, "한줄 설명을 입력해 주세요.")
     .max(200, "200자 이하로 입력해 주세요."),
-  thumbnailUrl: z
-    .string()
-    .url("URL 형식이 아닙니다.")
-    .optional()
-    .or(z.literal("")),
-  pdfUrl: z
-    .string()
-    .url("URL 형식이 아닙니다.")
-    .optional()
-    .or(z.literal("")),
+  // 서버에 이미 연결된 파일의 URL. 표시 전용이며 생성·수정 body 에 넣지 않는다.
+  // 파일 연결은 저장 시 POST /admin/projects/:id/{pdf,thumbnail} 가 담당한다.
+  thumbnailUrl: z.string(),
+  pdfUrl: z.string(),
+  // 새로 고른 파일. 저장 버튼을 누르기 전까지는 어디에도 올리지 않는다.
+  thumbnailFile: z.instanceof(File).nullable(),
+  pdfFile: z.instanceof(File).nullable(),
   members: z.array(memberSchema),
 })
 
 export type ProjectFormValues = z.infer<typeof projectFormSchema>
+
+export const PROJECT_ASSET_FIELD = {
+  pdf: { file: "pdfFile", url: "pdfUrl" },
+  thumbnail: { file: "thumbnailFile", url: "thumbnailUrl" },
+} as const satisfies Record<
+  ProjectAssetKind,
+  { file: keyof ProjectFormValues; url: keyof ProjectFormValues }
+>
 
 export const buildProjectFormDefaults = (
   project?: ProjectDto,
@@ -46,6 +52,8 @@ export const buildProjectFormDefaults = (
   description: project?.description ?? "",
   thumbnailUrl: project?.thumbnailUrl ?? "",
   pdfUrl: project?.pdfUrl ?? "",
+  thumbnailFile: null,
+  pdfFile: null,
   members:
     project?.members?.map((m) => ({
       name: m.name,

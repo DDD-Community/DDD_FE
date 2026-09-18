@@ -45,7 +45,8 @@ export const serializeFormToCreatePayload = (
   startAt: combineToIsoLocal(form.date, form.startTime),
   endAt: combineToIsoLocal(form.date, form.endTime),
   capacity: form.capacity,
-  location: trimmedOrUndefined(form.location),
+  // BE 생성 DTO 가 location 을 필수로 받는다. 공백만 입력은 폼 스키마가 이미 막는다.
+  location: form.location.trim(),
   description: trimmedOrUndefined(form.description),
 })
 
@@ -60,7 +61,7 @@ export const serializeBulkFormToCreatePayloads = (
     startAt: combineToIsoLocal(form.date, candidate.startTime),
     endAt: combineToIsoLocal(form.date, candidate.endTime),
     capacity: form.capacity,
-    location: trimmedOrUndefined(form.location),
+    location: form.location.trim(),
     description: trimmedOrUndefined(form.description),
   }))
 

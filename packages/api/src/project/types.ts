@@ -50,6 +50,12 @@ export type PutUpdateProjectMembersParams = { id: number };
 export type PutUpdateProjectMembersRequest = UpdateProjectMembersRequestDto;
 export type PutUpdateProjectMembersResponse = ProjectDto;
 
+// POST /api/v1/admin/projects/{id}/pdf · /thumbnail - 파일 업로드 + 프로젝트 연결
+// multipart 필드명은 `file` 하나. 응답은 갱신된 프로젝트 전체다.
+export type PostUploadProjectAssetParams = { id: number };
+export type PostUploadProjectAssetRequest = { file: File };
+export type PostUploadProjectAssetResponse = ProjectDto;
+
 // 엔티티 타입 (BE 응답 schema 미정의 → 수동 정의)
 export type ProjectPlatform =
   NonNullable<GetProjectsParams>["platform"] extends infer P
