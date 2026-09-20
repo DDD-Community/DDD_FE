@@ -343,6 +343,18 @@ const Card = styled.section({
   "@media (max-width: 767px)": { marginTop: "28px", padding: "24px 16px", borderRadius: "20px" },
 });
 
+/**
+ * 개인정보 동의 카드.
+ *
+ * 넓은 화면에서는 시안대로 높이를 확보하지만, 좁은 화면에서는 폰트·패딩이 함께
+ * 줄어 내용이 절반도 못 채운다 — 고정 높이를 그대로 두면 카드 아래쪽이 통째로
+ * 빈 공간으로 남으므로 내용 높이에 맡긴다.
+ */
+const PrivacyCard = styled(Card)({
+  minHeight: "420px",
+  "@media (max-width: 768px)": { minHeight: 0 },
+});
+
 const CardTitle = styled.h3({
   margin: 0,
   fontSize: "24px",
@@ -1665,7 +1677,8 @@ export const RecruitApplySection = () => {
     로딩 중은 제외한다 — 파트를 막 고른 직후에도 질문은 잠시 비어 있어서, 같이 보면
     정상 흐름이 매번 실패로 한 번 깜빡인다.
   */
-  const partFormUnavailable = Boolean(values.part) && !isLoadingQuestions && questionsError !== null;
+  const partFormUnavailable =
+    Boolean(values.part) && !isLoadingQuestions && questionsError !== null;
   const partTitle = values.part ? `${values.part} 파트 지원서` : "지원서";
   const handleBasicBlur = (field: BasicField) => {
     setFocusedField((prev) => (prev === field ? null : prev));
@@ -1938,7 +1951,7 @@ export const RecruitApplySection = () => {
                       </Fields>
                     </Card>
 
-                    <Card style={{ minHeight: "420px" }}>
+                    <PrivacyCard>
                       <CardTitle>개인정보 수집 및 이용 동의</CardTitle>
                       <PrivacyBox>
                         {`수집 항목: 이름, 이메일, 휴대폰 번호, 생년월일, 거주 지역, 지원 파트, 지원 내용
@@ -1973,7 +1986,7 @@ export const RecruitApplySection = () => {
                         <AgreementText>개인정보 수집 및 이용에 동의합니다</AgreementText>
                         <AgreementRequiredDot aria-hidden />
                       </Agreement>
-                    </Card>
+                    </PrivacyCard>
                   </>
                 ) : null}
 
