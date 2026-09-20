@@ -226,8 +226,9 @@ const CtaButton = styled(Link)({
 });
 
 export const HeroSection = () => {
-  const { isRecruitClosed, recruitButtonLabels } = useRecruitStatus();
+  const { isRecruitOpen, isRecruitClosed, recruitButtonLabels } = useRecruitStatus();
   const handleCtaClick = useRecruitCtaClick();
+  const recruitActionHref = isRecruitOpen ? "/recruit/apply" : "/recruit";
 
   return (
     <Section>
@@ -262,7 +263,7 @@ export const HeroSection = () => {
           </Subtitle>
         </HeadlineWrapper>
         <CtaButton
-          href="/recruit"
+          href={recruitActionHref}
           aria-disabled={isRecruitClosed || undefined}
           onClick={handleCtaClick}
         >

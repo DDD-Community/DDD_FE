@@ -18,9 +18,20 @@ const NAV_LINKS = [
 /** 드로어가 화면을 덮는 모바일에서는 로고 대신 '홈' 항목으로 홈 진입 경로를 노출한다 */
 const MOBILE_NAV_LINKS = [{ label: "홈", href: "/" }, ...NAV_LINKS] as const;
 
+/**
+ * 네비 메뉴로 표현되지 않는 경로.
+ *
+ * 지원서는 `/recruit` 아래에 있지만 '모집 안내' 의 하위 문서가 아니라 CTA 로만 닿는
+ * 별도 진입점이다. prefix 규칙을 그대로 두면 지원서를 쓰는 내내 '모집 안내' 가 현재
+ * 위치로 켜져 있어, 바로 옆 '지원 신청' 버튼과 어느 쪽이 지금 화면인지 어긋난다.
+ */
+const NON_NAV_PATHS: readonly string[] = ["/recruit/apply"];
+
 /** `/project/{id}` 같은 하위 경로에서도 상위 메뉴가 active 로 유지되도록 prefix 까지 본다 */
-const isActiveHref = (pathname: string, href: string) =>
-  href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+const isActiveHref = (pathname: string, href: string) => {
+  if (NON_NAV_PATHS.includes(pathname)) return false;
+  return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+};
 
 /** 뒤 배경을 굴절시키는 유리 필터 */
 const GLASS_FILTER = "blur(24px) saturate(180%)";
