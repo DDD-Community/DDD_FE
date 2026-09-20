@@ -1,5 +1,5 @@
 import type { PublicCohortDto } from "@ddd/api";
-import { findCurriculumDescription } from "@/constants/recruit";
+import { findCurriculumDescription, normalizeCurriculumKey } from "@/constants/recruit";
 
 /** 모집 일정 카드 1건 — 배열 순서가 곧 화면의 01~04 스텝 순서다. */
 export type RecruitScheduleItem = {
@@ -79,7 +79,9 @@ function formatDateRange(start: unknown, end: unknown): { date: string; dateEnd:
  * 날짜가 비어 있는 단계는 카드에서 제외하고, 남은 카드에만 01 부터 스텝 번호를
  * 다시 매긴다. 운영진이 아직 입력하지 않은 일정을 빈 칸으로 노출하지 않기 위함이다.
  */
-export function buildRecruitSchedules(cohort: PublicCohortDto | null | undefined): RecruitScheduleItem[] {
+export function buildRecruitSchedules(
+  cohort: PublicCohortDto | null | undefined,
+): RecruitScheduleItem[] {
   if (!cohort) return [];
 
   const process = isRecord(cohort.process) ? cohort.process : {};
@@ -114,6 +116,8 @@ export function buildRecruitCurriculum(
   cohort: PublicCohortDto | null | undefined,
 ): RecruitCurriculumItem[] {
   const curriculum = Array.isArray(cohort?.curriculum) ? cohort.curriculum : [];
+  // 같은 활동명이 두 번 등장하면(부스팅 데이 1·2회차) 설명이 달라지므로 등장 순번을 센다.
+  const occurrenceByActivity = new Map<string, number>();
 
   return curriculum.flatMap((week, index) => {
     if (!isRecord(week)) return [];
@@ -122,12 +126,16 @@ export function buildRecruitCurriculum(
     const parts = parseDateParts(week.date);
     if (!title || !parts) return [];
 
+    const key = normalizeCurriculumKey(title);
+    const occurrence = occurrenceByActivity.get(key) ?? 0;
+    occurrenceByActivity.set(key, occurrence + 1);
+
     return [
       {
         week: `${index + 1}주차`,
         date: `${parts.month}.${parts.day}`,
         title,
-        description: findCurriculumDescription(title),
+        description: findCurriculumDescription(title, occurrence),
       },
     ];
   });

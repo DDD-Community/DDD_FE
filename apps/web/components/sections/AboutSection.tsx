@@ -7,7 +7,7 @@ import { colors, fontWeights } from "@/constants/tokens";
 const STATS = [
   { label: "DDD가 탄생한지", value: "10년" },
   { label: "누적 멤버 수", value: "470명+" },
-  { label: "런칭 성공률", value: "nn%" },
+  { label: "런칭 성공률", value: "85%" },
 ] as const;
 
 const Section = styled.section({

@@ -93,20 +93,48 @@ const CURRICULUM_DESCRIPTIONS: Record<string, string> = {
   오리엔테이션: "크루원들과 처음 만나서 이야기를 나누는 날이에요",
   orientation: "크루원들과 처음 만나서 이야기를 나누는 날이에요",
   ot: "크루원들과 처음 만나서 이야기를 나누는 날이에요",
-  부스팅데이: "팀에서 정한 아이디어를 바탕으로 기획을 구체화하는 날이에요",
-  직군세션: "같은 직군 멤버들과 모여 각자의 경험과 고민을 나누고, 시야를 넓히는 네트워킹 데이에요",
-  ut: "구현된 서비스를 중심으로 사용성 테스트를 진행하고 완성도를 높여요",
-  ut세션: "구현된 서비스를 중심으로 사용성 테스트를 진행하고 완성도를 높여요",
-  ut1차: "구현된 서비스를 중심으로 사용성 테스트를 진행하고 완성도를 높여요",
-  ut2차: "구현된 서비스를 중심으로 다시 한 번 사용성 테스트를 진행하고 완성도를 높여요",
+  직군세션: "같은 직군 멤버들과 모여 각자의 경험과 고민을 나누고, 시야를 넓히는 네트워킹 데이예요",
+  컨퍼런스: "현업자의 경험을 들으며, 새로운 인사이트를 얻는 날이에요",
+  ut: "구현된 서비스로 사용성 테스트를 진행하고, 완성도를 높여요",
+  ut세션: "구현된 서비스로 사용성 테스트를 진행하고, 완성도를 높여요",
+  ut1차: "구현된 서비스로 사용성 테스트를 진행하고, 완성도를 높여요",
+  ut2차: "구현된 서비스로 다시 한 번 사용성 테스트를 진행하고, 완성도를 높여요",
   중간발표: "현재까지의 진행 상황과 서비스 방향을 공유하고, 피드백을 통해 방향성을 점검해요",
-  티키타카: "프로젝트를 잠시 벗어나, 전체 멤버들과 자유롭게 소통하며 관계를 다지는 날이에요",
-  티키타카데이: "프로젝트를 잠시 벗어나, 전체 멤버들과 자유롭게 소통하며 관계를 다지는 날이에요",
+  티키타카: "프로젝트에서 잠시 벗어나, 전체 멤버들과 자유롭게 소통하며 관계를 다지는 날이에요",
+  티키타카데이: "프로젝트에서 잠시 벗어나, 전체 멤버들과 자유롭게 소통하며 관계를 다지는 날이에요",
   최종발표: "4개월간의 결과물을 정리해 발표하고, 프로젝트를 하나의 서비스로 마무리해요",
   데모데이: "4개월간의 결과물을 정리해 발표하고, 프로젝트를 하나의 서비스로 마무리해요",
 };
 
-/** 활동명(어드민 입력값) → 안내 문구. 매칭 실패 시 빈 문자열. */
-export function findCurriculumDescription(activityName: string): string {
-  return CURRICULUM_DESCRIPTIONS[activityName.replace(/\s+/g, "").toLowerCase()] ?? "";
+/**
+ * 한 기수에 같은 활동명이 두 번 등장하고 설명이 서로 다른 경우.
+ *
+ * 부스팅 데이는 1회차가 기획 구체화, 2회차가 QA·개선이다. 어드민 입력값은 둘 다
+ * "부스팅 데이" 라서 활동명만으로는 구분할 수 없어 등장 순번으로 가른다.
+ * 배열 index = 등장 순번(0-based), 순번이 배열을 넘으면 마지막 문구를 쓴다.
+ */
+const CURRICULUM_DESCRIPTIONS_BY_OCCURRENCE: Record<string, readonly string[]> = {
+  부스팅데이: [
+    "팀에서 정한 아이디어를 바탕으로 기획을 구체화하는 날이에요",
+    "QA와 개선 작업을 통해 서비스의 완성도를 끌어올리는 날이에요",
+  ],
+};
+
+/** 활동명(어드민 입력값) → 정규화 키. 공백 제거 + 소문자. */
+export function normalizeCurriculumKey(activityName: string): string {
+  return activityName.replace(/\s+/g, "").toLowerCase();
+}
+
+/**
+ * 활동명(어드민 입력값) → 안내 문구. 매칭 실패 시 빈 문자열.
+ *
+ * `occurrence` 는 같은 활동명이 해당 기수에서 몇 번째로 등장했는지(0-based)다.
+ */
+export function findCurriculumDescription(activityName: string, occurrence = 0): string {
+  const key = normalizeCurriculumKey(activityName);
+  const variants = CURRICULUM_DESCRIPTIONS_BY_OCCURRENCE[key];
+
+  if (variants) return variants[Math.min(occurrence, variants.length - 1)];
+
+  return CURRICULUM_DESCRIPTIONS[key] ?? "";
 }
