@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
 import type { ProjectCategory, ProjectItem } from "@/constants/projects";
@@ -12,6 +12,8 @@ import {
 import { CursorPagination } from "@/components/ui/CursorPagination";
 import { EmptyNotice } from "@/components/ui/EmptyNotice";
 import { LoadErrorNotice } from "@/components/ui/LoadErrorNotice";
+import { Skeleton, VisuallyHidden } from "@/components/ui/Skeleton";
+import { useCursorPagedList } from "@/hooks/useCursorPagedList";
 import { fetchPublicProjectsPage } from "@/lib/api/project";
 
 const Section = styled.section({
@@ -226,12 +228,66 @@ const Badge = styled.span<{ kind: "primary" | "gray" }>(({ kind }) => ({
   "@media (max-width: 767px)": { fontSize: "14px", lineHeight: "18px" },
 }));
 
+/*
+  불러오는 동안 카드가 들어올 자리를 잡아두는 뼈대.
+
+  여백·모서리·최소 높이를 위 실제 카드와 같은 값으로 맞춘다. 어긋나면 결과가 들어오는
+  순간 그리드 높이가 바뀌어 화면이 한 번 튄다.
+*/
+const SkeletonThumbnail = styled(Skeleton)({
+  aspectRatio: "1 / 1",
+  width: "100%",
+  borderRadius: "30px",
+});
+
+const SkeletonTitle = styled(Skeleton)({
+  width: "70%",
+  height: "32px",
+
+  "@media (max-width: 1024px)": { height: "30px" },
+  "@media (max-width: 768px)": { height: "25px" },
+  "@media (max-width: 767px)": { height: "20px" },
+});
+
+// CardDescription 의 minHeight(2줄) 와 같은 높이를 차지한다.
+const SkeletonDescription = styled(Skeleton)({
+  width: "100%",
+  height: "40px",
+});
+
+const SkeletonBadge = styled(Skeleton)({
+  width: "84px",
+  height: "28px",
+  borderRadius: "30px",
+
+  "@media (max-width: 1024px)": { height: "23px" },
+  "@media (max-width: 768px)": { height: "20px" },
+  "@media (max-width: 767px)": { height: "18px" },
+});
+
+const SkeletonCard = () => (
+  // 읽을 내용이 없는 시각적 자리표시자다. 로딩 중이라는 사실은 아래 status 가 말한다.
+  <Card aria-hidden>
+    <SkeletonThumbnail />
+    <CardBody>
+      <SkeletonTitle />
+      <SkeletonDescription />
+    </CardBody>
+    <BadgeRow>
+      <SkeletonBadge />
+      <SkeletonBadge />
+    </BadgeRow>
+  </Card>
+);
+
 type Props = {
   initialItems?: ProjectItem[];
   initialNextCursor?: string | null;
-  /** 서버에서 그린 1페이지가 실패했는지. 실패한 채로 넘어오면 처음부터 안내 문구를 띄운다. */
+  /** 서버에서 그린 1페이지가 실패했는지. 실패했으면 그 결과를 캐시하지 않고 브라우저에서 다시 받는다. */
   initialLoadFailed?: boolean;
 };
+
+const DEFAULT_TAB: ProjectCategory = "전체";
 
 const toApiPlatform = (tab: ProjectCategory): "IOS" | "AOS" | "WEB" | undefined => {
   if (tab === "전체") return undefined;
@@ -244,113 +300,49 @@ export const ProjectListPageSection = ({
   initialNextCursor = null,
   initialLoadFailed = false,
 }: Props) => {
-  const [activeTab, setActiveTab] = useState<ProjectCategory>("전체");
-  const [projectItems, setProjectItems] = useState<ProjectItem[]>(initialItems);
-  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
-  /** 지나온 페이지마다 그 페이지를 불러올 때 쓴 커서. 1페이지는 커서가 없어 null 이다. */
-  const [cursorHistory, setCursorHistory] = useState<Array<string | null>>([null]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasLoadError, setHasLoadError] = useState(initialLoadFailed);
+  const [activeTab, setActiveTab] = useState<ProjectCategory>(DEFAULT_TAB);
 
-  // 현재 페이지는 히스토리 길이와 항상 같다. 따로 state 로 들고 있으면 둘이 어긋날 수 있다.
-  const currentPage = cursorHistory.length;
-  /**
-   * 번호로 그릴 수 있는 페이지 수.
-   *
-   * 커서 페이지네이션이라 전체 개수를 모른다. 지나온 페이지 + `nextCursor` 가 있으면
-   * 다음 한 칸까지가 지금 확실히 아는 전부다. 뒤로 더 있어도 가보기 전에는 그릴 수 없다.
-   */
-  const knownPageCount = currentPage + (nextCursor ? 1 : 0);
+  /*
+    탭이 바뀔 때만 새로 만들어야 한다. 매 렌더마다 새 함수를 넘기면 훅이 "필터가 또
+    바뀌었다" 고 보고 체인을 다시 걷는다.
+  */
+  const fetchProjectsPage = useCallback(
+    (cursor: string | null) =>
+      fetchPublicProjectsPage({
+        platform: toApiPlatform(activeTab),
+        limit: PROJECT_LIST_PAGE_SIZE,
+        cursor: cursor ?? undefined,
+      }),
+    [activeTab],
+  );
+
+  const {
+    items: projectItems,
+    currentPage,
+    pageCount,
+    isLoading,
+    hasError,
+    goToPage,
+    retry,
+  } = useCursorPagedList<ProjectItem>({
+    filterKey: activeTab,
+    fetchPage: fetchProjectsPage,
+    initialChain: initialLoadFailed
+      ? undefined
+      : { filterKey: DEFAULT_TAB, page: { items: initialItems, nextCursor: initialNextCursor } },
+    logLabel: "project",
+  });
 
   /*
     로딩 중에는 안내를 내지 않는다. 탭을 누르면 `activeTab` 은 즉시 바뀌지만 목록은
     응답이 와야 바뀌므로, 그 사이에 그리면 아직 확인하지도 않은 탭을 두고 "없어요" 라고
     단언하게 된다. 실패는 LoadErrorNotice 가 맡으므로 여기서는 제외한다.
   */
-  const isEmpty = projectItems.length === 0 && !isLoading && !hasLoadError;
+  const isEmpty = projectItems.length === 0 && !isLoading && !hasError;
   const emptyMessage =
     activeTab === "전체"
       ? "아직 등록된 프로젝트가 없어요."
       : `아직 등록된 ${PROJECT_CATEGORY_LABELS[activeTab]} 프로젝트가 없어요.`;
-
-  const goToPage = async (page: number) => {
-    if (isLoading || page === currentPage || page < 1 || page > knownPageCount) return;
-
-    // 앞쪽 페이지는 지나올 때 쓴 커서가 히스토리에 남아 있고, 아직 안 가본 다음 페이지는
-    // 방금 응답이 준 nextCursor 로만 갈 수 있다.
-    const cursor = page <= cursorHistory.length ? cursorHistory[page - 1] : nextCursor;
-
-    setIsLoading(true);
-    setHasLoadError(false);
-    try {
-      const loaded = await fetchPublicProjectsPage({
-        platform: toApiPlatform(activeTab),
-        limit: PROJECT_LIST_PAGE_SIZE,
-        cursor: cursor ?? undefined,
-      });
-      setProjectItems(loaded.items);
-      setNextCursor(loaded.nextCursor);
-      // 뒤로 갈 때는 건너뛴 뒤쪽 히스토리를 버린다. 남겨두면 없는 페이지 번호가 계속 뜬다.
-      setCursorHistory((prev) => [...prev.slice(0, page - 1), cursor]);
-    } catch (error) {
-      console.error("[project] 페이지를 불러오지 못했다.", error);
-      setHasLoadError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * 지금 탭·페이지를 그대로 다시 불러온다.
-   *
-   * 탭을 다시 눌러 재시도하게 두지 않는 이유는, 그 경로가 항상 1페이지로 돌아가기
-   * 때문이다. 3페이지에서 실패한 사람을 말없이 1페이지로 보내면 안 된다.
-   */
-  const retryCurrentPage = async () => {
-    if (isLoading) return;
-    const cursor = cursorHistory[cursorHistory.length - 1];
-    setIsLoading(true);
-    setHasLoadError(false);
-    try {
-      const loaded = await fetchPublicProjectsPage({
-        platform: toApiPlatform(activeTab),
-        limit: PROJECT_LIST_PAGE_SIZE,
-        cursor: cursor ?? undefined,
-      });
-      setProjectItems(loaded.items);
-      setNextCursor(loaded.nextCursor);
-    } catch (error) {
-      console.error("[project] 페이지를 다시 불러오지 못했다.", error);
-      setHasLoadError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const selectTab = async (tab: ProjectCategory) => {
-    if (isLoading || tab === activeTab) return;
-
-    const previousTab = activeTab;
-    setActiveTab(tab);
-    setIsLoading(true);
-    setHasLoadError(false);
-    try {
-      const loaded = await fetchPublicProjectsPage({
-        platform: toApiPlatform(tab),
-        limit: PROJECT_LIST_PAGE_SIZE,
-      });
-      setProjectItems(loaded.items);
-      setNextCursor(loaded.nextCursor);
-      setCursorHistory([null]);
-    } catch (error) {
-      console.error("[project] 탭 목록을 불러오지 못했다.", error);
-      // 탭만 바뀌고 목록은 이전 탭 것이 남으면 화면이 거짓말을 한다. 선택을 되돌린다.
-      setActiveTab(previousTab);
-      setHasLoadError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Section>
@@ -369,45 +361,53 @@ export const ProjectListPageSection = ({
                 role="tab"
                 active={activeTab === tab}
                 aria-selected={activeTab === tab}
-                onClick={() => void selectTab(tab)}
+                onClick={() => setActiveTab(tab)}
               >
                 {PROJECT_CATEGORY_LABELS[tab]}
               </Tab>
             ))}
           </TabList>
-          <Grid>
-            {projectItems.map((project) => (
-              <CardLink key={project.id} href={`/project/${project.id}`}>
-                <Card>
-                  <CardThumbnail>
-                    {project.thumbnail ? <img src={project.thumbnail} alt={project.title} /> : null}
-                  </CardThumbnail>
-                  <CardBody>
-                    <CardTitle>{project.title}</CardTitle>
-                    <CardDescription>{project.description}</CardDescription>
-                  </CardBody>
-                  <BadgeRow>
-                    <Badge kind="primary">{PROJECT_CATEGORY_LABELS[project.category]}</Badge>
-                    <Badge kind="gray">{project.generation}</Badge>
-                  </BadgeRow>
-                </Card>
-              </CardLink>
-            ))}
+          <Grid aria-busy={isLoading}>
+            {isLoading
+              ? Array.from({ length: PROJECT_LIST_PAGE_SIZE }, (_, index) => (
+                  <SkeletonCard key={index} />
+                ))
+              : projectItems.map((project) => (
+                  <CardLink key={project.id} href={`/project/${project.id}`}>
+                    <Card>
+                      <CardThumbnail>
+                        {project.thumbnail ? (
+                          <img src={project.thumbnail} alt={project.title} />
+                        ) : null}
+                      </CardThumbnail>
+                      <CardBody>
+                        <CardTitle>{project.title}</CardTitle>
+                        <CardDescription>{project.description}</CardDescription>
+                      </CardBody>
+                      <BadgeRow>
+                        <Badge kind="primary">{PROJECT_CATEGORY_LABELS[project.category]}</Badge>
+                        <Badge kind="gray">{project.generation}</Badge>
+                      </BadgeRow>
+                    </Card>
+                  </CardLink>
+                ))}
           </Grid>
+          {isLoading ? (
+            <VisuallyHidden role="status">프로젝트 목록을 불러오는 중이에요.</VisuallyHidden>
+          ) : null}
           {isEmpty ? <EmptyNotice message={emptyMessage} /> : null}
-          {hasLoadError ? (
+          {hasError ? (
             <LoadErrorNotice
               message="프로젝트를 불러오지 못했어요. 잠시 후 다시 시도해주세요."
-              onRetry={() => void retryCurrentPage()}
-              isRetrying={isLoading}
+              onRetry={retry}
             />
           ) : null}
           <CursorPagination
             label="프로젝트 페이지네이션"
             currentPage={currentPage}
-            pageCount={knownPageCount}
+            pageCount={pageCount}
             isLoading={isLoading}
-            onChange={(page) => void goToPage(page)}
+            onChange={goToPage}
           />
         </Body>
       </ContentSection>

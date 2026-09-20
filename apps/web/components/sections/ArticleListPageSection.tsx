@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback } from "react";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
 import { ARTICLE_LIST_PAGE_SIZE, type ArticleItem } from "@/constants/articles";
 import { CursorPagination } from "@/components/ui/CursorPagination";
 import { EmptyNotice } from "@/components/ui/EmptyNotice";
 import { LoadErrorNotice } from "@/components/ui/LoadErrorNotice";
+import { Skeleton, VisuallyHidden } from "@/components/ui/Skeleton";
+import { useCursorPagedList } from "@/hooks/useCursorPagedList";
 import { fetchPublicArticlesPage } from "@/lib/api/blog";
 
 const Section = styled.section({
@@ -163,90 +165,118 @@ const Description = styled.p({
   "@media (max-width: 767px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
+/*
+  불러오는 동안 글 한 줄이 들어올 자리를 잡아두는 뼈대.
+
+  Row 와 같은 그리드·여백·썸네일 높이를 쓴다. 어긋나면 결과가 들어오는 순간 목록
+  전체 높이가 바뀌어 스크롤 위치가 튄다.
+*/
+const SkeletonRow = styled.div({
+  display: "grid",
+  gridTemplateColumns: "410px 1fr",
+  alignItems: "center",
+  gap: "24px",
+  padding: "40px 0",
+  borderBottom: "1px solid #c9c9c9",
+
+  "@media (max-width: 1024px)": { gridTemplateColumns: "340px 1fr" },
+  "@media (max-width: 768px)": { gridTemplateColumns: "316px 1fr", padding: "20px 0" },
+  "@media (max-width: 767px)": { gridTemplateColumns: "1fr" },
+});
+
+const SkeletonThumbnail = styled(Skeleton)({
+  width: "100%",
+  height: "324px",
+  borderRadius: "30px",
+
+  "@media (max-width: 1024px)": { height: "260px" },
+  "@media (max-width: 768px)": { height: "240px", borderRadius: "20px" },
+  "@media (max-width: 767px)": { height: "222px", borderRadius: "25px" },
+});
+
+const SkeletonTexts = styled.div({
+  display: "flex",
+  flexDirection: "column",
+  gap: "12px",
+});
+
+const SkeletonTitle = styled(Skeleton)({
+  width: "60%",
+  height: "32px",
+
+  "@media (max-width: 1024px)": { height: "30px" },
+  "@media (max-width: 768px)": { height: "25px" },
+  "@media (max-width: 767px)": { height: "20px" },
+});
+
+// Description 은 3줄까지 차지한다(20/28 → 84px).
+const SkeletonDescription = styled(Skeleton)({
+  width: "100%",
+  height: "84px",
+
+  "@media (max-width: 1024px)": { height: "69px" },
+  "@media (max-width: 768px)": { height: "60px" },
+  "@media (max-width: 767px)": { height: "54px" },
+});
+
+const SkeletonArticleRow = () => (
+  // 읽을 내용이 없는 시각적 자리표시자다. 로딩 중이라는 사실은 아래 status 가 말한다.
+  <SkeletonRow aria-hidden>
+    <SkeletonThumbnail />
+    <SkeletonTexts>
+      <SkeletonTitle />
+      <SkeletonDescription />
+    </SkeletonTexts>
+  </SkeletonRow>
+);
+
 type Props = {
   initialItems?: ArticleItem[];
   initialNextCursor?: string | null;
-  /** 서버에서 그린 1페이지가 실패했는지. 실패한 채로 넘어오면 처음부터 안내를 띄운다. */
+  /** 서버에서 그린 1페이지가 실패했는지. 실패했으면 그 결과를 캐시하지 않고 브라우저에서 다시 받는다. */
   initialLoadFailed?: boolean;
 };
+
+/** 아티클 목록은 필터가 없다 — 체인이 하나뿐이라 캐시 키도 고정값 하나면 된다. */
+const SINGLE_FILTER_KEY = "all";
 
 export const ArticleListPageSection = ({
   initialItems = [],
   initialNextCursor = null,
   initialLoadFailed = false,
 }: Props) => {
-  const [articleItems, setArticleItems] = useState<ArticleItem[]>(initialItems);
-  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
-  /** 지나온 페이지마다 그 페이지를 불러올 때 쓴 커서. 1페이지는 커서가 없어 null 이다. */
-  const [cursorHistory, setCursorHistory] = useState<Array<string | null>>([null]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasLoadError, setHasLoadError] = useState(initialLoadFailed);
+  // 목록 전체가 한 체인이라 요청 함수도 한 번 만들어두면 그만이다.
+  const fetchArticlesPage = useCallback(
+    (cursor: string | null) =>
+      fetchPublicArticlesPage({
+        cursor: cursor ?? undefined,
+        limit: ARTICLE_LIST_PAGE_SIZE,
+      }),
+    [],
+  );
 
-  // 현재 페이지는 히스토리 길이와 항상 같다. 따로 state 로 들고 있으면 둘이 어긋날 수 있다.
-  const currentPage = cursorHistory.length;
-  /**
-   * 번호로 그릴 수 있는 페이지 수.
-   *
-   * 커서 페이지네이션이라 전체 개수를 모른다. 지나온 페이지 + `nextCursor` 가 있으면
-   * 다음 한 칸까지가 지금 확실히 아는 전부다. 뒤로 더 있어도 가보기 전에는 그릴 수 없다.
-   */
-  const knownPageCount = currentPage + (nextCursor ? 1 : 0);
+  const {
+    items: articleItems,
+    currentPage,
+    pageCount,
+    isLoading,
+    hasError,
+    goToPage,
+    retry,
+  } = useCursorPagedList<ArticleItem>({
+    filterKey: SINGLE_FILTER_KEY,
+    fetchPage: fetchArticlesPage,
+    initialChain: initialLoadFailed
+      ? undefined
+      : {
+          filterKey: SINGLE_FILTER_KEY,
+          page: { items: initialItems, nextCursor: initialNextCursor },
+        },
+    logLabel: "blog",
+  });
 
   // 불러오는 중이거나 실패한 목록은 "없음" 이 아니다. 실패는 LoadErrorNotice 가 맡는다.
-  const isEmpty = articleItems.length === 0 && !isLoading && !hasLoadError;
-
-  const goToPage = async (page: number) => {
-    if (isLoading || page === currentPage || page < 1 || page > knownPageCount) return;
-
-    // 앞쪽 페이지는 지나올 때 쓴 커서가 히스토리에 남아 있고, 아직 안 가본 다음 페이지는
-    // 방금 응답이 준 nextCursor 로만 갈 수 있다.
-    const cursor = page <= cursorHistory.length ? cursorHistory[page - 1] : nextCursor;
-
-    setIsLoading(true);
-    setHasLoadError(false);
-    try {
-      const loaded = await fetchPublicArticlesPage({
-        cursor: cursor ?? undefined,
-        limit: ARTICLE_LIST_PAGE_SIZE,
-      });
-      setArticleItems(loaded.items);
-      setNextCursor(loaded.nextCursor);
-      // 뒤로 갈 때는 건너뛴 뒤쪽 히스토리를 버린다. 남겨두면 없는 페이지 번호가 계속 뜬다.
-      setCursorHistory((prev) => [...prev.slice(0, page - 1), cursor]);
-    } catch (error) {
-      // catch 가 없으면 실패가 조용히 삼켜져 버튼만 안 먹는 것처럼 보인다.
-      console.error("[blog] 페이지를 불러오지 못했다.", error);
-      setHasLoadError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * 지금 페이지를 그대로 다시 불러온다.
-   *
-   * 첫 로드가 실패하면 목록이 비어 이전·다음 버튼도 눌릴 게 없다. 프로젝트 목록은
-   * 탭을 다시 눌러 재시도하지만 여기엔 탭이 없어, 안내의 재시도 버튼이 유일한 경로다.
-   */
-  const retryCurrentPage = async () => {
-    if (isLoading) return;
-    const cursor = cursorHistory[cursorHistory.length - 1];
-    setIsLoading(true);
-    setHasLoadError(false);
-    try {
-      const page = await fetchPublicArticlesPage({
-        cursor: cursor ?? undefined,
-        limit: ARTICLE_LIST_PAGE_SIZE,
-      });
-      setArticleItems(page.items);
-      setNextCursor(page.nextCursor);
-    } catch (error) {
-      console.error("[blog] 페이지를 다시 불러오지 못했다.", error);
-      setHasLoadError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const isEmpty = articleItems.length === 0 && !isLoading && !hasError;
 
   return (
     <Section>
@@ -258,40 +288,48 @@ export const ArticleListPageSection = ({
       </Banner>
       <ContentSection>
         <Body>
-          <List>
-            {articleItems.map((article) => (
-              <Row
-                key={article.id}
-                {...(article.externalUrl
-                  ? { href: article.externalUrl, target: "_blank", rel: "noopener noreferrer" }
-                  : { as: "article" as const })}
-              >
-                {article.thumbnail ? (
-                  <Thumbnail src={article.thumbnail} alt={article.title} />
-                ) : (
-                  <ThumbnailPlaceholder />
-                )}
-                <TextWrap>
-                  <Title>{article.title}</Title>
-                  {article.description ? <Description>{article.description}</Description> : null}
-                </TextWrap>
-              </Row>
-            ))}
+          <List aria-busy={isLoading}>
+            {isLoading
+              ? Array.from({ length: ARTICLE_LIST_PAGE_SIZE }, (_, index) => (
+                  <SkeletonArticleRow key={index} />
+                ))
+              : articleItems.map((article) => (
+                  <Row
+                    key={article.id}
+                    {...(article.externalUrl
+                      ? { href: article.externalUrl, target: "_blank", rel: "noopener noreferrer" }
+                      : { as: "article" as const })}
+                  >
+                    {article.thumbnail ? (
+                      <Thumbnail src={article.thumbnail} alt={article.title} />
+                    ) : (
+                      <ThumbnailPlaceholder />
+                    )}
+                    <TextWrap>
+                      <Title>{article.title}</Title>
+                      {article.description ? (
+                        <Description>{article.description}</Description>
+                      ) : null}
+                    </TextWrap>
+                  </Row>
+                ))}
           </List>
+          {isLoading ? (
+            <VisuallyHidden role="status">글 목록을 불러오는 중이에요.</VisuallyHidden>
+          ) : null}
           {isEmpty ? <EmptyNotice message="아직 등록된 글이 없어요." /> : null}
-          {hasLoadError ? (
+          {hasError ? (
             <LoadErrorNotice
               message="글 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요."
-              onRetry={() => void retryCurrentPage()}
-              isRetrying={isLoading}
+              onRetry={retry}
             />
           ) : null}
           <CursorPagination
             label="블로그 페이지네이션"
             currentPage={currentPage}
-            pageCount={knownPageCount}
+            pageCount={pageCount}
             isLoading={isLoading}
-            onChange={(page) => void goToPage(page)}
+            onChange={goToPage}
           />
         </Body>
       </ContentSection>

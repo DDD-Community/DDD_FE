@@ -6,8 +6,9 @@ import { fontWeights } from "@/constants/tokens";
 /*
   커서 페이지네이션 목록이 공유하는 페이지 이동 UI.
 
-  전체 개수를 모르는 커서 방식이라 "총 N페이지" 를 그릴 수 없다. 지나온 페이지와
-  다음 한 칸까지가 지금 확실히 아는 전부이고, 그 범위를 `pageCount` 로 받는다.
+  몇 페이지까지 그릴지는 여기서 정하지 않는다. BE 가 전체 개수를 주지 않아 페이지 수를
+  아는 유일한 방법이 커서 체인을 걸어보는 것이고, 그 일은 `useCursorPagedList` 가 한다.
+  여기서는 그 결과인 `pageCount` 를 그대로 그린다.
 
   1페이지밖에 없어도 숨기지 않는다 — 목록 아래에 이동 수단이 있다는 사실 자체가
   화면의 구조를 알려주고, 글이 늘어났을 때 갑자기 없던 UI 가 나타나지도 않는다.
@@ -55,7 +56,7 @@ const PageNumber = styled.button<{ active: boolean }>(({ active }) => ({
 
 type Props = {
   currentPage: number;
-  /** 번호로 그릴 수 있는 페이지 수. 지나온 페이지 + 다음 커서가 있으면 1. */
+  /** 번호로 그릴 수 있는 페이지 수. 체인을 끝까지 걸었으면 전체 페이지 수와 같다. */
   pageCount: number;
   isLoading: boolean;
   onChange: (page: number) => void;

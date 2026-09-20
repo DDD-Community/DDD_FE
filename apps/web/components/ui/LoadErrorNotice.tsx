@@ -33,34 +33,35 @@ const Message = styled.p({
   "@media (max-width: 768px)": { fontSize: "14px", lineHeight: "18px" },
 });
 
-const RetryButton = styled.button<{ disabled?: boolean }>(({ disabled }) => ({
+const RetryButton = styled.button({
   border: "1px solid #cad5e2",
   borderRadius: "8px",
   background: "transparent",
   padding: "8px 16px",
-  color: disabled ? "#9aa8bb" : "#525252",
+  color: "#525252",
   fontSize: "14px",
   lineHeight: "18px",
   fontWeight: fontWeights.medium,
-  cursor: disabled ? "not-allowed" : "pointer",
-}));
+  cursor: "pointer",
+});
 
 type Props = {
   message?: string;
   onRetry: () => void;
-  /** 재시도 요청이 도는 중. 같은 요청이 겹쳐 나가지 않도록 버튼을 잠근다. */
-  isRetrying?: boolean;
 };
 
+/*
+  재시도 중 상태는 여기서 그리지 않는다. 다시 시도를 누르는 순간 이 안내는 사라지고
+  목록 자리에 스켈레톤이 대신 서므로, 버튼이 "불러오는 중…" 으로 남아 있을 시간이 없다.
+*/
 export const LoadErrorNotice = ({
   message = "목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요.",
   onRetry,
-  isRetrying = false,
 }: Props) => (
   <Wrap role="alert">
     <Message>{message}</Message>
-    <RetryButton type="button" onClick={onRetry} disabled={isRetrying}>
-      {isRetrying ? "불러오는 중…" : "다시 시도"}
+    <RetryButton type="button" onClick={onRetry}>
+      다시 시도
     </RetryButton>
   </Wrap>
 );
