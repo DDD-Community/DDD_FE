@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
 import { ARTICLE_LIST_PAGE_SIZE, type ArticleItem } from "@/constants/articles";
@@ -8,8 +8,8 @@ import { CursorPagination } from "@/components/ui/CursorPagination";
 import { EmptyNotice } from "@/components/ui/EmptyNotice";
 import { LoadErrorNotice } from "@/components/ui/LoadErrorNotice";
 import { Skeleton, VisuallyHidden } from "@/components/ui/Skeleton";
-import { useCursorPagedList } from "@/hooks/useCursorPagedList";
-import { fetchPublicArticlesPage } from "@/lib/api/blog";
+import { slicePage, useCursorPagedList } from "@/hooks/useCursorPagedList";
+import { fetchAllPublicArticles } from "@/lib/api/blog";
 
 const Section = styled.section({
   background: "#fff",
@@ -231,9 +231,9 @@ const SkeletonArticleRow = () => (
 );
 
 type Props = {
-  initialItems?: ArticleItem[];
-  initialNextCursor?: string | null;
-  /** 서버에서 그린 1페이지가 실패했는지. 실패했으면 그 결과를 캐시하지 않고 브라우저에서 다시 받는다. */
+  /** 서버에서 받아둔 아티클 **전부**. 한 페이지가 아니다. */
+  initialArticles?: ArticleItem[];
+  /** 서버 조회가 실패했는지. 실패했으면 그 빈 목록을 캐시하지 않고 브라우저에서 다시 받는다. */
   initialLoadFailed?: boolean;
 };
 
@@ -241,19 +241,21 @@ type Props = {
 const SINGLE_FILTER_KEY = "all";
 
 export const ArticleListPageSection = ({
-  initialItems = [],
-  initialNextCursor = null,
+  initialArticles = [],
   initialLoadFailed = false,
 }: Props) => {
-  // 목록 전체가 한 체인이라 요청 함수도 한 번 만들어두면 그만이다.
-  const fetchArticlesPage = useCallback(
-    (cursor: string | null) =>
-      fetchPublicArticlesPage({
-        cursor: cursor ?? undefined,
-        limit: ARTICLE_LIST_PAGE_SIZE,
-      }),
-    [],
-  );
+  // 한 번 받아둔 목록 전체. 탭이 없어 배열 하나면 되고, 서버가 내려준 걸로 시작한다.
+  const allArticlesRef = useRef<ArticleItem[] | null>(initialLoadFailed ? null : initialArticles);
+
+  /*
+    서버 조회가 성공했다면 이 함수는 한 번도 실제로 돌지 않는다 — 페이지 넘기기는 전부
+    받아둔 배열을 자르는 것으로 끝나기 때문이다. 서버가 실패했을 때만 여기서 받아온다.
+  */
+  const fetchArticlesPage = useCallback(async (cursor: string | null) => {
+    const all = allArticlesRef.current ?? (await fetchAllPublicArticles());
+    allArticlesRef.current = all;
+    return slicePage(all, cursor, ARTICLE_LIST_PAGE_SIZE);
+  }, []);
 
   const {
     items: articleItems,
@@ -270,7 +272,7 @@ export const ArticleListPageSection = ({
       ? undefined
       : {
           filterKey: SINGLE_FILTER_KEY,
-          page: { items: initialItems, nextCursor: initialNextCursor },
+          page: slicePage(initialArticles, null, ARTICLE_LIST_PAGE_SIZE),
         },
     logLabel: "blog",
   });

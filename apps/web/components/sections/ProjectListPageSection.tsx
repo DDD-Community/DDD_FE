@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
 import type { ProjectCategory, ProjectItem } from "@/constants/projects";
@@ -13,8 +13,8 @@ import { CursorPagination } from "@/components/ui/CursorPagination";
 import { EmptyNotice } from "@/components/ui/EmptyNotice";
 import { LoadErrorNotice } from "@/components/ui/LoadErrorNotice";
 import { Skeleton, VisuallyHidden } from "@/components/ui/Skeleton";
-import { useCursorPagedList } from "@/hooks/useCursorPagedList";
-import { fetchPublicProjectsPage } from "@/lib/api/project";
+import { slicePage, useCursorPagedList } from "@/hooks/useCursorPagedList";
+import { fetchAllPublicProjects } from "@/lib/api/project";
 
 const Section = styled.section({
   background: "#ffffff",
@@ -281,9 +281,9 @@ const SkeletonCard = () => (
 );
 
 type Props = {
-  initialItems?: ProjectItem[];
-  initialNextCursor?: string | null;
-  /** 서버에서 그린 1페이지가 실패했는지. 실패했으면 그 결과를 캐시하지 않고 브라우저에서 다시 받는다. */
+  /** 서버에서 받아둔 "전체" 탭 프로젝트 **전부**. 한 페이지가 아니다. */
+  initialProjects?: ProjectItem[];
+  /** 서버 조회가 실패했는지. 실패했으면 그 빈 목록을 캐시하지 않고 브라우저에서 다시 받는다. */
   initialLoadFailed?: boolean;
 };
 
@@ -296,23 +296,31 @@ const toApiPlatform = (tab: ProjectCategory): "IOS" | "AOS" | "WEB" | undefined 
 };
 
 export const ProjectListPageSection = ({
-  initialItems = [],
-  initialNextCursor = null,
+  initialProjects = [],
   initialLoadFailed = false,
 }: Props) => {
   const [activeTab, setActiveTab] = useState<ProjectCategory>(DEFAULT_TAB);
 
+  // 탭별로 한 번 받아둔 전체 목록. 서버가 내려준 "전체" 탭 몫으로 시작한다.
+  const allByTabRef = useRef<Partial<Record<ProjectCategory, ProjectItem[]>>>(
+    initialLoadFailed ? {} : { [DEFAULT_TAB]: initialProjects },
+  );
+
   /*
     탭이 바뀔 때만 새로 만들어야 한다. 매 렌더마다 새 함수를 넘기면 훅이 "필터가 또
     바뀌었다" 고 보고 체인을 다시 걷는다.
+
+    한 탭에서 네트워크를 타는 건 첫 호출 한 번뿐이고, 그 뒤 페이지는 받아둔 배열을
+    자르기만 한다 — 그래서 훅의 배경 선행이 요청 없이 즉시 끝나고 페이지 번호가 첫
+    화면부터 정확하다.
   */
   const fetchProjectsPage = useCallback(
-    (cursor: string | null) =>
-      fetchPublicProjectsPage({
-        platform: toApiPlatform(activeTab),
-        limit: PROJECT_LIST_PAGE_SIZE,
-        cursor: cursor ?? undefined,
-      }),
+    async (cursor: string | null) => {
+      const cached = allByTabRef.current[activeTab];
+      const all = cached ?? (await fetchAllPublicProjects({ platform: toApiPlatform(activeTab) }));
+      allByTabRef.current[activeTab] = all;
+      return slicePage(all, cursor, PROJECT_LIST_PAGE_SIZE);
+    },
     [activeTab],
   );
 
@@ -329,7 +337,7 @@ export const ProjectListPageSection = ({
     fetchPage: fetchProjectsPage,
     initialChain: initialLoadFailed
       ? undefined
-      : { filterKey: DEFAULT_TAB, page: { items: initialItems, nextCursor: initialNextCursor } },
+      : { filterKey: DEFAULT_TAB, page: slicePage(initialProjects, null, PROJECT_LIST_PAGE_SIZE) },
     logLabel: "project",
   });
 

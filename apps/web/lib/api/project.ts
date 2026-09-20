@@ -2,6 +2,7 @@ import { ApiError, projectAPI, type ProjectPlatform } from "@ddd/api";
 import type { ProjectItem } from "@/constants/projects";
 import { mapProject } from "@/lib/mappers/project";
 import { ensureApiConfigured } from "./config";
+import { fetchAllPages, MAX_LIMIT } from "./fetchAllPages";
 
 export type ProjectCursorPage = {
   items: ProjectItem[];
@@ -25,6 +26,21 @@ export async function fetchPublicProjectsPage(options?: {
     items: response.items.map(mapProject),
     nextCursor: response.nextCursor ?? null,
   };
+}
+
+/**
+ * 공개 프로젝트 전부.
+ *
+ * BE 커서 버그 때문에 한 번에 다 받는다 — 이유와 되돌리는 시점은 `fetchAllPages` 참고.
+ * `MAX_LIMIT` 이 BE 가 받아주는 최댓값이라(101 부터 400) 현재 규모에선 요청 1번으로 끝난다.
+ */
+export async function fetchAllPublicProjects(options?: {
+  platform?: ProjectPlatform;
+}): Promise<ProjectItem[]> {
+  return fetchAllPages(
+    (cursor) => fetchPublicProjectsPage({ cursor, limit: MAX_LIMIT, platform: options?.platform }),
+    "project",
+  );
 }
 
 /** BE 가 "그런 프로젝트는 없다" 는 뜻으로 돌려주는 코드. */

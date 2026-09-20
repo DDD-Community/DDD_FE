@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
 import { ProjectListPageSection } from "@/components/sections/ProjectListPageSection";
-import { PROJECT_LIST_PAGE_SIZE } from "@/constants/projects";
-import { fetchPublicProjectsPage, type ProjectCursorPage } from "@/lib/api/project";
+import type { ProjectItem } from "@/constants/projects";
+import { fetchAllPublicProjects } from "@/lib/api/project";
 
 export const metadata: Metadata = {
   title: "DDD 프로젝트 - 사이드 프로젝트 결과물 모음",
@@ -11,17 +11,13 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectPage() {
-  const { items, nextCursor, hasFailed } = await loadFirstPage();
+  const { projects, hasFailed } = await loadProjects();
 
   return (
     <>
       <Navigation />
       <main>
-        <ProjectListPageSection
-          initialItems={items}
-          initialNextCursor={nextCursor}
-          initialLoadFailed={hasFailed}
-        />
+        <ProjectListPageSection initialProjects={projects} initialLoadFailed={hasFailed} />
       </main>
       <Footer />
     </>
@@ -29,19 +25,21 @@ export default async function ProjectPage() {
 }
 
 /*
-  목록을 못 불러왔다고 /project 를 통째로 에러 화면으로 떨어뜨리지 않는다.
+  첫 페이지가 아니라 "전체" 탭 목록 전부를 받는다.
 
-  BE 장애든 응답 형태가 어긋난 경우든 여기서 던지면 라우트 전체가 error.tsx 로 가고,
-  사용자는 탭 하나 눌러볼 기회도 없이 막힌다. 탭·페이지네이션은 클라이언트에서 다시
-  요청하므로, 빈 목록과 안내 문구로 넘겨 그 자리에서 다시 시도하게 둔다.
-  원인은 서버 로그로 남긴다.
+  BE 커서가 페이지 경계에서 항목을 빠뜨려서(`fetchAllPublicProjects` 주석 참고) 커서를
+  타는 것 자체를 피해야 한다. 덤으로 브라우저가 페이지를 넘길 때 요청이 필요 없어지고,
+  전체 페이지 수도 첫 화면부터 정확히 나온다. 현재 23개 기준 gzip 으로 1.6KB 쯤 는다.
+
+  목록을 못 불러왔다고 /project 를 통째로 에러 화면으로 떨어뜨리지는 않는다. 여기서
+  던지면 라우트 전체가 error.tsx 로 가고 사용자는 탭 하나 눌러볼 기회도 없이 막힌다.
+  빈 목록과 안내 문구로 넘겨 그 자리에서 다시 시도하게 둔다. 원인은 서버 로그로 남긴다.
 */
-async function loadFirstPage(): Promise<ProjectCursorPage & { hasFailed: boolean }> {
+async function loadProjects(): Promise<{ projects: ProjectItem[]; hasFailed: boolean }> {
   try {
-    const page = await fetchPublicProjectsPage({ limit: PROJECT_LIST_PAGE_SIZE });
-    return { ...page, hasFailed: false };
+    return { projects: await fetchAllPublicProjects(), hasFailed: false };
   } catch (error) {
-    console.error("[project] 목록 첫 페이지를 불러오지 못했다.", error);
-    return { items: [], nextCursor: null, hasFailed: true };
+    console.error("[project] 목록을 불러오지 못했다.", error);
+    return { projects: [], hasFailed: true };
   }
 }

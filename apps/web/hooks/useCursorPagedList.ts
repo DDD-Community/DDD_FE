@@ -21,6 +21,22 @@ export type CursorPage<T> = {
   nextCursor: string | null;
 };
 
+/**
+ * 이미 받아둔 목록 전체에서 한 페이지를 잘라낸다. 커서는 그냥 시작 인덱스 문자열이다.
+ *
+ * BE 커서를 한 칸씩 타면 항목이 누락돼서(`lib/api/fetchAllPages` 참고) 목록을 통째로
+ * 받아 브라우저에서 나눈다. 이 훅은 커서의 내용을 들여다보지 않으므로 가짜 커서로 충분하고,
+ * 덕분에 BE 가 고쳐지면 훅은 그대로 두고 `fetchPage` 만 진짜 커서 방식으로 되돌리면 된다.
+ */
+export function slicePage<T>(all: T[], cursor: string | null, pageSize: number): CursorPage<T> {
+  const offset = cursor ? Number(cursor) : 0;
+  const nextOffset = offset + pageSize;
+  return {
+    items: all.slice(offset, nextOffset),
+    nextCursor: nextOffset < all.length ? String(nextOffset) : null,
+  };
+}
+
 type Chain<T> = {
   /** 1페이지부터 순서대로 이어붙인 페이지들. 커서는 앞에서 뒤로만 가므로 중간은 비지 않는다. */
   pages: Array<CursorPage<T>>;
