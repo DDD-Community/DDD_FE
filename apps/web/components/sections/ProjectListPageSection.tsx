@@ -159,6 +159,8 @@ const CardThumbnail = styled.div({
     width: "100%",
     height: "100%",
     objectFit: "cover",
+    // 세로 크롭이 상단 카피 대신 아래쪽만 먹게 한다. ProjectCard 와 같은 이유.
+    objectPosition: "top",
     display: "block",
   },
 });
