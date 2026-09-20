@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { CSSObject } from "@emotion/react";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
@@ -13,6 +14,13 @@ const NAV_LINKS = [
   { label: "프로젝트", href: "/project" },
   { label: "블로그", href: "/blog" },
 ] as const;
+
+/** 드로어가 화면을 덮는 모바일에서는 로고 대신 '홈' 항목으로 홈 진입 경로를 노출한다 */
+const MOBILE_NAV_LINKS = [{ label: "홈", href: "/" }, ...NAV_LINKS] as const;
+
+/** `/project/{id}` 같은 하위 경로에서도 상위 메뉴가 active 로 유지되도록 prefix 까지 본다 */
+const isActiveHref = (pathname: string, href: string) =>
+  href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
 /** 뒤 배경을 굴절시키는 유리 필터 */
 const GLASS_FILTER = "blur(24px) saturate(180%)";
@@ -174,6 +182,27 @@ const NavPill = styled.nav({
   ].join(", "),
 });
 
+/**
+ * 현재 경로 메뉴를 표시하는 파란 틴트 칩.
+ *
+ * '지금 이 페이지' 는 안내일 뿐 액션이 아니므로, 솔리드 CTA 보다 한 단계 조용하게 둔다.
+ * 연한 배경 + primary 글자 + 얇은 링 조합이면 CTA 와 헷갈리지 않으면서도 선택 상태는 분명하다.
+ *
+ * 상태 전달은 별도 prop 대신 `aria-current` 속성을 그대로 쓴다. `&:hover` 와 특이도가 같아서
+ * (클래스+가상클래스 vs 클래스+속성) 소스 순서로 승패가 갈리므로, 각 컴포넌트에서 반드시
+ * hover/active 블록 **뒤에** 선언한다. 객체 키 병합이 아니라 캐스케이드로 겹치므로
+ * hover 의 transform 같은 나머지 선언은 그대로 살아 있다.
+ */
+const activeItemSurface: CSSObject = {
+  background: colors.mainLight,
+  color: colors.primary,
+  fontWeight: fontWeights.semiBold,
+  boxShadow: "inset 0 0 0 1px rgba(46, 113, 255, 0.28)",
+};
+
+/** 파란 CTA 를 한 톤 어둡게 누르는 hover 색 */
+const CTA_HOVER_BACKGROUND = "#1f5fe0";
+
 const NavItem = styled(Link)({
   ...glassContent,
   display: "flex",
@@ -211,6 +240,8 @@ const NavItem = styled(Link)({
   "&:active": {
     transform: "scale(0.97)",
   },
+
+  '&[aria-current="page"]': activeItemSurface,
 
   "@media (prefers-reduced-motion: reduce)": {
     transition: "none",
@@ -251,7 +282,7 @@ const CtaButton = styled(Link)({
   },
 
   "&:hover": {
-    background: "#1f5fe0",
+    background: CTA_HOVER_BACKGROUND,
   },
 
   '&[aria-disabled="true"]': {
@@ -351,6 +382,8 @@ const MobileItem = styled(Link)({
     background: "linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.5))",
     boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.95)",
   },
+
+  '&[aria-current="page"]': activeItemSurface,
 });
 
 /** 데스크톱 CTA 와 동일한 솔리드 스타일 — 유리 재질 미적용 */
@@ -370,7 +403,7 @@ const MobileCta = styled(Link)({
   transition: "background 0.15s",
 
   "&:active": {
-    background: "#1f5fe0",
+    background: CTA_HOVER_BACKGROUND,
   },
 
   '&[aria-disabled="true"]': {
@@ -381,6 +414,7 @@ const MobileCta = styled(Link)({
 
 export const Navigation = () => {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const { isRecruitOpen, isRecruitClosed, recruitButtonLabels } = useRecruitStatus();
   const handleCtaClick = useRecruitCtaClick();
   const recruitActionHref = isRecruitOpen ? "/recruit/apply" : "/recruit";
@@ -394,7 +428,11 @@ export const Navigation = () => {
           </LogoLink>
           <NavPill>
             {NAV_LINKS.map(({ label, href }) => (
-              <NavItem key={href} href={href}>
+              <NavItem
+                key={href}
+                href={href}
+                aria-current={isActiveHref(pathname, href) ? "page" : undefined}
+              >
                 {label}
               </NavItem>
             ))}
@@ -430,8 +468,13 @@ export const Navigation = () => {
           {recruitButtonLabels.navigation}
         </CtaButton>
         <MobileDrawer id="mobile-nav-drawer" open={open}>
-          {NAV_LINKS.map(({ label, href }) => (
-            <MobileItem key={href} href={href} onClick={() => setOpen(false)}>
+          {MOBILE_NAV_LINKS.map(({ label, href }) => (
+            <MobileItem
+              key={href}
+              href={href}
+              aria-current={isActiveHref(pathname, href) ? "page" : undefined}
+              onClick={() => setOpen(false)}
+            >
               {label}
             </MobileItem>
           ))}

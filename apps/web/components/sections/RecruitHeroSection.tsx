@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
@@ -41,14 +42,23 @@ const Section = styled.section({
  * 암전 오버레이는 두지 않는다. 시안 완성본과 배경 원본의 픽셀이 일치해서
  * (#080a0a / #0a0c0b / #161e18 …) 그 위에 덮인 레이어가 없음이 확인됐다.
  */
-const Bg = styled.div<{ src: string }>(({ src }) => ({
+/*
+  히어로 배경.
+
+  CSS `background-image` 로 두면 원본 파일을 그대로 받는다. 모집 중에 깔리는
+  recruit-hero-open.jpg 는 464KB 라, 모집이 열리는 순간 이 페이지가 가장 무거워진다.
+  next/image 로 넘겨 화면 폭에 맞는 webp 를 받게 한다.
+*/
+const Bg = styled.div({
   position: "absolute",
   inset: 0,
   backgroundColor: colors.background,
-  backgroundImage: `url('${src}')`,
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-}));
+
+  "& img": {
+    objectFit: "cover",
+    objectPosition: "center",
+  },
+});
 
 const Inner = styled.div({
   position: "relative",
@@ -203,7 +213,16 @@ export const RecruitHeroSection = () => {
 
   return (
     <Section>
-      <Bg src={isRecruitOpen ? assets.recruitHeroOpenBg : assets.heroBg} />
+      <Bg>
+        {/* 화면을 꽉 채우는 배경이자 대체로 LCP 요소다 — 미루지 않고 먼저 받는다. */}
+        <Image
+          src={isRecruitOpen ? assets.recruitHeroOpenBg : assets.heroBg}
+          alt=""
+          fill
+          sizes="100vw"
+          priority
+        />
+      </Bg>
       <Inner>
         <Label>Recruitment</Label>
         <div style={{ display: "flex", flexDirection: "column", gap: "40px", width: "100%" }}>

@@ -1,8 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { assets } from "@/constants/assets";
+
+/*
+  3D 오브젝트가 실제로 그려지는 폭. 위 Hero3DImage 의 중단점과 같은 값이라
+  브라우저가 그 폭에 맞는 크기만 받아간다. 원본은 505×506 이다.
+*/
+const HERO_3D_SIZES = "(max-width: 767px) 185px, (max-width: 1024px) 331px, 342px";
 import { useRecruitCtaClick, useRecruitStatus } from "@/components/providers/RecruitStatusProvider";
 import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
 
@@ -55,14 +62,19 @@ const Hero3D = styled.picture({
   pointerEvents: "none",
 });
 
-const Hero3DImage = styled.img({
+/*
+  3D "D" 오브젝트.
+
+  전에는 <img src> 와 CSS `background: url(...)` 이 같은 파일을 가리키고 있었다.
+  img 가 그려지면 배경은 그 뒤에 가려 보이지도 않는데, next/image 로 바꾸면
+  배경만 원본 PNG(290KB) 를 그대로 받아 최적화가 무의미해지므로 여기서 지운다.
+*/
+const Hero3DImage = styled(Image)({
   width: "341.804px",
   height: "350.535px",
   flexShrink: 0,
   aspectRatio: "39/40",
   opacity: 0.6,
-  background: `url(${assets.hero3d}) no-repeat center center`,
-  backgroundSize: "cover",
 
   "@media (max-width: 1024px)": {
     width: "331px",
@@ -220,10 +232,19 @@ export const HeroSection = () => {
   return (
     <Section>
       <BgImage>
-        <img src={assets.heroBg} alt="" />
+        {/* 화면을 꽉 채우는 배경이자 대체로 LCP 요소다 — 미루지 않고 먼저 받는다. */}
+        <Image src={assets.heroBg} alt="" fill sizes="100vw" priority />
       </BgImage>
       <Hero3D>
-        <Hero3DImage src={assets.hero3d} alt="" />
+        <Hero3DImage
+          src={assets.hero3d}
+          alt=""
+          width={342}
+          height={351}
+          sizes={HERO_3D_SIZES}
+          // 첫 화면 한가운데라 lazy 로 미루면 히어로가 비어 보인다.
+          priority
+        />
       </Hero3D>
       <Content>
         <HeadlineWrapper>
