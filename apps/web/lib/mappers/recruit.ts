@@ -74,6 +74,30 @@ function formatDateRange(start: unknown, end: unknown): { date: string; dateEnd:
 }
 
 /**
+ * [임시 패치 · 2026-09-21] 모집 시작일 표시 보정. BE 타임존 수정과 함께 제거한다.
+ *
+ * BE 는 모집 기간을 UTC 자정으로 저장한다. 어드민에 "2026-09-21" 을 넣으면
+ * `2026-09-21T00:00:00.000Z` = KST 9월 21일 **오전 9시** 가 되어, 공지한 21일 0시에
+ * 지원이 열리지 않았다. 게이트를 앞당기려고 어드민 값을 하루 내린 09-20 으로 넣어둔
+ * 상태라(그래야 09-20 09:00 KST 부터 열린다), 그대로 두면 모집 일정 카드가 공지와
+ * 다른 09.20 으로 나간다. 그 한 칸만 되돌린다.
+ *
+ * 종료일은 건드리지 않는다. 어드민 값이 그대로라 표시도 이미 맞다.
+ *
+ * 제거 조건: BE 가 날짜만 온 값을 KST 자정으로 해석하도록 고쳐지고, 어드민의
+ * 모집 시작일이 09-21 로 원복되면 이 상수와 아래 참조를 함께 지운다. 원복만 하고
+ * 이 표를 남겨두면 표시가 거꾸로 하루 밀린다.
+ */
+const RECRUIT_START_DISPLAY_OVERRIDES: Record<string, string> = {
+  "2026-09-20": "2026-09-21",
+};
+
+function overrideRecruitStartForDisplay(value: unknown): unknown {
+  if (typeof value !== "string") return value;
+  return RECRUIT_START_DISPLAY_OVERRIDES[value.slice(0, 10)] ?? value;
+}
+
+/**
  * 활성 기수 응답 → 모집 일정 카드 목록.
  *
  * 날짜가 비어 있는 단계는 카드에서 제외하고, 남은 카드에만 01 부터 스텝 번호를
@@ -85,7 +109,10 @@ export function buildRecruitSchedules(
   if (!cohort) return [];
 
   const process = isRecord(cohort.process) ? cohort.process : {};
-  const documentRange = formatDateRange(cohort.recruitStartAt, cohort.recruitEndAt);
+  const documentRange = formatDateRange(
+    overrideRecruitStartForDisplay(cohort.recruitStartAt),
+    cohort.recruitEndAt,
+  );
   const interviewRange = formatDateRange(process.interviewStartDate, process.interviewEndDate);
 
   const stages: Array<{ label: string; date: string | null; dateEnd?: string }> = [
