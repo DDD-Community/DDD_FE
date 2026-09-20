@@ -85,7 +85,7 @@ const FooterSection = styled.div({
 });
 
 const FooterLabel = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.small,
   fontWeight: fontWeights.regular,
   lineHeight: lineHeights.small,
@@ -106,7 +106,7 @@ const FooterLabel = styled.p({
 });
 
 const FooterEmail = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.headingLarge,
   fontWeight: fontWeights.semiBold,
   lineHeight: lineHeights.headingLarge,
@@ -178,7 +178,7 @@ const SocialLink = styled.a({
   display: "flex",
   alignItems: "center",
   gap: "4px",
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.headingLarge,
   fontWeight: fontWeights.semiBold,
   lineHeight: lineHeights.headingLarge,
@@ -217,7 +217,7 @@ const Divider = styled.span({
 });
 
 const Copyright = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.small,
   fontWeight: fontWeights.medium,
   lineHeight: lineHeights.small,

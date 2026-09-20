@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import Image from "next/image";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
 import type { ProjectCategory, ProjectItem } from "@/constants/projects";
@@ -58,6 +59,11 @@ const ContentSection = styled.div({
 const Body = styled.div({
   maxWidth: "1280px",
   margin: "0 auto",
+
+  // 페이지를 넘길 때 여기로 스크롤이 돌아온다. 헤더가 고정이라 그만큼 아래에서 멈춰야
+  // 탭이 가려지지 않는다(헤더 = 상단 여백 32 + 로고 55, 모바일 16 + 48).
+  scrollMarginTop: "104px",
+  "@media (max-width: 768px)": { scrollMarginTop: "80px" },
 });
 
 const Label = styled.p({
@@ -151,6 +157,9 @@ const CardThumbnail = styled.div({
   overflow: "hidden",
   width: "100%",
   background: colors.categoryBg,
+
+  // next/image 의 fill 은 가장 가까운 위치 지정 조상을 기준으로 깔린다.
+  position: "relative",
 
   // Card 가 column flex 라 min-height 가 auto 면 안쪽 img 의 원본 높이가
   // 자동 최소 높이가 되어 위 aspectRatio 를 밀어낸다. 세로형 썸네일만
@@ -289,6 +298,17 @@ type Props = {
 
 const DEFAULT_TAB: ProjectCategory = "전체";
 
+/*
+  브라우저가 받아올 썸네일 크기를 고른다. 아래 Grid 의 열 수와 같은 순서로 적는다 —
+  어긋나면 필요보다 큰 이미지를 받거나(느려짐) 작은 이미지를 늘려 그린다(흐릿해짐).
+
+  본문은 최대 1280px 에 3열·간격 24px 이라 한 칸이 약 427px 이다.
+*/
+const THUMBNAIL_SIZES = "(max-width: 767px) 100vw, (max-width: 1024px) 50vw, 427px";
+
+/** 그리드 첫 줄(3열)에 들어가는 카드 수. 이만큼은 lazy 로 미루지 않는다. */
+const FIRST_ROW_COUNT = 3;
+
 const toApiPlatform = (tab: ProjectCategory): "IOS" | "AOS" | "WEB" | undefined => {
   if (tab === "전체") return undefined;
   if (tab === "iOS") return "IOS";
@@ -332,6 +352,7 @@ export const ProjectListPageSection = ({
     hasError,
     goToPage,
     retry,
+    listTopRef,
   } = useCursorPagedList<ProjectItem>({
     filterKey: activeTab,
     fetchPage: fetchProjectsPage,
@@ -361,7 +382,7 @@ export const ProjectListPageSection = ({
         </Heading>
       </Banner>
       <ContentSection>
-        <Body>
+        <Body ref={listTopRef}>
           <TabList role="tablist" aria-label="프로젝트 카테고리">
             {PROJECT_CATEGORY_TABS.map((tab) => (
               <Tab
@@ -380,12 +401,23 @@ export const ProjectListPageSection = ({
               ? Array.from({ length: PROJECT_LIST_PAGE_SIZE }, (_, index) => (
                   <SkeletonCard key={index} />
                 ))
-              : projectItems.map((project) => (
+              : projectItems.map((project, index) => (
                   <CardLink key={project.id} href={`/project/${project.id}`}>
                     <Card>
                       <CardThumbnail>
                         {project.thumbnail ? (
-                          <img src={project.thumbnail} alt={project.title} />
+                          <Image
+                            src={project.thumbnail}
+                            alt={project.title}
+                            fill
+                            sizes={THUMBNAIL_SIZES}
+                            /*
+                              첫 줄은 화면을 열자마자 보이는 자리다. next/image 는
+                              기본이 lazy 라 이 세 장까지 뒤로 미뤄지면 가장 큰
+                              요소가 늦게 그려진다. 나머지는 lazy 로 둔다.
+                            */
+                            priority={index < FIRST_ROW_COUNT}
+                          />
                         ) : null}
                       </CardThumbnail>
                       <CardBody>

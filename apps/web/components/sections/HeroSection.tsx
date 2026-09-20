@@ -109,7 +109,7 @@ const HeadlineWrapper = styled.div({
 });
 
 const GradientHeadline = styled.h1({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   // 피그마는 줄바꿈을 텍스트에 고정해 두었다(1920: 2줄 / 375: 3줄).
   // \n 을 살리되, 지정 폭을 넘치면 자연 줄바꿈으로 흘려보낸다.
   whiteSpace: "pre-line",
@@ -159,7 +159,7 @@ const MobileBreak = styled.br({
 });
 
 const Subtitle = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   // clamp 하한은 375 브레이크포인트의 xl/Heading/Large (16/20) 다.
   fontSize: "clamp(16px, calc(1.541vw + 8.22px), 20px)",
   fontWeight: fontWeights.semiBold,
@@ -176,7 +176,7 @@ const CtaButton = styled(Link)({
   background: colors.primary,
   borderRadius: "100px",
   color: colors.textInverse,
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.large,
   fontWeight: fontWeights.medium,
   lineHeight: lineHeights.paragraphLarge,

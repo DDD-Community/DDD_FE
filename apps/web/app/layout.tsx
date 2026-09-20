@@ -3,6 +3,7 @@ import { PreAlertModal } from "@/components/modals/PreAlertModal";
 import { RecruitStatusProvider } from "@/components/providers/RecruitStatusProvider";
 import { getActiveCohort } from "@/lib/api/activeCohort.server";
 import { getApiPreconnectOrigin } from "@/lib/api/config";
+import { pretendard } from "./fonts";
 import { getPreNotificationCohortName, parseRecruitStatus } from "@/lib/mappers/cohort";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -51,7 +52,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const apiOrigin = getApiPreconnectOrigin();
 
   return (
-    <html lang="ko">
+    <html lang="ko" className={pretendard.variable}>
       <body>
         {/*
           API 도메인에 미리 연결해둔다 (React 가 <head> 로 hoist 한다).

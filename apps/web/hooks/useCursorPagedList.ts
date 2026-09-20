@@ -75,6 +75,10 @@ type Options<T> = {
  */
 const DEFAULT_BACKGROUND_PAGE_LIMIT = 20;
 
+/** "움직임 최소화" 를 켜 둔 사용자에게는 부드러운 스크롤 대신 즉시 이동한다. */
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 export function useCursorPagedList<T>({
   filterKey,
   fetchPage,
@@ -127,6 +131,14 @@ export function useCursorPagedList<T>({
 
   /** 지금 나가 있는 요청의 자리(`필터:이미 받은 페이지 수`). 같은 자리를 두 번 채우지 않는다. */
   const inFlightRef = useRef<string | null>(null);
+
+  /**
+   * 페이지를 옮긴 뒤 화면이 돌아올 자리. 목록을 감싼 요소에 붙인다.
+   *
+   * 이 요소의 위쪽(배너·탭)은 페이지가 바뀌어도 그대로라 위치가 흔들리지 않는다.
+   * 고정 헤더에 첫 줄이 가리지 않도록 붙이는 쪽에서 `scroll-margin-top` 을 준다.
+   */
+  const listTopRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (chain?.isComplete) return;
@@ -187,6 +199,18 @@ export function useCursorPagedList<T>({
         // 배경 선행이 실패해 멈춰 있었다면 이동을 계기로 다시 시도한다.
         return { ...previous, pageIndex: page - 1, hasError: false };
       });
+
+      /*
+        번호를 누른 자리는 목록 맨 아래다. 스크롤을 그대로 두면 새 페이지의 첫 줄이
+        화면 위로 밀려나 있어 아무것도 안 바뀐 것처럼 보인다.
+
+        기준 요소의 위쪽은 페이지가 바뀌어도 그대로이므로 상태가 반영되기를 기다리지
+        않고 지금 옮겨도 된다. 아직 안 받은 페이지라도 스켈레톤이 같은 높이를 차지한다.
+      */
+      listTopRef.current?.scrollIntoView({
+        block: "start",
+        behavior: prefersReducedMotion() ? "auto" : "smooth",
+      });
     },
     [filterKey],
   );
@@ -205,5 +229,6 @@ export function useCursorPagedList<T>({
     hasError: hasBlockingError,
     goToPage,
     retry,
+    listTopRef,
   };
 }

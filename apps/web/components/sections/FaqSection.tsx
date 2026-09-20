@@ -94,7 +94,7 @@ const TitleArea = styled.div({
 });
 
 const SectionLabel = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: "20px",
   fontWeight: fontWeights.medium,
   lineHeight: "28px",
@@ -114,7 +114,7 @@ const SectionLabel = styled.p({
 });
 
 const SectionTitle = styled.h2({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: "28px",
   fontWeight: fontWeights.semiBold,
   lineHeight: "32px",
@@ -163,7 +163,7 @@ const AccordionTrigger = styled.button<AccordionTriggerProps>({
 });
 
 const AccordionQuestion = styled.dt({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.headingMedium,
   fontWeight: fontWeights.medium,
   lineHeight: lineHeights.headingMedium,
@@ -213,7 +213,7 @@ const AnswerParagraphs = styled.div({
 });
 
 const AccordionAnswer = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.medium,
   fontWeight: fontWeights.regular,
   lineHeight: lineHeights.paragraphMedium,

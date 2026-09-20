@@ -52,7 +52,7 @@ const TitleArea = styled.div({
 });
 
 const SectionLabel = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontWeight: fontWeights.medium,
   color: colors.textInverse,
   fontSize: "20px",
@@ -72,7 +72,7 @@ const SectionLabel = styled.p({
 });
 
 const Title = styled.h2({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontWeight: fontWeights.bold,
   color: colors.slate200,
   whiteSpace: "pre-wrap",
@@ -137,7 +137,7 @@ const StatCard = styled.div({
 });
 
 const StatLabel = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontWeight: fontWeights.medium,
   color: colors.slate300,
   textAlign: "center",
@@ -158,7 +158,7 @@ const StatLabel = styled.p({
 });
 
 const StatValue = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontWeight: fontWeights.bold,
   color: colors.textInverse,
   textAlign: "center",

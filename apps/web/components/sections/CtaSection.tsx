@@ -32,7 +32,7 @@ const Inner = styled.div({
 });
 
 const Headline = styled.h2({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: "40px",
   fontWeight: fontWeights.bold,
   lineHeight: "50px",
@@ -64,7 +64,7 @@ const CtaButton = styled(Link)({
   background: colors.primary,
   borderRadius: "100px",
   color: colors.textInverse,
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.large,
   fontWeight: fontWeights.medium,
   lineHeight: "28px",

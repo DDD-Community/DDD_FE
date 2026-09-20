@@ -88,6 +88,8 @@ const ModalCard = styled.div({
   padding: "120px 80px 80px",
   color: "#202325",
   position: "relative",
+  // 열릴 때 포커스를 받는 대상이지만 조작 요소가 아니라 링은 그리지 않는다.
+  outline: "none",
 
   // 1024 프레임과 768 프레임의 팝업은 643x470 으로 동일하다.
   "@media (max-width: 1024px)": {
@@ -96,7 +98,7 @@ const ModalCard = styled.div({
   },
   "@media (max-width: 767px)": {
     borderRadius: "20px",
-    padding: "80px 12px 40px",
+    padding: "80px 16px 40px",
   },
 });
 
@@ -175,6 +177,12 @@ const Description = styled.p({
   lineHeight: "30px",
   fontWeight: fontWeights.medium,
   maxWidth: "686px",
+  /*
+   * 한글은 기본 줄바꿈 규칙에서 음절 단위로 끊긴다. 그대로 두면 좁은 폭에서
+   * "알려드릴 / 게요." 처럼 단어 한가운데가 갈라져, 시안의 어절 단위 두 줄과
+   * 다른 모양이 된다.
+   */
+  wordBreak: "keep-all",
 
   "@media (max-width: 1024px)": {
     fontSize: "20px",
@@ -182,10 +190,14 @@ const Description = styled.p({
     maxWidth: "297px",
   },
 
+  /*
+   * 시안(375)의 설명 폭은 약 190px 로, 우측 3D 로고와 나란히 놓이는 자리다.
+   * 297px 은 카드 내부 폭(311px)을 거의 다 먹어 로고 위를 침범했다.
+   */
   "@media (max-width: 767px)": {
     fontSize: "16px",
     lineHeight: "20px",
-    maxWidth: "297px",
+    maxWidth: "200px",
   },
 });
 
@@ -198,17 +210,22 @@ const Decoration = styled.img({
   objectFit: "cover",
   opacity: 0.3,
   pointerEvents: "none",
-  background: `url(${modalImageIcon.src}) / cover no-repeat`,
 
   "@media (max-width: 1024px)": {
     width: "102px",
     height: "102px",
   },
+  /*
+   * 시안(375)에서 로고는 제목·설명과 같은 높이의 우측 상단에 또렷하게 놓인다.
+   * top:78px 은 설명 두 번째 줄 위로 내려앉아 글자와 겹쳐 있었고, 데스크톱의
+   * 워터마크용 투명도(0.3)도 이 자리에서는 시안보다 흐렸다.
+   */
   "@media (max-width: 767px)": {
-    width: "86px",
-    height: "86px",
-    right: "2px",
-    top: "78px",
+    width: "70px",
+    height: "70px",
+    right: 0,
+    top: "8px",
+    opacity: 1,
   },
 });
 
@@ -239,8 +256,19 @@ const InputLabel = styled.div({
   fontWeight: fontWeights.medium,
 });
 
+/** 시안의 필수 표시는 빨간 별표가 아니라 라벨 오른쪽의 작은 파란 점이다. */
 const RequiredDot = styled.span({
-  color: "#ff3b30",
+  width: "5px",
+  height: "5px",
+  borderRadius: "999px",
+  background: colors.primary,
+  display: "inline-block",
+  flexShrink: 0,
+
+  "@media (max-width: 767px)": {
+    width: "4px",
+    height: "4px",
+  },
 });
 
 const InputFieldWrap = styled.div({
@@ -273,10 +301,20 @@ const Input = styled.input<{ invalid?: boolean }>(({ invalid }) => ({
       lineHeight: "18px",
     },
   },
+  /*
+   * 입력 높이는 시안 기준으로 낮추되, 글자 크기는 16px 아래로 내리지 않는다.
+   * iOS Safari 는 16px 미만 입력에 포커스가 가면 페이지를 확대해 버린다.
+   * 작게 보여야 하는 것은 placeholder 뿐이므로 거기에만 12px 을 건다.
+   */
   "@media (max-width: 767px)": {
+    height: "48px",
+    padding: "0 44px 0 20px",
+    fontSize: "16px",
+    lineHeight: "20px",
+
     "::placeholder": {
-      fontSize: "10px",
-      lineHeight: "13px",
+      fontSize: "12px",
+      lineHeight: "16px",
       fontWeight: fontWeights.regular,
     },
   },
@@ -334,9 +372,13 @@ const PrimaryButton = styled.button({
     fontSize: "18px",
     lineHeight: "23px",
   },
+  /*
+   * 세로 패딩 30px(합 60px)이 height 56px 보다 커서, border-box 안에 글자가
+   * 들어가지 못하고 버튼이 시안보다 한참 부풀어 있었다. 높이로만 잡는다.
+   */
   "@media (max-width: 767px)": {
-    height: "56px",
-    padding: "30px 40px",
+    height: "48px",
+    padding: "0 32px",
     fontSize: "14px",
     lineHeight: "18px",
   },
@@ -568,6 +610,7 @@ export const PreAlertModal = ({ cohortName = null }: { cohortName?: string | nul
 
   // 트랩 범위는 ModalCard 가 아니라 wrap 이다 — 닫기 버튼이 카드 바깥에 있다.
   const wrapRef = useRef<HTMLDivElement | null>(null);
+  const cardRef = useRef<HTMLDivElement | null>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
 
   /**
@@ -654,17 +697,23 @@ export const PreAlertModal = ({ cohortName = null }: { cohortName?: string | nul
     };
   }, [open]);
 
-  // 열릴 때, 그리고 step 이 바뀔 때마다 새 화면의 첫 요소로 포커스를 들인다.
+  /**
+   * 열릴 때, 그리고 step 이 바뀔 때마다 포커스를 다이얼로그 자신에게 들인다.
+   *
+   * 첫 포커스 가능 요소(= 닫기 버튼)를 잡으면 모달이 뜨자마자 그 버튼에 브라우저
+   * 기본 포커스 링이 그려져, 아무것도 누르지 않았는데 눌린 것처럼 보였다.
+   * role="dialog" 컨테이너를 잡으면 스크린리더에 모달 진입은 그대로 알려지고,
+   * 이어지는 Tab 은 아래 트랩이 모달 안에 가둔다.
+   */
   useEffect(() => {
     if (!open) return;
 
     const frame = window.requestAnimationFrame(() => {
-      const [first] = getFocusable();
-      first?.focus();
+      cardRef.current?.focus();
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [open, step, getFocusable]);
+  }, [open, step]);
 
   // Tab / Shift+Tab 을 모달 경계에서 순환시킨다 — aria-modal 만으로는 포커스가 갇히지 않는다.
   useEffect(() => {
@@ -754,7 +803,13 @@ export const PreAlertModal = ({ cohortName = null }: { cohortName?: string | nul
             ×
           </CloseButton>
         </FloatingCloseArea>
-        <ModalCard role="dialog" aria-modal="true" aria-label="사전 알림 신청 모달">
+        <ModalCard
+          ref={cardRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="사전 알림 신청 모달"
+          tabIndex={-1}
+        >
           {step === "form" && (
             <>
               <Header>
@@ -768,11 +823,14 @@ export const PreAlertModal = ({ cohortName = null }: { cohortName?: string | nul
               <Form onSubmit={onSubmit}>
                 <InputGroup>
                   <InputLabel>
-                    이메일 <RequiredDot>*</RequiredDot>
+                    이메일
+                    <RequiredDot aria-hidden />
                   </InputLabel>
                   <InputFieldWrap>
                     <Input
                       placeholder="이메일 주소를 입력해주세요."
+                      aria-label="이메일"
+                      aria-required="true"
                       value={values.email}
                       invalid={showError && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)}
                       onChange={(event) => {

@@ -49,7 +49,7 @@ const TitleArea = styled.div({
 });
 
 const SectionLabel = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: "20px",
   fontWeight: fontWeights.medium,
   lineHeight: "28px",
@@ -69,7 +69,7 @@ const SectionLabel = styled.p({
 });
 
 const SectionTitle = styled.h2({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: "28px",
   fontWeight: fontWeights.semiBold,
   lineHeight: "32px",
@@ -122,7 +122,7 @@ const ContactButton = styled(Link)({
   background: colors.primary,
   borderRadius: "100px",
   color: colors.textInverse,
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.large,
   fontWeight: fontWeights.medium,
   lineHeight: "28px",

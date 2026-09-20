@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef } from "react";
+import Image from "next/image";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
 import { ARTICLE_LIST_PAGE_SIZE, type ArticleItem } from "@/constants/articles";
@@ -74,6 +75,11 @@ const ContentSection = styled.div({
 const Body = styled.div({
   maxWidth: "1280px",
   margin: "0 auto",
+
+  // 페이지를 넘길 때 여기로 스크롤이 돌아온다. 헤더가 고정이라 그만큼 아래에서 멈춰야
+  // 첫 줄이 가려지지 않는다(헤더 = 상단 여백 32 + 로고 55, 모바일 16 + 48).
+  scrollMarginTop: "104px",
+  "@media (max-width: 768px)": { scrollMarginTop: "80px" },
 });
 
 const List = styled.div({
@@ -105,13 +111,21 @@ const Row = styled.a({
   },
 });
 
-const Thumbnail = styled.img({
+/*
+  썸네일 자리. 안쪽 이미지는 next/image 의 fill 로 깔리므로 이 박스가 크기를 정한다.
+  썸네일이 없는 행도 같은 박스를 빈 채로 두어 행 높이를 맞춘다.
+*/
+const Thumbnail = styled.div({
+  position: "relative",
   width: "100%",
   height: "324px",
-  objectFit: "cover",
   borderRadius: "30px",
-  display: "block",
+  overflow: "hidden",
   background: colors.categoryBg,
+
+  "& img": {
+    objectFit: "cover",
+  },
 
   "@media (max-width: 1024px)": {
     height: "260px",
@@ -126,7 +140,9 @@ const Thumbnail = styled.img({
   },
 });
 
-const ThumbnailPlaceholder = Thumbnail.withComponent("div");
+/* Row 의 그리드 한 칸 = 썸네일 폭. 위 Row 의 gridTemplateColumns 와 같은 값이다. */
+const THUMBNAIL_SIZES =
+  "(max-width: 767px) 100vw, (max-width: 768px) 316px, (max-width: 1024px) 340px, 410px";
 
 const TextWrap = styled.div({
   display: "flex",
@@ -265,6 +281,7 @@ export const ArticleListPageSection = ({
     hasError,
     goToPage,
     retry,
+    listTopRef,
   } = useCursorPagedList<ArticleItem>({
     filterKey: SINGLE_FILTER_KEY,
     fetchPage: fetchArticlesPage,
@@ -289,24 +306,35 @@ export const ArticleListPageSection = ({
         </Heading>
       </Banner>
       <ContentSection>
-        <Body>
+        <Body ref={listTopRef}>
           <List aria-busy={isLoading}>
             {isLoading
               ? Array.from({ length: ARTICLE_LIST_PAGE_SIZE }, (_, index) => (
                   <SkeletonArticleRow key={index} />
                 ))
-              : articleItems.map((article) => (
+              : articleItems.map((article, index) => (
                   <Row
                     key={article.id}
                     {...(article.externalUrl
                       ? { href: article.externalUrl, target: "_blank", rel: "noopener noreferrer" }
                       : { as: "article" as const })}
                   >
-                    {article.thumbnail ? (
-                      <Thumbnail src={article.thumbnail} alt={article.title} />
-                    ) : (
-                      <ThumbnailPlaceholder />
-                    )}
+                    <Thumbnail>
+                      {article.thumbnail ? (
+                        <Image
+                          src={article.thumbnail}
+                          alt={article.title}
+                          fill
+                          sizes={THUMBNAIL_SIZES}
+                          /*
+                            목록의 첫 행은 화면을 열자마자 보인다. next/image 의
+                            기본값(lazy) 으로 두면 전에 쓰던 <img> 보다 오히려
+                            늦게 뜬다. 나머지 행은 스크롤할 때 받는다.
+                          */
+                          priority={index === 0}
+                        />
+                      ) : null}
+                    </Thumbnail>
                     <TextWrap>
                       <Title>{article.title}</Title>
                       {article.description ? (

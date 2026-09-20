@@ -1,8 +1,15 @@
 "use client";
 
 import styled from "@emotion/styled";
+import Image from "next/image";
 import Link from "next/link";
 import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
+
+/*
+  이 카드를 쓰는 그리드(홈 ProjectsSection)의 한 칸 크기. 최대 1280px 에 3열·간격
+  24px 이라 약 427px 이고, 1024 이하 2열 / 767 이하 1열로 바뀐다.
+*/
+const THUMBNAIL_SIZES = "(max-width: 767px) 100vw, (max-width: 1024px) 50vw, 427px";
 
 interface ProjectCardProps {
   title: string;
@@ -66,7 +73,7 @@ const CardTexts = styled.div({
 });
 
 const CardTitle = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.headingLarge,
   fontWeight: fontWeights.semiBold,
   lineHeight: lineHeights.headingLarge,
@@ -91,7 +98,7 @@ const CardTitle = styled.p({
 });
 
 const CardDescription = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.medium,
   fontWeight: fontWeights.regular,
   lineHeight: lineHeights.paragraphMedium,
@@ -136,7 +143,7 @@ const CategoryBadge = styled.span({
   padding: "4px 20px",
   background: colors.mainLight,
   borderRadius: "30px",
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.large,
   fontWeight: fontWeights.medium,
   lineHeight: "28px",
@@ -163,7 +170,7 @@ const GenerationBadge = styled.span({
   padding: "4px 20px",
   background: colors.categoryBg,
   borderRadius: "30px",
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.large,
   fontWeight: fontWeights.medium,
   color: colors.textSecondary,
@@ -197,7 +204,9 @@ const ProjectCardBody = ({
   generation,
 }: Omit<ProjectCardProps, "href">) => (
   <Card>
-    <Thumbnail>{thumbnail ? <img src={thumbnail} alt={title} /> : null}</Thumbnail>
+    <Thumbnail>
+      {thumbnail ? <Image src={thumbnail} alt={title} fill sizes={THUMBNAIL_SIZES} /> : null}
+    </Thumbnail>
     <CardBody>
       <CardTexts>
         <CardTitle>{title}</CardTitle>

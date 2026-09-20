@@ -1,10 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import styled from "@emotion/styled";
 import { colors, fontSizes, fontWeights, lineHeights } from "@/constants/tokens";
 import type { ArticleItem } from "@/constants/articles";
+
+/* 썸네일 칸은 폭이 410px 로 고정이고 768 이하에서는 아예 그리지 않는다. */
+const THUMBNAIL_SIZES = "410px";
 
 const Section = styled.section({
   background: colors.background,
@@ -40,7 +44,7 @@ const TitleArea = styled.div({
 });
 
 const SectionLabel = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: "20px",
   fontWeight: fontWeights.medium,
   lineHeight: "28px",
@@ -66,7 +70,7 @@ const TitleGroup = styled.div({
 });
 
 const SectionSubtitle = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: "28px",
   fontWeight: fontWeights.semiBold,
   lineHeight: "32px",
@@ -134,6 +138,9 @@ const ArticleThumbnail = styled.div({
   flexShrink: 0,
   background: colors.categoryBg,
 
+  // next/image 의 fill 은 가장 가까운 위치 지정 조상을 기준으로 깔린다.
+  position: "relative",
+
   "& img": {
     width: "100%",
     height: "100%",
@@ -158,7 +165,7 @@ const ArticleContent = styled.div({
 });
 
 const ArticleTitle = styled.h3({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.headingLarge,
   fontWeight: fontWeights.semiBold,
   lineHeight: lineHeights.headingLarge,
@@ -179,7 +186,7 @@ const ArticleTitle = styled.h3({
 });
 
 const ArticleDescription = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.medium,
   fontWeight: fontWeights.regular,
   lineHeight: lineHeights.paragraphMedium,
@@ -242,7 +249,7 @@ const MoreButton = styled(Link)({
   background: colors.primary,
   borderRadius: "100px",
   color: colors.textInverse,
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.large,
   fontWeight: fontWeights.medium,
   lineHeight: lineHeights.paragraphLarge,
@@ -351,7 +358,9 @@ export const BlogSection = ({ items }: Props) => {
                   : { as: "article" as const })}
               >
                 <ArticleThumbnail>
-                  {thumbnail ? <img src={thumbnail} alt={title} /> : null}
+                  {thumbnail ? (
+                    <Image src={thumbnail} alt={title} fill sizes={THUMBNAIL_SIZES} />
+                  ) : null}
                 </ArticleThumbnail>
                 <ArticleContent>
                   <ArticleTitle>{title}</ArticleTitle>

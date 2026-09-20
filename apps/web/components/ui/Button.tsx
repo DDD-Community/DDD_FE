@@ -20,7 +20,7 @@ const StyledButton = styled.button({
   border: 'none',
   borderRadius: '100px',
   color: colors.textInverse,
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.large,
   fontWeight: fontWeights.medium,
   lineHeight: lineHeights.paragraphLarge,

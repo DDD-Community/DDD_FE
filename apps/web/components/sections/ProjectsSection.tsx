@@ -43,7 +43,7 @@ const TitleArea = styled.div({
 });
 
 const SectionLabel = styled.p({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontWeight: fontWeights.medium,
   color: colors.textInverse,
   fontSize: "20px",
@@ -63,7 +63,7 @@ const SectionLabel = styled.p({
 });
 
 const SectionTitle = styled.h2({
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontWeight: fontWeights.semiBold,
   color: colors.textInverse,
   fontSize: "28px",
@@ -199,7 +199,7 @@ const MoreButton = styled(Link)({
   background: colors.primary,
   borderRadius: "100px",
   color: colors.textInverse,
-  fontFamily: "'Pretendard', sans-serif",
+  fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.large,
   fontWeight: fontWeights.medium,
   lineHeight: "28px",
