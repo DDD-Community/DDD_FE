@@ -28,7 +28,8 @@ const eslintConfig = defineConfig([
   ...nextTs,
   // 루트 규칙을 next 프리셋 뒤에 둬서 모노레포 공통 규칙이 우선하도록 한다.
   ...baseConfigWithoutTsPlugin,
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
+  // pdfjs-wasm 은 pdfjs-dist 에서 그대로 복사해온 서드파티 산출물이다(sync-pdfjs-wasm.mjs).
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "public/pdfjs-wasm/**"]),
 ]);
 
 export default eslintConfig;

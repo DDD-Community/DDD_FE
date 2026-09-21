@@ -6,6 +6,8 @@ import type { PDFDocumentLoadingTask, PDFDocumentProxy, RenderTask } from "pdfjs
 import { colors, fontWeights } from "@/constants/tokens";
 import { toProxiedPdfUrl } from "@/lib/pdfProxy";
 
+/** `public/pdfjs-wasm/` 에 깔리는 pdf.js wasm 디코더 디렉터리. 파일이 아니라 경로다(끝의 `/` 필수). */
+const PDFJS_WASM_URL = "/pdfjs-wasm/";
 /** 로드 전 자리를 잡아둘 기본 비율. 발표 자료는 대부분 16:9 라 로드되면 1페이지 실제 비율로 교체된다. */
 const DEFAULT_PAGE_RATIO = 16 / 9;
 /** 뷰포트에서 이만큼 떨어진 페이지까지만 캔버스를 유지한다(그 밖은 비워 메모리를 돌려준다). */
@@ -178,7 +180,10 @@ export const PdfPreview = ({ src, title }: Props) => {
         import.meta.url,
       ).toString();
 
-      loadingTask = pdfjs.getDocument({ url: toProxiedPdfUrl(src) });
+      // wasmUrl 을 주지 않으면 JPEG 2000·JBIG2 이미지를 못 푼다. 그런데 pdf.js 는 이때
+      // 실패를 던지지 않고 경고만 남기고 넘어가므로, 슬라이드가 전부 이미지인 발표
+      // 자료는 로드도 렌더도 성공한 채 백지로만 보인다. 경로는 sync-pdfjs-wasm.mjs 참고.
+      loadingTask = pdfjs.getDocument({ url: toProxiedPdfUrl(src), wasmUrl: PDFJS_WASM_URL });
       const loadedDoc = await loadingTask.promise;
       if (cancelled) return;
 
