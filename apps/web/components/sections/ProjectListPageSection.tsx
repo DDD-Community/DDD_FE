@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import styled from "@emotion/styled";
 import { colors, fontWeights } from "@/constants/tokens";
 import type { ProjectCategory, ProjectItem } from "@/constants/projects";
@@ -141,7 +142,12 @@ const Grid = styled.div({
   "@media (max-width: 767px)": { gridTemplateColumns: "1fr", gap: "12px" },
 });
 
-const CardLink = styled.a({
+/*
+  next/link 여야 한다. 전에는 styled.a 였는데, 그러면 카드를 눌렀을 때 문서를 통째로
+  다시 받아 홈 첫 진입과 같은 대기(서버 렌더 + JS 전부 다시 로드)가 매번 생긴다.
+  Link 는 화면에 보이는 카드의 상세를 미리 받아 두고 클릭 즉시 바꿔 그린다.
+*/
+const CardLink = styled(Link)({
   textDecoration: "none",
   color: "inherit",
 });

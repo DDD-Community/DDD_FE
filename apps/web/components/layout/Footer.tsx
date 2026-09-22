@@ -247,7 +247,17 @@ export const Footer = () => {
                 <Fragment key={label}>
                   {index > 0 && <Divider />}
                   <SocialLink href={href} target="_blank" rel="noopener noreferrer">
-                    {icon ? <img src={icon} alt="" width={24} height={24} /> : null}
+                    {/* 푸터라 항상 첫 화면 밖이다. SponsorSection 의 lazy 와 같은 이유. */}
+                    {icon ? (
+                      <img
+                        src={icon}
+                        alt=""
+                        width={24}
+                        height={24}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : null}
                     {label}
                   </SocialLink>
                 </Fragment>

@@ -167,7 +167,11 @@ export const SponsorSection = () => {
         <LogoGrid>
           {SPONSORS.map(({ name, logo }) => (
             <SponsorLogo key={name}>
-              <img src={logo} alt={name} />
+              {/*
+                화면 한참 아래라 미룬다. lazy 가 없으면 React 가 SSR 때 이 img 들을
+                <link rel="preload"> 로 올려서 첫 화면(히어로) 이미지와 대역폭을 나눠 쓴다.
+              */}
+              <img src={logo} alt={name} loading="lazy" decoding="async" />
             </SponsorLogo>
           ))}
         </LogoGrid>

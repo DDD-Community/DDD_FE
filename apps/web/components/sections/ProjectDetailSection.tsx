@@ -24,11 +24,15 @@ const ContentSection = styled.div({
   "@media (max-width: 767px)": { padding: "40px 16px" },
 });
 
-const Banner = styled.div<{ src: string }>(({ src }) => ({
+const BANNER_GRADIENT = "linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%)";
+
+// src 가 없으면 그라데이션만 깐다. `url('')` 은 문서 자신의 주소로 풀려 브라우저가
+// HTML 을 이미지로 한 번 더 받아 온다. 스켈레톤과 배너 없는 프로젝트가 여기 해당한다.
+const Banner = styled.div<{ src?: string }>(({ src }) => ({
   minHeight: "330px",
   padding: "160px 320px 80px",
   backgroundColor: "#02111f",
-  backgroundImage: `linear-gradient(90deg, #02111f 7.926%, #072d3e 66.31%, #011924 100%), url('${src}')`,
+  backgroundImage: src ? `${BANNER_GRADIENT}, url('${src}')` : BANNER_GRADIENT,
   backgroundSize: "cover",
   backgroundPosition: "center",
   display: "flex",
