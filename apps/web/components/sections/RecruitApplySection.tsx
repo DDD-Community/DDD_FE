@@ -2076,7 +2076,13 @@ export const RecruitApplySection = () => {
                             {`Q${index + 1}`}
                           </p>
                           <p
-                            style={{ margin: 0, fontSize: 24, lineHeight: "30px", fontWeight: 500 }}
+                            style={{
+                              margin: 0,
+                              fontSize: 24,
+                              lineHeight: "30px",
+                              fontWeight: 500,
+                              whiteSpace: "pre-line",
+                            }}
                           >
                             {question.label} {question.required ? <Required>*</Required> : null}
                           </p>
