@@ -9,6 +9,8 @@ import { ErrorPage } from "./error/ErrorPage"
 import { AdminLayout } from "@/shared/ui/AdminLayout/AdminLayout"
 import ApplicationsPage from "./applications/ApplicationsPage"
 import InterviewBookingPage from "./interview-booking/InterviewBookingPage"
+import AttendanceCodesPage from "./attendance-codes/AttendanceCodesPage"
+import AttendanceBoardPage from "./attendance-board/AttendanceBoardPage"
 import { paths } from "@/shared/lib/paths"
 
 /** 라우터 설정 (리액트 라우터 Data Mode 기반) */
@@ -41,6 +43,16 @@ const router = createBrowserRouter([
       {
         path: "/interview-slots",
         element: <InterviewSlotsPage />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: paths.attendanceCodes,
+        element: <AttendanceCodesPage />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: paths.attendanceBoard,
+        element: <AttendanceBoardPage />,
         errorElement: <ErrorPage />,
       },
       {
