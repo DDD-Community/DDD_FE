@@ -4,10 +4,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { attendanceKeys, attendanceMutations } from "@ddd/api"
 import type { PostAttendanceInvitationRequest } from "@ddd/api"
 
-export function useCreateInvitationFlow(
-  generationId: number,
+interface Args {
+  generationId: number
   onSuccess?: () => void
-) {
+}
+
+export function useCreateInvitationFlow({ generationId, onSuccess }: Args) {
   const queryClient = useQueryClient()
   const mutation = useMutation(attendanceMutations.createInvitation())
 

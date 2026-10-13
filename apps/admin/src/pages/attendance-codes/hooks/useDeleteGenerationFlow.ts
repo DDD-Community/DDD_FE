@@ -3,7 +3,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { attendanceKeys, attendanceMutations } from "@ddd/api"
 
-export function useDeleteGenerationFlow(onSuccess?: () => void) {
+interface Args {
+  onSuccess?: () => void
+}
+
+export function useDeleteGenerationFlow({ onSuccess }: Args = {}) {
   const queryClient = useQueryClient()
   const mutation = useMutation(attendanceMutations.deleteGeneration())
 
@@ -17,7 +21,6 @@ export function useDeleteGenerationFlow(onSuccess?: () => void) {
       toast.danger("출석 기수 삭제에 실패했습니다", {
         description: (error as Error).message,
       })
-      throw error
     }
   }
 

@@ -34,7 +34,10 @@ export function AttendanceInvitationForm({ generationId, onDone }: Props) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods
-  const { submit, isPending } = useCreateInvitationFlow(generationId, onDone)
+  const { submit, isPending } = useCreateInvitationFlow({
+    generationId,
+    onSuccess: onDone,
+  })
   const onSubmit = handleSubmit(async (values) => {
     try {
       await submit({
