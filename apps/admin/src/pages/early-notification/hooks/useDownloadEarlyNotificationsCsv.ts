@@ -4,7 +4,7 @@ import { toast } from "@heroui/react"
 
 import { earlyNotificationQueries } from "@ddd/api"
 
-import { triggerCsvDownload } from "../lib/triggerCsvDownload"
+import { triggerCsvDownload } from "@/shared/lib/triggerCsvDownload"
 
 export const useDownloadEarlyNotificationsCsv = () => {
   const queryClient = useQueryClient()
@@ -26,7 +26,7 @@ export const useDownloadEarlyNotificationsCsv = () => {
         staleTime: 0,
         gcTime: 0,
       })
-      triggerCsvDownload({ csv, cohortName })
+      triggerCsvDownload({ csv, filenamePrefix: `사전알림_${cohortName}_` })
     } catch (error) {
       toast.danger("CSV 내보내기에 실패했습니다", {
         description:

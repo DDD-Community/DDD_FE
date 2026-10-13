@@ -27,6 +27,12 @@ export * from "./early-notification/types";
 export * from "./early-notification/queryKeys";
 export * from "./early-notification/queries";
 
+// attendance
+export * from "./attendance/api";
+export * from "./attendance/types";
+export * from "./attendance/queryKeys";
+export * from "./attendance/queries";
+
 // notification-campaign
 export * from "./notification-campaign/api";
 export * from "./notification-campaign/types";
