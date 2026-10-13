@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react"
+import { Suspense } from "react"
 import { Button, ListBox, Select, Tabs } from "@heroui/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ErrorBoundary } from "react-error-boundary"
@@ -11,6 +11,8 @@ import type { AttendanceGeneration } from "@ddd/api"
 import { EmptyState } from "@/shared/ui/EmptyState"
 import { ErrorFallback } from "@/shared/ui/ErrorFallback"
 import { StatCard } from "@/shared/ui/StatCard"
+import { FormField } from "@/shared/ui/FormField"
+import { useSelectedAttendanceGeneration } from "@/shared/hooks/useSelectedAttendanceGeneration"
 
 import { useDownloadAttendanceCsv } from "./hooks/useDownloadAttendanceCsv"
 import { AttendanceMatrixTable } from "./components/AttendanceMatrixTable"
@@ -18,20 +20,14 @@ import { MemberSummaryTable } from "./components/MemberSummaryTable"
 import { ScheduleSummaryTable } from "./components/ScheduleSummaryTable"
 import { useAttendanceBoard } from "./hooks/useAttendanceBoard"
 import { formatAttendanceRate } from "./lib/board"
+import { AttendanceBoardSkeleton } from "./components/AttendanceBoardSkeleton"
 
 export function AttendanceBoardContent() {
   const { data: generations } = useSuspenseQuery(
     attendanceQueries.getGenerations()
   )
-  const [requestedId, setRequestedId] = useState<number | null>(null)
+  const { generation, select } = useSelectedAttendanceGeneration(generations)
   const { download, isExporting } = useDownloadAttendanceCsv()
-  const generation =
-    generations.find((item) => item.id === requestedId) ??
-    generations.reduce<AttendanceGeneration | null>(
-      (latest, item) =>
-        latest === null || item.id > latest.id ? item : latest,
-      null
-    )
 
   if (!generation)
     return <EmptyState>등록된 출석앱 기수가 없습니다.</EmptyState>
@@ -39,35 +35,33 @@ export function AttendanceBoardContent() {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3 rounded-lg bg-white p-5 shadow">
-        <div className="w-full max-w-xs space-y-2">
-          <label className="text-xs font-medium text-gray-700">
-            출석앱 기수
-          </label>
-          <Select
-            aria-label="출석앱 기수"
-            selectedKey={String(generation.id)}
-            onSelectionChange={(key) => {
-              if (key !== null) setRequestedId(Number(key))
-            }}
-          >
-            <Select.Trigger>
-              <Select.Value>{generation.name}</Select.Value>
-              <Select.Indicator />
-            </Select.Trigger>
-            <Select.Popover>
-              <ListBox>
-                {generations.map((item) => (
-                  <ListBox.Item
-                    key={item.id}
-                    id={String(item.id)}
-                    textValue={item.name}
-                  >
-                    {item.name}
-                  </ListBox.Item>
-                ))}
-              </ListBox>
-            </Select.Popover>
-          </Select>
+        <div className="w-full max-w-xs">
+          <FormField label="출석앱 기수">
+            <Select
+              selectedKey={String(generation.id)}
+              onSelectionChange={(key) => {
+                if (key !== null) select(Number(key))
+              }}
+            >
+              <Select.Trigger>
+                <Select.Value>{generation.name}</Select.Value>
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  {generations.map((item) => (
+                    <ListBox.Item
+                      key={item.id}
+                      id={String(item.id)}
+                      textValue={item.name}
+                    >
+                      {item.name}
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
+            </Select>
+          </FormField>
         </div>
         <Button
           variant="outline"
@@ -84,14 +78,7 @@ export function AttendanceBoardContent() {
         </Button>
       </div>
       <ErrorBoundary key={generation.id} FallbackComponent={ErrorFallback}>
-        <Suspense
-          fallback={
-            <div className="space-y-4">
-              <div className="h-24 animate-pulse rounded-lg bg-gray-100" />
-              <div className="h-80 animate-pulse rounded-lg bg-gray-100" />
-            </div>
-          }
-        >
+        <Suspense fallback={<AttendanceBoardSkeleton />}>
           <AttendanceBoardData generation={generation} />
         </Suspense>
       </ErrorBoundary>

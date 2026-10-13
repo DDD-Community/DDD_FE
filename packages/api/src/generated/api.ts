@@ -1256,10 +1256,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 출석 기수 목록 */
+        /**
+         * 출석 기수 목록
+         * @description 출석 기수 목록을 조회합니다.
+         */
         get: operations["attendance_getGenerations"];
         put?: never;
-        /** 출석 기수 생성 */
+        /**
+         * 출석 기수 생성
+         * @description 출석 기수를 생성합니다.
+         */
         post: operations["attendance_createGeneration"];
         delete?: never;
         options?: never;
@@ -1277,7 +1283,10 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** 출석 기수 삭제 */
+        /**
+         * 출석 기수 삭제
+         * @description 출석 기수를 삭제합니다.
+         */
         delete: operations["attendance_deleteGeneration"];
         options?: never;
         head?: never;
@@ -1291,10 +1300,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 출석 팀 목록 */
+        /**
+         * 출석 팀 목록
+         * @description 기수의 출석 팀을 조회합니다.
+         */
         get: operations["attendance_getTeams"];
         put?: never;
-        /** 출석 팀 생성 */
+        /**
+         * 출석 팀 생성
+         * @description 기수에 출석 팀을 생성합니다.
+         */
         post: operations["attendance_createTeam"];
         delete?: never;
         options?: never;
@@ -1312,7 +1327,10 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** 출석 팀 삭제 */
+        /**
+         * 출석 팀 삭제
+         * @description 출석 팀을 삭제합니다.
+         */
         delete: operations["attendance_deleteTeam"];
         options?: never;
         head?: never;
@@ -1326,10 +1344,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 출석 초대코드 목록 */
+        /**
+         * 출석 초대코드 목록
+         * @description 기수의 출석 초대코드를 조회합니다.
+         */
         get: operations["attendance_getInvitations"];
         put?: never;
-        /** 출석 초대코드 생성 */
+        /**
+         * 출석 초대코드 생성
+         * @description 기수에 출석 초대코드를 생성합니다.
+         */
         post: operations["attendance_createInvitation"];
         delete?: never;
         options?: never;
@@ -1347,7 +1371,10 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** 출석 초대코드 삭제 */
+        /**
+         * 출석 초대코드 삭제
+         * @description 출석 초대코드를 삭제합니다.
+         */
         delete: operations["attendance_deleteInvitation"];
         options?: never;
         head?: never;
@@ -1361,7 +1388,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 출석 보드 조회 */
+        /**
+         * 출석 보드 조회
+         * @description 기수의 출석 보드와 집계 정보를 조회합니다.
+         */
         get: operations["attendance_getBoard"];
         put?: never;
         post?: never;
@@ -1378,7 +1408,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 출석 보드 CSV 내보내기 */
+        /**
+         * 출석 보드 CSV 내보내기
+         * @description 기수의 출석 보드를 CSV 파일로 내보냅니다.
+         */
         get: operations["attendance_exportBoard"];
         put?: never;
         post?: never;
@@ -2344,6 +2377,106 @@ export interface components {
              * @description 외부 링크 URL
              */
             externalUrl?: string;
+        };
+        AttendanceGenerationResponseDto: {
+            /** @example 1 */
+            id: number;
+            /** @example 15기 */
+            name: string;
+            /** @example 20 */
+            memberCount: number;
+        };
+        AttendanceTeamResponseDto: {
+            /** @example 1 */
+            id: number;
+            /** @example 1팀 */
+            name: string;
+            /** @example 출석 서비스 */
+            serviceName: string | null;
+            /** @example 5 */
+            memberCount: number;
+        };
+        AttendanceInvitationResponseDto: {
+            /** @example 1 */
+            id: number;
+            /** @example JOIN-2026 */
+            code: string;
+            /** @enum {string} */
+            type: "MEMBER" | "MANAGER";
+            /** @example null */
+            description: string | null;
+            /** @example 3 */
+            registeredCount: number;
+            /** @example 2026-10-12T09:00:00.000Z */
+            createdAt: string;
+        };
+        AttendanceBoardGenerationResponseDto: {
+            /** @example 1 */
+            id: number;
+            /** @example 15기 */
+            name: string;
+        };
+        AttendanceScheduleResponseDto: {
+            /** @example 1 */
+            id: number;
+            /** @example 정기 모임 */
+            name: string;
+            /** @example 2026-10-12 */
+            date: string;
+            /** @example 19:00 */
+            scheduleTime: string;
+        };
+        AttendanceMemberResponseDto: {
+            /** @example 1 */
+            id: number;
+            /** @example 홍길동 */
+            name: string | null;
+            /** @example 1 */
+            teamId: number | null;
+            /** @example 1팀 */
+            teamName: string | null;
+            /** @example 개발 */
+            job: string | null;
+        };
+        AttendanceCellResponseDto: {
+            /** @example 1 */
+            memberId: number;
+            /** @example 1 */
+            scheduleId: number;
+            /** @enum {string} */
+            status: "ATTENDED" | "LATE" | "ABSENT" | "NONE";
+        };
+        MemberAttendanceSummaryResponseDto: {
+            /** @example 1 */
+            memberId: number;
+            /** @example 5 */
+            attended: number;
+            /** @example 1 */
+            late: number;
+            /** @example 0 */
+            absent: number;
+        };
+        ScheduleAttendanceSummaryResponseDto: {
+            /** @example 1 */
+            scheduleId: number;
+            /** @example 10 */
+            attended: number;
+            /** @example 1 */
+            late: number;
+            /** @example 0 */
+            absent: number;
+            /** @example 2 */
+            none: number;
+        };
+        AttendanceBoardResponseDto: {
+            generation: components["schemas"]["AttendanceBoardGenerationResponseDto"];
+            /** @example 2026-10-12 */
+            today: string;
+            schedules: components["schemas"]["AttendanceScheduleResponseDto"][];
+            members: components["schemas"]["AttendanceMemberResponseDto"][];
+            cells: components["schemas"]["AttendanceCellResponseDto"][];
+            memberSummaries: components["schemas"]["MemberAttendanceSummaryResponseDto"][];
+            scheduleSummaries: components["schemas"]["ScheduleAttendanceSummaryResponseDto"][];
         };
         CreateAttendanceGenerationRequestDto: {
             /** @example 15기 */
@@ -4824,11 +4957,84 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 출석 기수 목록 조회 성공. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["AttendanceGenerationResponseDto"][];
+                    };
+                };
+            };
+            /** @description 요청 값이 올바르지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_BAD_REQUEST */
+                        code?: string;
+                        /** @example 요청 값이 올바르지 않습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 요청에 실패했습니다. */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_UPSTREAM_ERROR */
+                        code?: string;
+                        /** @example 출석 서비스 요청에 실패했습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 연동 설정이 없습니다. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_CONFIGURED */
+                        code?: string;
+                        /** @example 출석 서비스 연동 설정이 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
             };
         };
     };
@@ -4845,11 +5051,125 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 출석 기수 생성 성공. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["AttendanceGenerationResponseDto"];
+                    };
+                };
+            };
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description 요청 값이 올바르지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_BAD_REQUEST */
+                        code?: string;
+                        /** @example 요청 값이 올바르지 않습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_FOUND */
+                        code?: string;
+                        /** @example 출석 리소스를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스의 충돌입니다. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @example ATTENDANCE_GENERATION_IN_USE
+                         * @enum {string}
+                         */
+                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_CONFLICT";
+                        /** @example 출석 리소스의 충돌입니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 요청에 실패했습니다. */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_UPSTREAM_ERROR */
+                        code?: string;
+                        /** @example 출석 서비스 요청에 실패했습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 연동 설정이 없습니다. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_CONFIGURED */
+                        code?: string;
+                        /** @example 출석 서비스 연동 설정이 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
             };
         };
     };
@@ -4864,11 +5184,111 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 출석 기수 삭제 성공. */
             204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description 요청 값이 올바르지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_BAD_REQUEST */
+                        code?: string;
+                        /** @example 요청 값이 올바르지 않습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_FOUND */
+                        code?: string;
+                        /** @example 출석 리소스를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스의 충돌입니다. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @example ATTENDANCE_GENERATION_IN_USE
+                         * @enum {string}
+                         */
+                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_CONFLICT";
+                        /** @example 출석 리소스의 충돌입니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 요청에 실패했습니다. */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_UPSTREAM_ERROR */
+                        code?: string;
+                        /** @example 출석 서비스 요청에 실패했습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 연동 설정이 없습니다. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_CONFIGURED */
+                        code?: string;
+                        /** @example 출석 서비스 연동 설정이 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
             };
         };
     };
@@ -4883,11 +5303,100 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 출석 팀 목록 조회 성공. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["AttendanceTeamResponseDto"][];
+                    };
+                };
+            };
+            /** @description 요청 값이 올바르지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_BAD_REQUEST */
+                        code?: string;
+                        /** @example 요청 값이 올바르지 않습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_FOUND */
+                        code?: string;
+                        /** @example 출석 리소스를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 요청에 실패했습니다. */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_UPSTREAM_ERROR */
+                        code?: string;
+                        /** @example 출석 서비스 요청에 실패했습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 연동 설정이 없습니다. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_CONFIGURED */
+                        code?: string;
+                        /** @example 출석 서비스 연동 설정이 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
             };
         };
     };
@@ -4906,11 +5415,125 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 출석 팀 생성 성공. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["AttendanceTeamResponseDto"];
+                    };
+                };
+            };
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description 요청 값이 올바르지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_BAD_REQUEST */
+                        code?: string;
+                        /** @example 요청 값이 올바르지 않습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_FOUND */
+                        code?: string;
+                        /** @example 출석 리소스를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스의 충돌입니다. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @example ATTENDANCE_GENERATION_IN_USE
+                         * @enum {string}
+                         */
+                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_CONFLICT";
+                        /** @example 출석 리소스의 충돌입니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 요청에 실패했습니다. */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_UPSTREAM_ERROR */
+                        code?: string;
+                        /** @example 출석 서비스 요청에 실패했습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 연동 설정이 없습니다. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_CONFIGURED */
+                        code?: string;
+                        /** @example 출석 서비스 연동 설정이 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
             };
         };
     };
@@ -4925,11 +5548,111 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 출석 팀 삭제 성공. */
             204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description 요청 값이 올바르지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_BAD_REQUEST */
+                        code?: string;
+                        /** @example 요청 값이 올바르지 않습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_FOUND */
+                        code?: string;
+                        /** @example 출석 리소스를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스의 충돌입니다. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @example ATTENDANCE_GENERATION_IN_USE
+                         * @enum {string}
+                         */
+                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_CONFLICT";
+                        /** @example 출석 리소스의 충돌입니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 요청에 실패했습니다. */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_UPSTREAM_ERROR */
+                        code?: string;
+                        /** @example 출석 서비스 요청에 실패했습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 연동 설정이 없습니다. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_CONFIGURED */
+                        code?: string;
+                        /** @example 출석 서비스 연동 설정이 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
             };
         };
     };
@@ -4944,11 +5667,100 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 출석 초대코드 목록 조회 성공. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["AttendanceInvitationResponseDto"][];
+                    };
+                };
+            };
+            /** @description 요청 값이 올바르지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_BAD_REQUEST */
+                        code?: string;
+                        /** @example 요청 값이 올바르지 않습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_FOUND */
+                        code?: string;
+                        /** @example 출석 리소스를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 요청에 실패했습니다. */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_UPSTREAM_ERROR */
+                        code?: string;
+                        /** @example 출석 서비스 요청에 실패했습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 연동 설정이 없습니다. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_CONFIGURED */
+                        code?: string;
+                        /** @example 출석 서비스 연동 설정이 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
             };
         };
     };
@@ -4967,11 +5779,125 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 출석 초대코드 생성 성공. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["AttendanceInvitationResponseDto"];
+                    };
+                };
+            };
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description 요청 값이 올바르지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_BAD_REQUEST */
+                        code?: string;
+                        /** @example 요청 값이 올바르지 않습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_FOUND */
+                        code?: string;
+                        /** @example 출석 리소스를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스의 충돌입니다. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @example ATTENDANCE_GENERATION_IN_USE
+                         * @enum {string}
+                         */
+                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_CONFLICT";
+                        /** @example 출석 리소스의 충돌입니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 요청에 실패했습니다. */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_UPSTREAM_ERROR */
+                        code?: string;
+                        /** @example 출석 서비스 요청에 실패했습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 연동 설정이 없습니다. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_CONFIGURED */
+                        code?: string;
+                        /** @example 출석 서비스 연동 설정이 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
             };
         };
     };
@@ -4986,11 +5912,111 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 출석 초대코드 삭제 성공. */
             204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description 요청 값이 올바르지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_BAD_REQUEST */
+                        code?: string;
+                        /** @example 요청 값이 올바르지 않습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_FOUND */
+                        code?: string;
+                        /** @example 출석 리소스를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스의 충돌입니다. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /**
+                         * @example ATTENDANCE_GENERATION_IN_USE
+                         * @enum {string}
+                         */
+                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_CONFLICT";
+                        /** @example 출석 리소스의 충돌입니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 요청에 실패했습니다. */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_UPSTREAM_ERROR */
+                        code?: string;
+                        /** @example 출석 서비스 요청에 실패했습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 연동 설정이 없습니다. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_CONFIGURED */
+                        code?: string;
+                        /** @example 출석 서비스 연동 설정이 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
             };
         };
     };
@@ -5005,11 +6031,100 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 출석 보드 조회 성공. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["AttendanceBoardResponseDto"];
+                    };
+                };
+            };
+            /** @description 요청 값이 올바르지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_BAD_REQUEST */
+                        code?: string;
+                        /** @example 요청 값이 올바르지 않습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_FOUND */
+                        code?: string;
+                        /** @example 출석 리소스를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 요청에 실패했습니다. */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_UPSTREAM_ERROR */
+                        code?: string;
+                        /** @example 출석 서비스 요청에 실패했습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 연동 설정이 없습니다. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_CONFIGURED */
+                        code?: string;
+                        /** @example 출석 서비스 연동 설정이 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
             };
         };
     };
@@ -5024,12 +6139,93 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 출석 보드 CSV 내보내기 성공. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": string;
+                    "text/csv": string;
+                };
+            };
+            /** @description 요청 값이 올바르지 않습니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_BAD_REQUEST */
+                        code?: string;
+                        /** @example 요청 값이 올바르지 않습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 리소스를 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_FOUND */
+                        code?: string;
+                        /** @example 출석 리소스를 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 요청에 실패했습니다. */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_UPSTREAM_ERROR */
+                        code?: string;
+                        /** @example 출석 서비스 요청에 실패했습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 출석 서비스 연동 설정이 없습니다. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example ATTENDANCE_NOT_CONFIGURED */
+                        code?: string;
+                        /** @example 출석 서비스 연동 설정이 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
                 };
             };
         };

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Button, Table, toast } from "@heroui/react"
+import { Button, Table } from "@heroui/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Delete02Icon, PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -14,6 +14,8 @@ import { AttendanceInvitationDrawer } from "./AttendanceInvitationDrawer"
 import { AttendanceTeamDrawer } from "./AttendanceTeamDrawer"
 import { useDeleteInvitationFlow } from "../hooks/useDeleteInvitationFlow"
 import { useDeleteTeamFlow } from "../hooks/useDeleteTeamFlow"
+import { useCopyInvitationCodeFlow } from "../hooks/useCopyInvitationCodeFlow"
+import { formatDateTime } from "../lib/format"
 
 interface Props {
   generation: AttendanceGeneration
@@ -36,6 +38,7 @@ export function AttendanceGenerationDetails({ generation }: Props) {
   const [isTeamDrawerOpen, setIsTeamDrawerOpen] = useState(false)
   const [isInvitationDrawerOpen, setIsInvitationDrawerOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null)
+  const { copy } = useCopyInvitationCodeFlow()
   const deleteTeam = useDeleteTeamFlow(generation.id, () =>
     setDeleteTarget(null)
   )
@@ -47,21 +50,15 @@ export function AttendanceGenerationDetails({ generation }: Props) {
       ? deleteTeam.isPending
       : deleteInvitation.isPending
 
-  const handleCopy = async (code: string) => {
+  const handleDelete = async () => {
     try {
-      await navigator.clipboard.writeText(code)
-      toast.success("코드를 복사했습니다")
-    } catch (error) {
-      toast.danger("코드 복사에 실패했습니다", {
-        description: (error as Error).message,
-      })
+      if (deleteTarget?.kind === "team")
+        await deleteTeam.remove(deleteTarget.id)
+      if (deleteTarget?.kind === "invitation")
+        await deleteInvitation.remove(deleteTarget.id)
+    } catch {
+      /* flow displays toast */
     }
-  }
-
-  const handleDelete = () => {
-    if (deleteTarget?.kind === "team") void deleteTeam.remove(deleteTarget.id)
-    if (deleteTarget?.kind === "invitation")
-      void deleteInvitation.remove(deleteTarget.id)
   }
 
   return (
@@ -147,7 +144,7 @@ export function AttendanceGenerationDetails({ generation }: Props) {
                           <Button
                             size="sm"
                             variant="outline"
-                            onPress={() => void handleCopy(invitation.code)}
+                            onPress={() => void copy(invitation.code)}
                           >
                             복사
                           </Button>
@@ -159,7 +156,7 @@ export function AttendanceGenerationDetails({ generation }: Props) {
                       <Table.Cell>{invitation.description ?? "-"}</Table.Cell>
                       <Table.Cell>{invitation.registeredCount}명</Table.Cell>
                       <Table.Cell>
-                        {formatCreatedAt(invitation.createdAt)}
+                        {formatDateTime(invitation.createdAt)}
                       </Table.Cell>
                       <Table.Cell>
                         <Button
@@ -214,10 +211,4 @@ export function AttendanceGenerationDetails({ generation }: Props) {
       />
     </div>
   )
-}
-
-function formatCreatedAt(value: string): string {
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return value
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
 }

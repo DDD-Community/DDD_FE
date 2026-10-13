@@ -6,35 +6,38 @@ import { Delete02Icon, PlusSignIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
 import { attendanceQueries } from "@ddd/api"
-import type { AttendanceGeneration } from "@ddd/api"
 
 import { EmptyState } from "@/shared/ui/EmptyState"
 import { ErrorFallback } from "@/shared/ui/ErrorFallback"
+import { useSelectedAttendanceGeneration } from "@/shared/hooks/useSelectedAttendanceGeneration"
 
 import { useDeleteGenerationFlow } from "./hooks/useDeleteGenerationFlow"
 import { AttendanceDeleteDialog } from "./components/AttendanceDeleteDialog"
 import { AttendanceGenerationDrawer } from "./components/AttendanceGenerationDrawer"
 import { AttendanceGenerationDetails } from "./components/AttendanceGenerationDetails"
+import { AttendanceGenerationDetailsSkeleton } from "./components/AttendanceGenerationDetailsSkeleton"
 
 export function AttendanceCodesContent() {
   const { data: generations } = useSuspenseQuery(
     attendanceQueries.getGenerations()
   )
-  const [requestedId, setRequestedId] = useState<number | null>(null)
+  const { generation: selectedGeneration, select } =
+    useSelectedAttendanceGeneration(generations)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-  const selectedGeneration =
-    generations.find((generation) => generation.id === requestedId) ??
-    generations.reduce<AttendanceGeneration | null>(
-      (latest, generation) =>
-        latest === null || generation.id > latest.id ? generation : latest,
-      null
-    )
-
   const { remove, isPending } = useDeleteGenerationFlow(() => {
     setIsDeleteOpen(false)
-    setRequestedId(null)
+    select(null)
   })
+  const handleDelete = async () => {
+    if (!selectedGeneration) return
+
+    try {
+      await remove(selectedGeneration.id)
+    } catch {
+      /* flow displays toast */
+    }
+  }
 
   return (
     <div className="space-y-5">
@@ -64,7 +67,7 @@ export function AttendanceCodesContent() {
                     ? "primary"
                     : "outline"
                 }
-                onPress={() => setRequestedId(generation.id)}
+                onPress={() => select(generation.id)}
               >
                 {generation.name}
                 <span className="ml-2 text-xs">
@@ -91,13 +94,7 @@ export function AttendanceCodesContent() {
             key={selectedGeneration.id}
             FallbackComponent={ErrorFallback}
           >
-            <Suspense
-              fallback={
-                <div className="rounded-lg bg-white p-8 text-center text-sm text-gray-500">
-                  기수 상세 정보를 불러오는 중...
-                </div>
-              }
-            >
+            <Suspense fallback={<AttendanceGenerationDetailsSkeleton />}>
               <AttendanceGenerationDetails generation={selectedGeneration} />
             </Suspense>
           </ErrorBoundary>
@@ -114,7 +111,7 @@ export function AttendanceCodesContent() {
         title="출석앱 기수를 삭제하시겠습니까?"
         description="팀·회원·일정·초대코드가 연결된 기수는 삭제할 수 없습니다."
         isPending={isPending}
-        onConfirm={() => selectedGeneration && remove(selectedGeneration.id)}
+        onConfirm={handleDelete}
       />
     </div>
   )

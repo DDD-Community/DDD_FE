@@ -27,6 +27,7 @@ export function useDeleteInvitationFlow(
       toast.danger("초대 코드 삭제에 실패했습니다", {
         description: (error as Error).message,
       })
+      throw error
     }
   }
 

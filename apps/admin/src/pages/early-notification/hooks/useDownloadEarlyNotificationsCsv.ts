@@ -30,9 +30,7 @@ export const useDownloadEarlyNotificationsCsv = () => {
     } catch (error) {
       toast.danger("CSV 내보내기에 실패했습니다", {
         description:
-          error instanceof Error
-            ? error.message
-            : "잠시 후 다시 시도해 주세요.",
+          error instanceof Error ? error.message : "잠시 후 다시 시도해 주세요.",
       })
     } finally {
       setIsExporting(false)

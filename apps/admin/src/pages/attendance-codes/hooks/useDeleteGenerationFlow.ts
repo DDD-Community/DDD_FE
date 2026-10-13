@@ -17,6 +17,7 @@ export function useDeleteGenerationFlow(onSuccess?: () => void) {
       toast.danger("출석 기수 삭제에 실패했습니다", {
         description: (error as Error).message,
       })
+      throw error
     }
   }
 

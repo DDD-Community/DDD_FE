@@ -2,7 +2,7 @@ import { toast } from "@heroui/react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { attendanceKeys, attendanceMutations } from "@ddd/api"
-import type { CreateAttendanceTeamRequest } from "@ddd/api"
+import type { PostAttendanceTeamRequest } from "@ddd/api"
 
 export function useCreateTeamFlow(
   generationId: number,
@@ -11,7 +11,7 @@ export function useCreateTeamFlow(
   const queryClient = useQueryClient()
   const mutation = useMutation(attendanceMutations.createTeam())
 
-  const submit = async (payload: CreateAttendanceTeamRequest) => {
+  const submit = async (payload: PostAttendanceTeamRequest) => {
     try {
       await mutation.mutateAsync({ params: { generationId }, payload })
       await Promise.all([
@@ -28,6 +28,7 @@ export function useCreateTeamFlow(
       toast.danger("팀 추가에 실패했습니다", {
         description: (error as Error).message,
       })
+      throw error
     }
   }
 
