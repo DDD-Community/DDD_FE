@@ -26,7 +26,7 @@ export function AttendanceGenerationForm({ onDone }: Props) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods
-  const { submit, isPending } = useCreateGenerationFlow(onDone)
+  const { submit, isPending } = useCreateGenerationFlow({ onSuccess: onDone })
   const onSubmit = handleSubmit(async (values) => {
     try {
       await submit(values)

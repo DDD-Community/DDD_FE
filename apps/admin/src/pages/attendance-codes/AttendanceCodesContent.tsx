@@ -25,18 +25,15 @@ export function AttendanceCodesContent() {
     useSelectedAttendanceGeneration(generations)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-  const { remove, isPending } = useDeleteGenerationFlow(() => {
-    setIsDeleteOpen(false)
-    select(null)
+  const { remove, isPending } = useDeleteGenerationFlow({
+    onSuccess: () => {
+      setIsDeleteOpen(false)
+      select(null)
+    },
   })
   const handleDelete = async () => {
     if (!selectedGeneration) return
-
-    try {
-      await remove(selectedGeneration.id)
-    } catch {
-      /* flow displays toast */
-    }
+    await remove(selectedGeneration.id)
   }
 
   return (

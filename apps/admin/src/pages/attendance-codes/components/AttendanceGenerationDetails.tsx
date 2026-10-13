@@ -39,26 +39,23 @@ export function AttendanceGenerationDetails({ generation }: Props) {
   const [isInvitationDrawerOpen, setIsInvitationDrawerOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null)
   const { copy } = useCopyInvitationCodeFlow()
-  const deleteTeam = useDeleteTeamFlow(generation.id, () =>
-    setDeleteTarget(null)
-  )
-  const deleteInvitation = useDeleteInvitationFlow(generation.id, () =>
-    setDeleteTarget(null)
-  )
+  const deleteTeam = useDeleteTeamFlow({
+    generationId: generation.id,
+    onSuccess: () => setDeleteTarget(null),
+  })
+  const deleteInvitation = useDeleteInvitationFlow({
+    generationId: generation.id,
+    onSuccess: () => setDeleteTarget(null),
+  })
   const isPending =
     deleteTarget?.kind === "team"
       ? deleteTeam.isPending
       : deleteInvitation.isPending
 
   const handleDelete = async () => {
-    try {
-      if (deleteTarget?.kind === "team")
-        await deleteTeam.remove(deleteTarget.id)
-      if (deleteTarget?.kind === "invitation")
-        await deleteInvitation.remove(deleteTarget.id)
-    } catch {
-      /* flow displays toast */
-    }
+    if (deleteTarget?.kind === "team") await deleteTeam.remove(deleteTarget.id)
+    if (deleteTarget?.kind === "invitation")
+      await deleteInvitation.remove(deleteTarget.id)
   }
 
   return (
@@ -203,8 +200,8 @@ export function AttendanceGenerationDetails({ generation }: Props) {
         }
         description={
           deleteTarget?.kind === "invitation"
-            ? `초대 코드 ${deleteTarget.label}을 삭제합니다. 이미 가입한 회원에는 영향이 없습니다.`
-            : `팀 ${deleteTarget?.label ?? ""}을 삭제합니다. 회원이 소속된 팀은 삭제할 수 없습니다.`
+            ? `초대 코드 삭제: ${deleteTarget.label}. 이미 가입한 회원에는 영향이 없습니다.`
+            : `팀 삭제: ${deleteTarget?.label ?? ""}. 회원이 소속된 팀은 삭제할 수 없습니다.`
         }
         isPending={isPending}
         onConfirm={handleDelete}
