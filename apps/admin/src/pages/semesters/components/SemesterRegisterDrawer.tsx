@@ -52,6 +52,7 @@ const buildDefaults = (prefill?: SemesterRegisterForm): SemesterRegisterForm =>
     curriculum: Array.from({ length: CURRICULUM_WEEK_COUNT }, () => ({
       date: "",
       description: "",
+      time: "",
     })),
     parts: Object.fromEntries(
       SEMESTER_PARTS.map((name) => [

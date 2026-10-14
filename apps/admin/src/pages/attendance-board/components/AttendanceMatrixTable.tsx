@@ -34,7 +34,11 @@ export function AttendanceMatrixTable({ board, matrix }: Props) {
             <Table.Column>직군</Table.Column>
             {board.schedules.map((schedule) => (
               <Table.Column key={schedule.id}>
-                {formatScheduleLabel(schedule.date, schedule.name)}
+                {formatScheduleLabel(
+                  schedule.date,
+                  schedule.scheduleTime,
+                  schedule.name
+                )}
               </Table.Column>
             ))}
           </Table.Header>

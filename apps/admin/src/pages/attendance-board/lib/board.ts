@@ -79,9 +79,14 @@ export function buildScheduleRows(board: AttendanceBoard) {
     }))
 }
 
-export function formatScheduleLabel(date: string, name: string): string {
+export function formatScheduleLabel(
+  date: string,
+  scheduleTime: string | null | undefined,
+  name: string
+): string {
   const [, month, day] = date.split("-")
-  return `${month}/${day} ${name}`
+  const time = scheduleTime ? ` ${scheduleTime.slice(0, 5)}` : ""
+  return `${month}/${day}${time} ${name}`
 }
 
 export function calculateOverallAttendanceRate(

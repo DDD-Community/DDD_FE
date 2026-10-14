@@ -67,7 +67,9 @@ describe("attendance board helpers", () => {
 
   it("orders schedules by date and formats a short date label", () => {
     expect(buildScheduleRows(board).map((row) => row.id)).toEqual([1, 2])
-    expect(formatScheduleLabel("2026-09-05", "첫 일정")).toBe("09/05 첫 일정")
+    expect(formatScheduleLabel("2026-09-05", "14:00:00", "첫 일정")).toBe(
+      "09/05 14:00 첫 일정"
+    )
   })
 })
 

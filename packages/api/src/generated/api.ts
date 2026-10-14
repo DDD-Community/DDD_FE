@@ -2494,6 +2494,134 @@ export interface components {
             code?: string;
             description?: string;
         };
+        AttendanceSyncDateReasonResponseDto: {
+            /**
+             * @description 일정 날짜
+             * @example 2026-11-07
+             */
+            date: string;
+            /**
+             * @description 보존·건너뜀 사유
+             * @enum {string}
+             */
+            reason: "HAS_ATTENDANCE" | "DATE_TAKEN_BY_OTHER_GENERATION";
+        };
+        AttendanceSyncResultResponseDto: {
+            /** @enum {string} */
+            status: "SYNCED" | "SKIPPED" | "FAILED";
+            reason?: string | null;
+            message?: string | null;
+            generationName?: string | null;
+            created?: string[] | null;
+            updated?: string[] | null;
+            unchanged?: string[] | null;
+            deleted?: string[] | null;
+            kept?: components["schemas"]["AttendanceSyncDateReasonResponseDto"][] | null;
+            skipped?: components["schemas"]["AttendanceSyncDateReasonResponseDto"][] | null;
+            ignoredWeeks?: number[] | null;
+        };
+        CohortPartAdminResponseDto: {
+            /**
+             * @description ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 파트명
+             * @example FE
+             */
+            partName: components["schemas"]["CohortPartName"];
+            /**
+             * @description 모집 오픈 여부
+             * @example false
+             */
+            isOpen: boolean;
+            /**
+             * @description 지원서 스키마 JSON
+             * @example {
+             *       "questions": []
+             *     }
+             */
+            applicationSchema: Record<string, never>;
+        };
+        CohortAdminResponseDto: {
+            /** @description 출석 일정 동기화 결과. 커리큘럼을 요청하지 않은 경우 null */
+            attendanceSync: components["schemas"]["AttendanceSyncResultResponseDto"] | null;
+            /**
+             * @description ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 기수 명칭
+             * @example 15기
+             */
+            name: string;
+            /**
+             * Format: date-time
+             * @description 모집 시작일
+             */
+            recruitStartAt: string;
+            /**
+             * Format: date-time
+             * @description 모집 종료일
+             */
+            recruitEndAt: string;
+            /**
+             * Format: date-time
+             * @description 활동 종료일
+             */
+            activityEndAt?: string | null;
+            /**
+             * @description 기수 상태
+             * @enum {string}
+             */
+            status: "UPCOMING" | "RECRUITING" | "ACTIVE" | "CLOSED";
+            /**
+             * @description 프로세스 일정 JSON
+             * @example {
+             *       "documentResultAt": "2026-03-20",
+             *       "interviewAt": "2026-03-25",
+             *       "finalResultAt": "2026-03-30"
+             *     }
+             */
+            process?: Record<string, never> | null;
+            /**
+             * @description 커리큘럼 배열 JSON
+             * @example [
+             *       {
+             *         "week": 1,
+             *         "date": "03.10",
+             *         "title": "오리엔테이션"
+             *       }
+             *     ]
+             */
+            curriculum?: Record<string, never>[] | null;
+            /**
+             * @description 파트별 지원서 양식 JSON
+             * @example {
+             *       "PM": {
+             *         "questions": []
+             *       },
+             *       "FE": {
+             *         "questions": []
+             *       }
+             *     }
+             */
+            applicationForm?: Record<string, never> | null;
+            /** @description 파트별 모집 설정 목록 */
+            parts: components["schemas"]["CohortPartAdminResponseDto"][];
+            /**
+             * Format: date-time
+             * @description 생성일
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description 수정일
+             */
+            updatedAt: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -2954,6 +3082,21 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 기수 저장 및 출석 일정 동기화 결과 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["CohortAdminResponseDto"];
+                    };
+                };
+            };
             201: {
                 headers: {
                     [name: string]: unknown;
@@ -3015,11 +3158,20 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 기수 저장 및 출석 일정 동기화 결과 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["CohortAdminResponseDto"];
+                    };
+                };
             };
         };
     };
@@ -5131,7 +5283,7 @@ export interface operations {
                          * @example ATTENDANCE_GENERATION_IN_USE
                          * @enum {string}
                          */
-                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_CONFLICT";
+                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_SCHEDULE_DATE_CONFLICT" | "ATTENDANCE_CONFLICT";
                         /** @example 출석 리소스의 충돌입니다. */
                         message?: string;
                         /** @example null */
@@ -5250,7 +5402,7 @@ export interface operations {
                          * @example ATTENDANCE_GENERATION_IN_USE
                          * @enum {string}
                          */
-                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_CONFLICT";
+                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_SCHEDULE_DATE_CONFLICT" | "ATTENDANCE_CONFLICT";
                         /** @example 출석 리소스의 충돌입니다. */
                         message?: string;
                         /** @example null */
@@ -5495,7 +5647,7 @@ export interface operations {
                          * @example ATTENDANCE_GENERATION_IN_USE
                          * @enum {string}
                          */
-                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_CONFLICT";
+                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_SCHEDULE_DATE_CONFLICT" | "ATTENDANCE_CONFLICT";
                         /** @example 출석 리소스의 충돌입니다. */
                         message?: string;
                         /** @example null */
@@ -5614,7 +5766,7 @@ export interface operations {
                          * @example ATTENDANCE_GENERATION_IN_USE
                          * @enum {string}
                          */
-                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_CONFLICT";
+                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_SCHEDULE_DATE_CONFLICT" | "ATTENDANCE_CONFLICT";
                         /** @example 출석 리소스의 충돌입니다. */
                         message?: string;
                         /** @example null */
@@ -5859,7 +6011,7 @@ export interface operations {
                          * @example ATTENDANCE_GENERATION_IN_USE
                          * @enum {string}
                          */
-                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_CONFLICT";
+                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_SCHEDULE_DATE_CONFLICT" | "ATTENDANCE_CONFLICT";
                         /** @example 출석 리소스의 충돌입니다. */
                         message?: string;
                         /** @example null */
@@ -5978,7 +6130,7 @@ export interface operations {
                          * @example ATTENDANCE_GENERATION_IN_USE
                          * @enum {string}
                          */
-                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_CONFLICT";
+                        code?: "ATTENDANCE_GENERATION_IN_USE" | "ATTENDANCE_TEAM_IN_USE" | "ATTENDANCE_GENERATION_DUPLICATED" | "ATTENDANCE_TEAM_DUPLICATED" | "ATTENDANCE_INVITATION_DUPLICATED" | "ATTENDANCE_SCHEDULE_DATE_CONFLICT" | "ATTENDANCE_CONFLICT";
                         /** @example 출석 리소스의 충돌입니다. */
                         message?: string;
                         /** @example null */
