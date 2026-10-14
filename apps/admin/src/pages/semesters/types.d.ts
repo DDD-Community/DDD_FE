@@ -14,6 +14,7 @@ export type ProcessSchedule = {
 export type CurriculumWeek = {
   date: string
   description: string
+  time: string
 }
 
 export type CohortPartQuestion = {

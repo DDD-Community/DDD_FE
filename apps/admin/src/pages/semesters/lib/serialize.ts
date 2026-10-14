@@ -47,7 +47,7 @@ const emptyForm = (): SemesterRegisterForm => ({
     interviewEndDate: "",
     finalResultDate: "",
   },
-  curriculum: Array.from({ length: 9 }, () => ({ date: "", description: "" })),
+  curriculum: Array.from({ length: 9 }, () => ({ date: "", description: "", time: "" })),
   parts: Object.fromEntries(
     PARTS.map((name) => [
       name,
@@ -67,7 +67,7 @@ export const serializeFormToCreatePayload = (
   recruitEndAt: form.recruitEndDate,
   status: form.status,
   process: { ...form.process },
-  curriculum: form.curriculum.map((w) => ({ ...w })),
+  curriculum: form.curriculum.map(({ time, ...week }) => ({ ...week, ...(time ? { time } : {}) })),
 })
 
 export const serializeFormToUpdatePayload = (
@@ -78,7 +78,7 @@ export const serializeFormToUpdatePayload = (
   recruitEndAt: form.recruitEndDate,
   status: form.status,
   process: { ...form.process },
-  curriculum: form.curriculum.map((w) => ({ ...w })),
+  curriculum: form.curriculum.map(({ time, ...week }) => ({ ...week, ...(time ? { time } : {}) })),
 })
 
 export const serializeFormToPartsPayload = (
@@ -150,11 +150,12 @@ const extractCurriculum = (
   const padded = Array.from({ length: 9 }, (_, i) => {
     const w = raw[i]
     if (typeof w !== "object" || w === null)
-      return { date: "", description: "" }
+      return { date: "", description: "", time: "" }
     const o = w as Record<string, unknown>
     return {
       date: isNonEmptyString(o.date) ? o.date : "",
       description: isNonEmptyString(o.description) ? o.description : "",
+      time: isNonEmptyString(o.time) ? o.time : "",
     }
   })
   return padded

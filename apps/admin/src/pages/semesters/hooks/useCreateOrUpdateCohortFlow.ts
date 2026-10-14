@@ -1,6 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { cohortKeys, cohortMutations } from "@ddd/api"
+import { attendanceKeys, cohortKeys, cohortMutations } from "@ddd/api"
+import { toast } from "@heroui/react"
+
+import type { CohortDto } from "@ddd/api"
 
 import type { SemesterRegisterForm } from "../types"
 import {
@@ -9,6 +12,7 @@ import {
   serializeFormToPartsPayload,
   serializeFormToUpdatePayload,
 } from "../lib/serialize"
+import { describeAttendanceSync } from "../lib/attendanceSyncMessage"
 
 export class PartsSaveAfterCreateError extends Error {
   readonly name = "PartsSaveAfterCreateError"
@@ -47,9 +51,9 @@ export const useCreateOrUpdateCohortFlow = ({ mode, targetId }: Args) => {
   const submit = async (form: SemesterRegisterForm): Promise<SubmitResult> => {
     let cohortId = targetId
     let createdInThisCall = false
-    // 이름은 BE 응답이 아니라 폼에서 도출한다 — PATCH/POST 가 cohort 바디를
-    // 안 실어주면 mutateAsync 결과가 null 이라, 결과의 .name 을 읽으면 크래시하고
-    // 뒤따르는 파트 저장이 건너뛰어져 부분 저장이 된다.
+    let attendanceSync: CohortDto["attendanceSync"] = null
+    // 이름은 BE 응답이 아니라 폼에서 도출한다 — 구버전 BE 는 PATCH 응답 data 가 null 이라
+    // 결과의 필드를 바로 읽으면 크래시한다. attendanceSync 도 같은 이유로 null 안전하게 읽는다.
     const name = buildName(form.cohortNumber)
 
     try {
@@ -62,13 +66,15 @@ export const useCreateOrUpdateCohortFlow = ({ mode, targetId }: Args) => {
           throw new Error("기수 생성 응답이 비어 있습니다")
         }
         cohortId = created.id
+        attendanceSync = created?.attendanceSync ?? null
         createdInThisCall = true
       } else {
         if (cohortId == null) throw new Error("저장할 기수를 찾을 수 없습니다")
-        await updateMutation.mutateAsync({
+        const updated = await updateMutation.mutateAsync({
           params: { id: cohortId },
           payload: serializeFormToUpdatePayload(form),
         })
+        attendanceSync = updated?.attendanceSync ?? null
       }
 
       try {
@@ -83,9 +89,20 @@ export const useCreateOrUpdateCohortFlow = ({ mode, targetId }: Args) => {
         throw partsError
       }
 
+      const syncMessage = describeAttendanceSync(attendanceSync)
+      if (syncMessage.tone === "success") {
+        toast.success(syncMessage.title, {
+          description: syncMessage.description,
+        })
+      } else if (syncMessage.tone === "warning") {
+        toast.warning(syncMessage.title, {
+          description: syncMessage.description,
+        })
+      }
       return { cohortId: cohortId!, name, createdInThisCall }
     } finally {
       queryClient.invalidateQueries({ queryKey: cohortKeys.all })
+      queryClient.invalidateQueries({ queryKey: attendanceKeys.all })
     }
   }
 

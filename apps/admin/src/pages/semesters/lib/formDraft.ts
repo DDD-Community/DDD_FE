@@ -57,7 +57,9 @@ const draftSchema = z.object({
     interviewEndDate: z.string(),
     finalResultDate: z.string(),
   }),
-  curriculum: z.array(z.object({ date: z.string(), description: z.string() })),
+  curriculum: z.array(
+    z.object({ date: z.string(), description: z.string(), time: z.string().default("") })
+  ),
   parts: partsSchema,
 })
 

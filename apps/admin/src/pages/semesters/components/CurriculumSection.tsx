@@ -11,6 +11,10 @@ export function CurriculumSection() {
   return (
     <Section title="커리큘럼">
       <div className="space-y-3">
+        <p className="text-sm text-gray-500">
+          출석 시작 시각을 입력한 주차만 출석앱 일정으로 동기화됩니다. 시작 후
+          11분까지 출석, 60분까지 지각으로 처리됩니다.
+        </p>
         {Array.from({ length: CURRICULUM_WEEK_COUNT }, (_, index) => (
           <div key={index} className="flex items-center gap-2">
             <span className="w-12 shrink-0 text-sm text-gray-500">
@@ -25,6 +29,19 @@ export function CurriculumSection() {
                   aria-label={`${index + 1}주차 날짜`}
                   className="w-1/2"
                   value={field.value?.slice(0, 10) ?? ""}
+                  onChange={(e) => field.onChange(e.target.value)}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name={`curriculum.${index}.time`}
+              render={({ field }) => (
+                <Input
+                  type="time"
+                  aria-label={`${index + 1}주차 출석 시작 시각`}
+                  className="w-36"
+                  value={field.value ?? ""}
                   onChange={(e) => field.onChange(e.target.value)}
                 />
               )}

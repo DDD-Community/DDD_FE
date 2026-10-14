@@ -103,6 +103,9 @@ export type PatchUpdateCohortParams = { id: number };
 export type PatchUpdateCohortRequest = UpdateCohortRequestDto;
 export type PatchUpdateCohortResponse = CohortDto;
 
+// 커리큘럼 저장 후 출석앱 일정 동기화 결과 (기수 생성·수정 응답의 attendanceSync)
+export type AttendanceSyncResult = components["schemas"]["AttendanceSyncResultResponseDto"];
+
 // DELETE /api/v1/admin/cohorts/{id} - 기수 삭제
 export type DeleteCohortParams = { id: number };
 export type DeleteCohortResponse = void;
@@ -182,6 +185,7 @@ export interface CohortDto {
   curriculum?: Record<string, unknown>[];
   applicationForm?: Record<string, unknown>;
   parts?: CohortPartConfigDto[];
+  attendanceSync: components["schemas"]["AttendanceSyncResultResponseDto"] | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -22,6 +22,7 @@ export function ScheduleSummaryTable({ rows }: Props) {
           <Table.Header>
             <Table.Column isRowHeader>날짜</Table.Column>
             <Table.Column>일정명</Table.Column>
+            <Table.Column>시각</Table.Column>
             <Table.Column>출석</Table.Column>
             <Table.Column>지각</Table.Column>
             <Table.Column>결석</Table.Column>
@@ -32,6 +33,7 @@ export function ScheduleSummaryTable({ rows }: Props) {
               <Table.Row key={row.id}>
                 <Table.Cell>{row.date}</Table.Cell>
                 <Table.Cell>{row.name}</Table.Cell>
+                <Table.Cell>{row.scheduleTime?.slice(0, 5) ?? "-"}</Table.Cell>
                 <Table.Cell>{row.attended}</Table.Cell>
                 <Table.Cell>{row.late}</Table.Cell>
                 <Table.Cell>{row.absent}</Table.Cell>
