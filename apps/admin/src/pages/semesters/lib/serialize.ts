@@ -9,6 +9,7 @@ import type {
   UpdateCohortRequestDto,
 } from "@ddd/api"
 
+import { DEFAULT_ATTENDANCE_START_TIME } from "@/pages/semesters/constants"
 import { slugify } from "@/shared/lib/slug"
 
 import type {
@@ -47,7 +48,11 @@ const emptyForm = (): SemesterRegisterForm => ({
     interviewEndDate: "",
     finalResultDate: "",
   },
-  curriculum: Array.from({ length: 9 }, () => ({ date: "", description: "", time: "" })),
+  curriculum: Array.from({ length: 9 }, () => ({
+    date: "",
+    description: "",
+    time: DEFAULT_ATTENDANCE_START_TIME,
+  })),
   parts: Object.fromEntries(
     PARTS.map((name) => [
       name,
@@ -150,12 +155,12 @@ const extractCurriculum = (
   const padded = Array.from({ length: 9 }, (_, i) => {
     const w = raw[i]
     if (typeof w !== "object" || w === null)
-      return { date: "", description: "", time: "" }
+      return { date: "", description: "", time: DEFAULT_ATTENDANCE_START_TIME }
     const o = w as Record<string, unknown>
     return {
       date: isNonEmptyString(o.date) ? o.date : "",
       description: isNonEmptyString(o.description) ? o.description : "",
-      time: isNonEmptyString(o.time) ? o.time : "",
+      time: isNonEmptyString(o.time) ? o.time : DEFAULT_ATTENDANCE_START_TIME,
     }
   })
   return padded

@@ -40,3 +40,6 @@ export const SEMESTER_PARTS: CohortPartName[] = [
   CohortPartConfigDtoName.IOS,
   CohortPartConfigDtoName.AND,
 ]
+
+/** 커리큘럼 주차의 출석 시작 시각 기본값. DDD 세션은 14시에 시작한다. 주차별로 바꿀 수 있다. */
+export const DEFAULT_ATTENDANCE_START_TIME = "14:00"
