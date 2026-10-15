@@ -6,7 +6,10 @@ import {
   type CohortPartName,
 } from "@ddd/api"
 
-import { SEMESTER_PARTS } from "@/pages/semesters/constants"
+import {
+  DEFAULT_ATTENDANCE_START_TIME,
+  SEMESTER_PARTS,
+} from "@/pages/semesters/constants"
 
 import type { SemesterRegisterForm } from "../types"
 
@@ -58,7 +61,16 @@ const draftSchema = z.object({
     finalResultDate: z.string(),
   }),
   curriculum: z.array(
-    z.object({ date: z.string(), description: z.string(), time: z.string().default("") })
+    z.object({
+      date: z.string(),
+      description: z.string(),
+      // 시각 기능 이전에 만든 초안(필드 없음)이나 비어 있는 시각은 기본값으로 복원한다.
+      // 빈 값으로 복원되면 저장 시 출석앱 동기화가 "시각 있는 주차 0개"로 건너뛴다.
+      time: z
+        .string()
+        .optional()
+        .transform((value) => value || DEFAULT_ATTENDANCE_START_TIME),
+    })
   ),
   parts: partsSchema,
 })
