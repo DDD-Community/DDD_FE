@@ -17,7 +17,7 @@ import { buildName } from "@/pages/semesters/lib/serialize"
 import { validateFormParts } from "@/pages/semesters/lib/validateParts"
 import { useIsMobile } from "@/shared/hooks/useIsMobile"
 
-import { CURRICULUM_WEEK_COUNT } from "../constants"
+import { CURRICULUM_WEEK_COUNT, DEFAULT_ATTENDANCE_START_TIME } from "../constants"
 import type { SemesterRegisterForm } from "../types"
 
 import { ApplicationFormSection } from "./ApplicationFormSection"
@@ -52,7 +52,7 @@ const buildDefaults = (prefill?: SemesterRegisterForm): SemesterRegisterForm =>
     curriculum: Array.from({ length: CURRICULUM_WEEK_COUNT }, () => ({
       date: "",
       description: "",
-      time: "",
+      time: DEFAULT_ATTENDANCE_START_TIME,
     })),
     parts: Object.fromEntries(
       SEMESTER_PARTS.map((name) => [

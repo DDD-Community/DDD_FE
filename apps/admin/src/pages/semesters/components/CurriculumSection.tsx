@@ -12,8 +12,8 @@ export function CurriculumSection() {
     <Section title="커리큘럼">
       <div className="space-y-3">
         <p className="text-sm text-gray-500">
-          출석 시작 시각을 입력한 주차만 출석앱 일정으로 동기화됩니다. 시작 후
-          11분까지 출석, 60분까지 지각으로 처리됩니다.
+          출석 시작 시각은 기본 14:00이며 주차별로 바꿀 수 있습니다. 시각이 있는 주차만
+          출석앱 일정으로 동기화되고, 시작 후 11분까지 출석, 60분까지 지각으로 처리됩니다.
         </p>
         {Array.from({ length: CURRICULUM_WEEK_COUNT }, (_, index) => (
           <div key={index} className="flex items-center gap-2">
