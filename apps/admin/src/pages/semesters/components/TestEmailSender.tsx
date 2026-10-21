@@ -1,5 +1,8 @@
 import { useState } from "react"
 import { Button, ListBox, Select } from "@heroui/react"
+import { useQuery } from "@tanstack/react-query"
+
+import { usersQueries } from "@ddd/api"
 
 import type { TestEmailType } from "@ddd/api"
 
@@ -23,21 +26,26 @@ interface Props {
 export function TestEmailSender({ cohortId }: Props) {
   const [type, setType] = useState<TestEmailType>("면접합격")
   const { send, isPending } = useSendTestEmailFlow()
+  // 받는 사람은 서버가 로그인 계정으로 고정한다. 화면은 어디로 가는지만 보여 준다.
+  const { data: me } = useQuery(usersQueries.getMe())
 
   if (cohortId === null) {
     return (
       <p className="text-xs text-gray-500">
-        기수를 등록한 뒤 안내 메일을 내 메일로 미리 받아 볼 수 있습니다.
+        기수를 등록한 뒤 안내 메일을 로그인한 계정 메일로 미리 받아 볼 수
+        있습니다.
       </p>
     )
   }
 
   return (
     <div className="space-y-2 rounded-lg bg-white p-4">
-      <p className="text-sm font-semibold text-gray-900">내 메일로 미리 받기</p>
+      <p className="text-sm font-semibold text-gray-900">
+        로그인한 계정 메일로 미리 받기
+      </p>
       <p className="text-xs text-gray-500">
-        저장된 값으로 실제 양식 그대로 로그인한 계정 메일로 보냅니다. 방금 고친
-        값은 먼저 저장해 주세요.
+        저장된 값으로 실제 양식 그대로 {me?.email ?? "로그인한 계정 메일"}(으)로
+        보냅니다. 방금 고친 값은 먼저 저장해 주세요.
       </p>
       <div className="flex items-center gap-2">
         <Select
@@ -67,7 +75,7 @@ export function TestEmailSender({ cohortId }: Props) {
         <Button
           variant="secondary"
           isDisabled={isPending}
-          onPress={() => send({ cohortId, type })}
+          onPress={() => send({ cohortId, type, to: me?.email })}
         >
           {isPending ? "보내는 중..." : "보내기"}
         </Button>

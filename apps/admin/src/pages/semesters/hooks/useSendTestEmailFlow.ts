@@ -16,13 +16,18 @@ export const useSendTestEmailFlow = () => {
   const send = async ({
     cohortId,
     type,
+    to,
   }: {
     cohortId: number
     type: TestEmailType
+    /** 토스트에 보여 줄 받는 주소. 실제 수신자는 서버가 정한다 */
+    to?: string
   }) => {
     try {
       await sendMutation.mutateAsync({ payload: { cohortId, type } })
-      toast.success(`${type} 안내 메일을 내 메일로 보냈습니다`)
+      toast.success(`${type} 안내 메일을 보냈습니다`, {
+        description: to ? `받는 주소: ${to}` : undefined,
+      })
     } catch (error) {
       toast.danger("테스트 메일 발송에 실패했습니다", {
         description: (error as Error)?.message,
