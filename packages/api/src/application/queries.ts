@@ -6,6 +6,7 @@ import type {
   GetAdminApplicationParams,
   PatchApplicationStatusParams,
   PatchApplicationStatusRequest,
+  PostSendTestEmailRequest,
   PostSaveApplicationDraftRequest,
   GetApplicationDraftParams,
   PostSubmitApplicationRequest,
@@ -55,6 +56,19 @@ export const applicationQueries = {
 };
 
 export const applicationMutations = {
+  /**
+   * 안내 메일 테스트 발송 mutation
+   *
+   * @example
+   * const mutation = useMutation(applicationMutations.sendTestEmail())
+   * mutation.mutate({ payload: { cohortId: 15, type: '면접합격' } })
+   */
+  sendTestEmail: () =>
+    mutationOptions({
+      mutationFn: ({ payload }: { payload: PostSendTestEmailRequest }) =>
+        applicationAPI.sendTestEmail({ payload }),
+    }),
+
   /**
    * 어드민 지원서 상태 변경 mutation
    *

@@ -61,6 +61,11 @@ export type PatchApplicationStatusParams = { id: number };
 export type PatchApplicationStatusRequest = UpdateApplicationStatusRequestDto;
 export type PatchApplicationStatusResponse = void;
 
+// POST /api/v1/admin/applications/test-emails - 안내 메일 테스트 발송 (요청한 운영진 본인 주소로)
+export type SendTestEmailRequestDto = components["schemas"]["SendTestEmailRequestDto"];
+export type PostSendTestEmailRequest = SendTestEmailRequestDto;
+export type TestEmailType = SendTestEmailRequestDto["type"];
+
 // POST /api/v1/applications/draft - 임시 저장
 export type PostSaveApplicationDraftRequest = SaveApplicationDraftRequestDto;
 export type PostSaveApplicationDraftResponse = void;

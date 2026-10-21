@@ -7,8 +7,15 @@ import { Section } from "@/shared/ui/Section"
 
 import type { SemesterRegisterForm } from "../types"
 
+import { TestEmailSender } from "./TestEmailSender"
+
+interface Props {
+  /** 저장된 기수 id. 새 기수 등록 중이면 null */
+  cohortId: number | null
+}
+
 // 비운 칸은 메일에서 그 줄이 통째로 빠진다. 값을 지어내 넣지 않으므로 아는 값만 채우면 된다.
-export function AnnouncementSection() {
+export function AnnouncementSection({ cohortId }: Props) {
   const { register } = useFormContext<SemesterRegisterForm>()
   return (
     <Section title="안내 메일 정보">
@@ -86,6 +93,7 @@ export function AnnouncementSection() {
           />
         </FormField>
       </GridBox>
+      <TestEmailSender cohortId={cohortId} />
     </Section>
   )
 }
