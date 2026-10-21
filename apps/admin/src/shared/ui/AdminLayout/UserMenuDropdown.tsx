@@ -1,12 +1,7 @@
 import { Dropdown, Label } from "@heroui/react"
 import type { ComponentProps, Key, ReactNode } from "react"
 import { useLogoutFlow } from "@/shared/hooks/useLogoutFlow"
-
-const MENU_ITEMS = [
-  { id: "logout", label: "로그아웃", variant: "danger" as const },
-] as const
-
-type MenuItemId = (typeof MENU_ITEMS)[number]["id"]
+import { useGoogleCalendarConnectionFlow } from "@/shared/hooks/useGoogleCalendarConnectionFlow"
 
 interface UserMenuDropdownProps {
   /** 트리거 버튼 내부에 표시할 시각 콘텐츠 (Avatar, 이름 등). 절대 <button>을 넘기지 말 것 — Dropdown.Trigger가 이미 button을 렌더한다. */
@@ -24,14 +19,15 @@ export const UserMenuDropdown = ({
   placement = "top",
 }: UserMenuDropdownProps) => {
   const { logoutAndRedirect, isPending } = useLogoutFlow()
-
-  // 추후 메뉴 항목이 추가될 경우를 대비해 핸들러를 객체로 관리
-  const handlers: Record<MenuItemId, () => void> = {
+  const calendar = useGoogleCalendarConnectionFlow()
+  const handlers: Record<string, () => void> = {
+    connect: () => void calendar.connect(),
+    disconnect: () => void calendar.disconnect(),
     logout: logoutAndRedirect,
   }
 
   const onAction = (key: Key) => {
-    const handler = handlers[key as MenuItemId]
+    const handler = handlers[String(key)]
     handler?.()
   }
 
@@ -42,17 +38,58 @@ export const UserMenuDropdown = ({
       </Dropdown.Trigger>
       <Dropdown.Popover placement={placement}>
         <Dropdown.Menu onAction={onAction} aria-label="사용자 메뉴">
-          {MENU_ITEMS.map((item) => (
-            <Dropdown.Item
-              key={item.id}
-              id={item.id}
-              variant={item.variant}
-              isDisabled={isPending}
-              textValue={item.label}
-            >
-              <Label>{item.label}</Label>
-            </Dropdown.Item>
-          ))}
+          {calendar.status &&
+            (calendar.status.status === "ACTIVE" ? (
+              <>
+                <Dropdown.Item
+                  id="calendar-info"
+                  textValue={`캘린더: ${calendar.status.googleEmail ?? "연결됨"}`}
+                  isDisabled
+                >
+                  <Label>
+                    캘린더: {calendar.status.googleEmail ?? "연결됨"}
+                  </Label>
+                </Dropdown.Item>
+                <Dropdown.Item
+                  id="connect"
+                  textValue="Google 캘린더 다시 연결"
+                  isDisabled={calendar.isPending}
+                >
+                  <Label>Google 캘린더 다시 연결</Label>
+                </Dropdown.Item>
+                <Dropdown.Item
+                  id="disconnect"
+                  textValue="Google 캘린더 연결 해제"
+                  isDisabled={calendar.isPending}
+                >
+                  <Label>Google 캘린더 연결 해제</Label>
+                </Dropdown.Item>
+              </>
+            ) : (
+              <Dropdown.Item
+                id="connect"
+                textValue={
+                  calendar.status.status === "INVALID"
+                    ? "Google 캘린더 다시 연결 필요"
+                    : "Google 캘린더 연결"
+                }
+                isDisabled={calendar.isPending}
+              >
+                <Label>
+                  {calendar.status.status === "INVALID"
+                    ? "Google 캘린더 다시 연결 필요"
+                    : "Google 캘린더 연결"}
+                </Label>
+              </Dropdown.Item>
+            ))}
+          <Dropdown.Item
+            id="logout"
+            variant="danger"
+            isDisabled={isPending}
+            textValue="로그아웃"
+          >
+            <Label>로그아웃</Label>
+          </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown.Popover>
     </Dropdown>

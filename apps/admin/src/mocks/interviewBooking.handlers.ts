@@ -71,6 +71,7 @@ const RESERVATION: BookingReservation = {
   startAt: SLOTS[0].startAt,
   endAt: SLOTS[0].endAt,
   location: SLOTS[0].location,
+  joinUrl: null,
 }
 
 function readScenario(request: Request): string {

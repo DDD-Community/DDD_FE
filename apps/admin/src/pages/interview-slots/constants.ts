@@ -12,3 +12,4 @@ export const MAX_SLOT_DURATION_MINUTES = 480
 
 /** 한 번에 등록 가능한 최대 슬롯 수. 5분 × 4시간 = 48 이 현실적 상한 */
 export const MAX_BULK_SLOT_COUNT = 48
+export const MEET_LOCATION = "온라인 (Google Meet)"

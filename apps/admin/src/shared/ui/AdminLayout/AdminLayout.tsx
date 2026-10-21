@@ -5,11 +5,13 @@ import { useIsMobile } from "@/shared/hooks/useIsMobile"
 import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import { paths } from "@/shared/lib/paths"
 import { MobileHeader } from "./MobileHeader"
+import { useGoogleCalendarCallbackToast } from "@/shared/hooks/useGoogleCalendarCallbackToast"
 
 /** 어드민 페이지 전체에서 사용하는 기본 레이아웃 */
 export const AdminLayout = () => {
   const isMobile = useIsMobile()
   const { status } = useRequireAuth()
+  useGoogleCalendarCallbackToast()
 
   if (status === "loading") {
     return (

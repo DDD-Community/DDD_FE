@@ -40,6 +40,7 @@ function withSlotFallback(
     startAt: reservation.startAt ?? slot.startAt,
     endAt: reservation.endAt ?? slot.endAt,
     location: reservation.location ?? slot.location,
+    joinUrl: reservation.joinUrl ?? null,
   }
 }
 

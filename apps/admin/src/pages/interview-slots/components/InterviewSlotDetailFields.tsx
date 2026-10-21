@@ -1,13 +1,15 @@
 import { Input, TextArea } from "@heroui/react"
-import { Controller, useFormContext } from "react-hook-form"
+import { Controller, useFormContext, useWatch } from "react-hook-form"
 
 import { FormField } from "@/shared/ui/FormField"
 
 import type { InterviewSlotSharedForm } from "../types"
+import { InterviewSlotInterviewersField } from "./InterviewSlotInterviewersField"
 
 /** 단건·반복 등록이 공유하는 수용 인원 / 장소 / 설명 */
 export function InterviewSlotDetailFields() {
   const { control } = useFormContext<InterviewSlotSharedForm>()
+  const interviewerUserIds = useWatch({ control, name: "interviewerUserIds" })
 
   return (
     <>
@@ -35,7 +37,9 @@ export function InterviewSlotDetailFields() {
         />
       </FormField>
 
-      <FormField label="장소">
+      <InterviewSlotInterviewersField />
+
+      <FormField label={interviewerUserIds.length > 0 ? "장소 (선택)" : "장소"}>
         <Controller
           control={control}
           name="location"
@@ -56,6 +60,12 @@ export function InterviewSlotDetailFields() {
             </>
           )}
         />
+        {interviewerUserIds.length > 0 && (
+          <p className="mt-1 text-xs text-muted">
+            지원자에게는 회의 주소 대신 시작 10분 전부터 열리는 입장 링크가
+            메일로 갑니다.
+          </p>
+        )}
       </FormField>
 
       <FormField label="설명 (선택)">

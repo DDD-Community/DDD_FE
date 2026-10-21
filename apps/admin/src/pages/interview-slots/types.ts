@@ -26,11 +26,18 @@ const InterviewSlotSharedFieldsSchema = z.object({
     .number({ message: "수용 인원을 입력해주세요" })
     .int()
     .min(1, "최소 1명 이상이어야 합니다"),
-  location: z
-    .string()
-    .refine((v) => v.trim().length > 0, "장소를 입력해주세요"),
+  location: z.string(),
+  interviewerUserIds: z.array(z.number().int().positive()),
   description: z.string(),
 })
+
+const requireLocationWithoutInterviewers = (v: InterviewSlotSharedForm) =>
+  v.interviewerUserIds.length > 0 || v.location.trim().length > 0
+
+const locationIssue = {
+  message: "장소를 입력해주세요",
+  path: ["location"],
+}
 
 export type InterviewSlotSharedForm = z.infer<
   typeof InterviewSlotSharedFieldsSchema
@@ -46,10 +53,12 @@ export type InterviewSlotSharedForm = z.infer<
 export const InterviewSlotFormSchema = InterviewSlotSharedFieldsSchema.extend({
   startTime: z.string().min(1, "시작 시각을 선택해주세요"),
   endTime: z.string().min(1, "종료 시각을 선택해주세요"),
-}).refine((v) => v.startTime < v.endTime, {
-  message: "종료 시각은 시작 시각보다 뒤여야 합니다",
-  path: ["endTime"],
 })
+  .refine(requireLocationWithoutInterviewers, locationIssue)
+  .refine((v) => v.startTime < v.endTime, {
+    message: "종료 시각은 시작 시각보다 뒤여야 합니다",
+    path: ["endTime"],
+  })
 
 export type InterviewSlotForm = z.infer<typeof InterviewSlotFormSchema>
 
@@ -64,6 +73,7 @@ export const buildInterviewSlotFormDefaults = (
   endTime: prefill?.endTime ?? "",
   capacity: prefill?.capacity ?? 1,
   location: prefill?.location ?? "",
+  interviewerUserIds: prefill?.interviewerUserIds ?? [],
   description: prefill?.description ?? "",
 })
 
@@ -90,10 +100,12 @@ export const InterviewSlotBulkFormSchema =
         `슬롯 길이는 ${MAX_SLOT_DURATION_MINUTES}분 이하여야 합니다`
       ),
     excludedStartTimes: z.array(z.string()),
-  }).refine((v) => v.rangeStart < v.rangeEnd, {
-    message: "운영 종료 시각은 시작 시각보다 뒤여야 합니다",
-    path: ["rangeEnd"],
   })
+    .refine(requireLocationWithoutInterviewers, locationIssue)
+    .refine((v) => v.rangeStart < v.rangeEnd, {
+      message: "운영 종료 시각은 시작 시각보다 뒤여야 합니다",
+      path: ["rangeEnd"],
+    })
 
 export type InterviewSlotBulkForm = z.infer<typeof InterviewSlotBulkFormSchema>
 
@@ -110,5 +122,6 @@ export const buildInterviewSlotBulkFormDefaults = (
   excludedStartTimes: prefill?.excludedStartTimes ?? [],
   capacity: prefill?.capacity ?? 1,
   location: prefill?.location ?? "",
+  interviewerUserIds: prefill?.interviewerUserIds ?? [],
   description: prefill?.description ?? "",
 })

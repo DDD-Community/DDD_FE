@@ -22,13 +22,14 @@ export const InterviewSlotsTable = ({
   return (
     <Table>
       <Table.ScrollContainer>
-        <Table.Content aria-label="면접 슬롯 목록" className="min-w-200">
+        <Table.Content aria-label="면접 슬롯 목록" className="min-w-240">
           <Table.Header>
             <Table.Column isRowHeader>날짜</Table.Column>
             <Table.Column>시간</Table.Column>
             <Table.Column>파트</Table.Column>
             <Table.Column>예약/정원</Table.Column>
             <Table.Column>장소</Table.Column>
+            <Table.Column>회의</Table.Column>
             <Table.Column>액션</Table.Column>
           </Table.Header>
           <Table.Body>
