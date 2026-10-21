@@ -11,9 +11,15 @@ import type {
   PostCreateInterviewReservationParams,
   PostCreateInterviewReservationRequest,
   DeleteInterviewReservationParams,
+  SyncInterviewSlotMeetingParams,
 } from "./types";
 
 export const interviewQueries = {
+  getInterviewerCandidates: () =>
+    queryOptions({
+      queryKey: interviewKeys.interviewerCandidates(),
+      queryFn: interviewAPI.getInterviewerCandidates,
+    }),
   /**
    * 면접 슬롯 목록 조회 쿼리
    *
@@ -52,6 +58,11 @@ export const interviewQueries = {
 };
 
 export const interviewMutations = {
+  syncInterviewSlotMeeting: () =>
+    mutationOptions({
+      mutationFn: ({ params }: { params: SyncInterviewSlotMeetingParams }) =>
+        interviewAPI.syncInterviewSlotMeeting({ params }),
+    }),
   /**
    * 면접 슬롯 생성 mutation
    *

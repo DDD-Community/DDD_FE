@@ -1,16 +1,21 @@
 import type { components, paths } from "../generated/api";
 
 // Request DTO
-export type CreateInterviewSlotRequestDto =
-  components["schemas"]["CreateInterviewSlotRequestDto"];
-export type UpdateInterviewSlotRequestDto =
-  components["schemas"]["UpdateInterviewSlotRequestDto"];
+export type CreateInterviewSlotRequestDto = components["schemas"]["CreateInterviewSlotRequestDto"];
+export type UpdateInterviewSlotRequestDto = components["schemas"]["UpdateInterviewSlotRequestDto"];
 export type CreateInterviewReservationRequestDto =
   components["schemas"]["CreateInterviewReservationRequestDto"];
 
 // 엔티티 타입 (BE 응답 schema 정의됨)
 export type InterviewSlot = components["schemas"]["InterviewSlotResponseDto"];
 export type InterviewSlotResponseDto = InterviewSlot;
+export type InterviewSlotInterviewerResponseDto =
+  components["schemas"]["InterviewSlotInterviewerResponseDto"];
+export type InterviewSlotMeetingResponseDto =
+  components["schemas"]["InterviewSlotMeetingResponseDto"];
+export type InterviewSlotMeetingStatus = InterviewSlotMeetingResponseDto["status"];
+export type InterviewerCandidateResponseDto =
+  components["schemas"]["InterviewerCandidateResponseDto"];
 export type InterviewReservation = components["schemas"]["InterviewReservationResponseDto"];
 export type InterviewReservationResponseDto = InterviewReservation;
 
@@ -18,6 +23,9 @@ export type InterviewReservationResponseDto = InterviewReservation;
 export type GetInterviewSlotsParams =
   paths["/api/v1/admin/interview-slots"]["get"]["parameters"]["query"];
 export type GetInterviewSlotsResponse = InterviewSlot[];
+export type GetInterviewerCandidatesResponse = InterviewerCandidateResponseDto[];
+export type SyncInterviewSlotMeetingParams = { id: number };
+export type SyncInterviewSlotMeetingResponse = InterviewSlot;
 export type InterviewListSlotsParams = GetInterviewSlotsParams;
 
 // GET /api/v1/admin/interview-slots/{id} - 면접 슬롯 단일 조회

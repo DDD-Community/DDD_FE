@@ -3,6 +3,7 @@ import type { GetInterviewSlotsParams, GetInterviewSlotParams } from "./types";
 export const interviewKeys = {
   /** 면접 base key */
   all: ["interviews"] as const,
+  interviewerCandidates: () => [...interviewKeys.all, "interviewer-candidates"] as const,
 
   /** 면접 슬롯 목록 key */
   slotLists: () => [...interviewKeys.all, "slots", "list"] as const,
@@ -14,8 +15,7 @@ export const interviewKeys = {
    * @param {number} [params.cohortId] - 기수 ID 필터 (선택)
    * @param {number} [params.cohortPartId] - 기수 파트 ID 필터 (선택)
    */
-  slotList: (params: GetInterviewSlotsParams) =>
-    [...interviewKeys.slotLists(), params] as const,
+  slotList: (params: GetInterviewSlotsParams) => [...interviewKeys.slotLists(), params] as const,
 
   /**
    * 면접 슬롯 단일 key

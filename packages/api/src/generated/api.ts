@@ -1441,6 +1441,162 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/google-calendar/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Google Calendar 연동 시작 */
+        post: operations["googleCalendar_connect"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/google-calendar/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Google Calendar OAuth 콜백 */
+        get: operations["googleCalendar_callback"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/google-calendar/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Google Calendar 연동 상태 */
+        get: operations["googleCalendar_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/google-calendar/connection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Google Calendar 연동 해제 */
+        delete: operations["googleCalendar_disconnect"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/google-calendar/test-meeting": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 테스트 Meet 생성 */
+        post: operations["googleCalendar_createTestMeeting"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/google-calendar/test-meeting/{eventId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 테스트 Meet 삭제 */
+        delete: operations["googleCalendar_deleteTestMeeting"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/interview-slots/interviewer-candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 면접관 후보 조회 */
+        get: operations["interview_listInterviewerCandidates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/interview-slots/{id}/meeting/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 면접 슬롯 회의 수동 동기화 */
+        post: operations["interview_syncSlotMeeting"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/interview-bookings/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 면접 입장
+         * @description 예약자의 면접 입장 가능 시각을 확인하고 회의로 이동합니다.
+         */
+        get: operations["interviewBooking_join"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1628,7 +1784,7 @@ export interface components {
              * @enum {string}
              */
             status?: "UPCOMING" | "RECRUITING" | "ACTIVE" | "CLOSED";
-            /** @description 프로세스 일정 JSON */
+            /** @description 프로세스 일정·메일 안내 JSON. 보낸 키만 바뀌고 보내지 않은 기존 키는 유지된다. 키를 비우려면 null 을 보낸다 */
             process?: Record<string, never>;
             /** @description 커리큘럼 배열 JSON */
             curriculum?: Record<string, never>[];
@@ -2291,6 +2447,8 @@ export interface components {
             reservedCount: number;
             /** @description 예약 목록 */
             reservations: components["schemas"]["InterviewReservationResponseDto"][];
+            interviewers: components["schemas"]["InterviewSlotInterviewerResponseDto"][];
+            meeting: components["schemas"]["InterviewSlotMeetingResponseDto"];
             /**
              * Format: date-time
              * @description 생성 일시
@@ -2332,6 +2490,8 @@ export interface components {
             location: string;
             /** @description 설명 */
             description?: string;
+            /** @description 순서대로 면접관 사용자 ID. 첫 사용자가 회의 호스트입니다. */
+            interviewerUserIds?: number[];
         };
         UpdateInterviewSlotRequestDto: {
             /**
@@ -2353,6 +2513,8 @@ export interface components {
             location?: string;
             /** @description 설명 */
             description?: string;
+            /** @description 면접관 사용자 ID. 빈 배열은 기존 면접관을 제거합니다. */
+            interviewerUserIds?: number[];
         };
         CreateInterviewReservationRequestDto: {
             /**
@@ -2654,6 +2816,56 @@ export interface components {
              * @description 수정일
              */
             updatedAt: string;
+        };
+        GoogleCalendarAuthorizationResponseDto: {
+            /** @description Google OAuth 인증 주소 */
+            authorizationUrl: string;
+        };
+        GoogleCalendarStatusResponseDto: {
+            connected: boolean;
+            /** @enum {string|null} */
+            status?: "ACTIVE" | "INVALID" | null;
+            googleEmail?: string | null;
+            /** Format: date-time */
+            connectedAt?: string | null;
+            lastError?: string | null;
+        };
+        TestMeetingResponseDto: {
+            eventId: string;
+            htmlLink: string;
+            meetUrl?: string | null;
+            conferenceStatus?: string | null;
+            /** Format: date-time */
+            startAt: string;
+            /** Format: date-time */
+            endAt: string;
+        };
+        TestMeetingRequestDto: {
+            /** @description 테스트 초대 이메일, 최대 5개 */
+            attendeeEmails?: string[];
+        };
+        InterviewSlotInterviewerResponseDto: {
+            userId: number;
+            name: string;
+            email: string;
+            isHost: boolean;
+            calendarConnected: boolean;
+        };
+        InterviewSlotMeetingResponseDto: {
+            /** @enum {string} */
+            status: "NONE" | "PENDING" | "READY" | "OUT_OF_SYNC" | "FAILED";
+            meetUrl?: string | null;
+            lastError?: string | null;
+            /** Format: date-time */
+            syncedAt?: string | null;
+        };
+        InterviewerCandidateResponseDto: {
+            userId: number;
+            name: string;
+            email: string;
+            roles: string[];
+            calendarConnected: boolean;
+            calendarEmail?: string | null;
         };
     };
     responses: never;
@@ -4760,10 +4972,9 @@ export interface operations {
                     "application/json": {
                         /** @example SUCCESS */
                         code?: string;
-                        /** @example 면접 슬롯이 수정되었습니다. */
+                        /** @example success */
                         message?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
+                        data?: components["schemas"]["InterviewSlotResponseDto"];
                     };
                 };
             };
@@ -6433,6 +6644,353 @@ export interface operations {
                         data?: Record<string, never> | null;
                     };
                 };
+            };
+        };
+    };
+    googleCalendar_connect: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 연동 주소 생성 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["GoogleCalendarAuthorizationResponseDto"];
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    googleCalendar_callback: {
+        parameters: {
+            query?: {
+                code?: string;
+                state?: string;
+                error?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description 클라이언트로 연동 결과 리다이렉트 */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    googleCalendar_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 연동 상태 조회 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["GoogleCalendarStatusResponseDto"];
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    googleCalendar_disconnect: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 연동 해제 */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    googleCalendar_createTestMeeting: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestMeetingRequestDto"];
+            };
+        };
+        responses: {
+            /** @description 테스트 Meet 생성 */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["TestMeetingResponseDto"];
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    googleCalendar_deleteTestMeeting: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                eventId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 테스트 Meet 삭제 */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    interview_listInterviewerCandidates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 면접관 후보 조회 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["InterviewerCandidateResponseDto"][];
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    interview_syncSlotMeeting: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 면접 회의 동기화 결과 */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        code?: string;
+                        /** @example success */
+                        message?: string;
+                        data?: components["schemas"]["InterviewSlotResponseDto"];
+                    };
+                };
+            };
+            /** @description access_token 쿠키가 없거나 만료되었습니다. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example UNAUTHORIZED */
+                        code?: string;
+                        /** @example access_token 쿠키가 없거나 만료되었습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+            /** @description 면접 슬롯을 찾을 수 없습니다. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example INTERVIEW_SLOT_NOT_FOUND */
+                        code?: string;
+                        /** @example 면접 슬롯을 찾을 수 없습니다. */
+                        message?: string;
+                        /** @example null */
+                        data?: Record<string, never> | null;
+                    };
+                };
+            };
+        };
+    };
+    interviewBooking_join: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

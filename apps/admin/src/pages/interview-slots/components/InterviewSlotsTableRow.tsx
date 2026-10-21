@@ -1,6 +1,7 @@
 import { Button, Table } from "@heroui/react"
 
 import type { CohortDto, InterviewSlot } from "@ddd/api"
+import { InterviewSlotMeetingCell } from "./InterviewSlotMeetingCell"
 
 type Props = {
   slot: InterviewSlot
@@ -50,6 +51,9 @@ export const InterviewSlotsTableRow = ({
         </Button>
       </Table.Cell>
       <Table.Cell>{slot.location ?? "-"}</Table.Cell>
+      <Table.Cell>
+        <InterviewSlotMeetingCell slot={slot} />
+      </Table.Cell>
       <Table.Cell>
         <Button size="sm" variant="outline" className="mr-2" onPress={onEdit}>
           수정

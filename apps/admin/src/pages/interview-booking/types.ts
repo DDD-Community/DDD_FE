@@ -15,6 +15,7 @@ export interface BookingReservation {
   startAt?: string
   endAt?: string
   location?: string
+  joinUrl?: string | null
 }
 
 export interface BookingContext {

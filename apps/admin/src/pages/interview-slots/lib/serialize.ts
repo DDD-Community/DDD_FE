@@ -5,6 +5,7 @@ import type {
 } from "@ddd/api"
 
 import type { InterviewSlotBulkForm, InterviewSlotForm } from "../types"
+import { MEET_LOCATION } from "../constants"
 import type { SlotCandidate } from "./generateSlotCandidates"
 
 const pad = (n: number): string => `${n}`.padStart(2, "0")
@@ -45,8 +46,10 @@ export const serializeFormToCreatePayload = (
   startAt: combineToIsoLocal(form.date, form.startTime),
   endAt: combineToIsoLocal(form.date, form.endTime),
   capacity: form.capacity,
-  // BE 생성 DTO 가 location 을 필수로 받는다. 공백만 입력은 폼 스키마가 이미 막는다.
-  location: form.location.trim(),
+  location: form.location.trim() || MEET_LOCATION,
+  ...(form.interviewerUserIds.length > 0 && {
+    interviewerUserIds: form.interviewerUserIds,
+  }),
   description: trimmedOrUndefined(form.description),
 })
 
@@ -61,7 +64,10 @@ export const serializeBulkFormToCreatePayloads = (
     startAt: combineToIsoLocal(form.date, candidate.startTime),
     endAt: combineToIsoLocal(form.date, candidate.endTime),
     capacity: form.capacity,
-    location: form.location.trim(),
+    location: form.location.trim() || MEET_LOCATION,
+    ...(form.interviewerUserIds.length > 0 && {
+      interviewerUserIds: form.interviewerUserIds,
+    }),
     description: trimmedOrUndefined(form.description),
   }))
 
@@ -75,7 +81,10 @@ export const serializeFormToUpdatePayload = (
   startAt: combineToIsoLocal(form.date, form.startTime),
   endAt: combineToIsoLocal(form.date, form.endTime),
   capacity: form.capacity,
-  location: trimmedOrUndefined(form.location),
+  location:
+    form.location.trim() ||
+    (form.interviewerUserIds.length > 0 ? MEET_LOCATION : undefined),
+  interviewerUserIds: form.interviewerUserIds,
   description: trimmedOrUndefined(form.description),
 })
 
@@ -89,5 +98,9 @@ export const serializeSlotToForm = (
   endTime: isoTime(slot.endAt),
   capacity: slot.capacity,
   location: slot.location ?? "",
+  interviewerUserIds: [
+    ...slot.interviewers.filter((interviewer) => interviewer.isHost),
+    ...slot.interviewers.filter((interviewer) => !interviewer.isHost),
+  ].map((interviewer) => interviewer.userId),
   description: slot.description ?? "",
 })

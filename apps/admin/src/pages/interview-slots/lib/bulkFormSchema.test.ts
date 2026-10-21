@@ -15,6 +15,7 @@ const validForm = {
   excludedStartTimes: [],
   capacity: 1,
   location: "Google Meet",
+  interviewerUserIds: [],
   description: "",
 }
 
@@ -26,6 +27,23 @@ function firstIssuePath(input: unknown): string | undefined {
 describe("InterviewSlotBulkFormSchema", () => {
   it("정상 입력을 통과시킨다", () => {
     expect(InterviewSlotBulkFormSchema.safeParse(validForm).success).toBe(true)
+  })
+
+  it("면접관이 있으면 장소 없이 등록할 수 있다", () => {
+    expect(
+      InterviewSlotBulkFormSchema.safeParse({
+        ...validForm,
+        location: "",
+        interviewerUserIds: [1],
+      }).success
+    ).toBe(true)
+    expect(
+      InterviewSlotBulkFormSchema.safeParse({
+        ...validForm,
+        location: "",
+        interviewerUserIds: [],
+      }).success
+    ).toBe(false)
   })
 
   it("운영 종료 시각이 시작보다 앞이면 rangeEnd 에러", () => {

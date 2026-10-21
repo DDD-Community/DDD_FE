@@ -1,3 +1,5 @@
+import { buttonVariants } from "@heroui/react"
+
 import { NO_INFO_PLACEHOLDER } from "../constants"
 import { formatKstDateTime } from "../lib/slotGroups"
 import type { BookingReservation } from "../types"
@@ -25,6 +27,23 @@ export function BookingDoneCard({ reservation }: Props) {
           <dd className="font-semibold text-gray-900">{locationText}</dd>
         </div>
       </dl>
+      {reservation?.joinUrl && (
+        <div className="space-y-2">
+          <a
+            href={reservation.joinUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            // 새 탭으로 여는 링크라 Button 대신 <a> 에 버튼 스타일만 입힌다.
+            className={buttonVariants({ size: "lg" })}
+          >
+            면접 입장 링크
+          </a>
+          <p className="text-sm text-gray-500">
+            면접 시작 10분 전부터 입장할 수 있어요. 같은 링크가 안내 메일에도
+            있어요.
+          </p>
+        </div>
+      )}
       <p className="text-sm font-medium text-gray-500">
         확정 안내 메일을 보내드렸어요(캘린더 초대 포함).
         <br />
