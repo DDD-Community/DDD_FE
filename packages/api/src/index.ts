@@ -45,6 +45,12 @@ export * from "./interview/types";
 export * from "./interview/queryKeys";
 export * from "./interview/queries";
 
+// google-calendar
+export * from "./google-calendar/api";
+export * from "./google-calendar/types";
+export * from "./google-calendar/queryKeys";
+export * from "./google-calendar/queries";
+
 // blog
 export * from "./blog/api";
 export * from "./blog/types";

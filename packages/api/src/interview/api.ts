@@ -14,9 +14,21 @@ import type {
   PostCreateInterviewReservationRequest,
   PostCreateInterviewReservationResponse,
   DeleteInterviewReservationParams,
+  GetInterviewerCandidatesResponse,
+  SyncInterviewSlotMeetingParams,
+  SyncInterviewSlotMeetingResponse,
 } from "./types";
 
 export const interviewAPI = {
+  getInterviewerCandidates: () =>
+    api.get(
+      "/api/v1/admin/interview-slots/interviewer-candidates",
+    ) as unknown as Promise<GetInterviewerCandidatesResponse>,
+
+  syncInterviewSlotMeeting: ({ params }: { params: SyncInterviewSlotMeetingParams }) =>
+    api.post("/api/v1/admin/interview-slots/{id}/meeting/sync", {
+      params: { path: { id: params.id } },
+    }) as unknown as Promise<SyncInterviewSlotMeetingResponse>,
   /** 면접 슬롯 목록 조회 - GET /api/v1/admin/interview-slots */
   getInterviewSlots: ({ params }: { params: GetInterviewSlotsParams }) =>
     api.get("/api/v1/admin/interview-slots", {
@@ -30,11 +42,7 @@ export const interviewAPI = {
     }) as unknown as Promise<GetInterviewSlotResponse>,
 
   /** 면접 슬롯 생성 - POST /api/v1/admin/interview-slots */
-  createInterviewSlot: ({
-    payload,
-  }: {
-    payload: PostCreateInterviewSlotRequest;
-  }) =>
+  createInterviewSlot: ({ payload }: { payload: PostCreateInterviewSlotRequest }) =>
     api.post("/api/v1/admin/interview-slots", {
       body: payload,
     }) as unknown as Promise<PostCreateInterviewSlotResponse>,
@@ -72,11 +80,7 @@ export const interviewAPI = {
     }) as unknown as Promise<PostCreateInterviewReservationResponse>,
 
   /** 면접 예약 취소 - DELETE /api/v1/admin/interview-slots/reservations/{reservationId} */
-  cancelInterviewReservation: ({
-    params,
-  }: {
-    params: DeleteInterviewReservationParams;
-  }) =>
+  cancelInterviewReservation: ({ params }: { params: DeleteInterviewReservationParams }) =>
     api.delete("/api/v1/admin/interview-slots/reservations/{reservationId}", {
       params: { path: { reservationId: params.reservationId } },
     }) as unknown as Promise<void>,
