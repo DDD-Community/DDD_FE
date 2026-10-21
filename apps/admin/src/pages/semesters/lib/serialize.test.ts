@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest"
 
 import type { CohortDto } from "@ddd/api"
 
-import { serializeCohortToForm } from "./serialize"
+import {
+  serializeCohortToForm,
+  serializeFormToUpdatePayload,
+} from "./serialize"
 
 const cohortWith = (curriculum: unknown[]): CohortDto =>
   ({
@@ -33,5 +36,31 @@ describe("serializeCohortToForm 커리큘럼 출석 시각", () => {
     )
 
     expect(form.curriculum[0].time).toBe("13:30")
+  })
+})
+
+describe("기수 수정 저장 시 안내 메일 값", () => {
+  it("서버의 메일 값을 폼에 채우고, 저장할 때 일정과 함께 process 로 보낸다", () => {
+    const form = serializeCohortToForm({
+      ...cohortWith([]),
+      process: {
+        documentResultDate: "2026-10-07",
+        participationFee: 160000,
+        bankAccount: "토스뱅크 1000-0000-0000",
+        accountHolder: "홍길동",
+      },
+    } as unknown as CohortDto)
+
+    expect(form.announcement.accountHolder).toBe("홍길동")
+
+    const payload = serializeFormToUpdatePayload(form)
+
+    expect(payload.process).toMatchObject({
+      documentResultDate: "2026-10-07",
+      participationFee: 160000,
+      bankAccount: "토스뱅크 1000-0000-0000",
+      accountHolder: "홍길동",
+      participationFeeDetail: null,
+    })
   })
 })

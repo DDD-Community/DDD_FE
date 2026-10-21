@@ -13,6 +13,7 @@ import {
   readFormDraft,
   saveFormDraft,
 } from "@/pages/semesters/lib/formDraft"
+import { EMPTY_ANNOUNCEMENT } from "@/pages/semesters/lib/announcement"
 import { buildName } from "@/pages/semesters/lib/serialize"
 import { validateFormParts } from "@/pages/semesters/lib/validateParts"
 import { useIsMobile } from "@/shared/hooks/useIsMobile"
@@ -20,6 +21,7 @@ import { useIsMobile } from "@/shared/hooks/useIsMobile"
 import { CURRICULUM_WEEK_COUNT, DEFAULT_ATTENDANCE_START_TIME } from "../constants"
 import type { SemesterRegisterForm } from "../types"
 
+import { AnnouncementSection } from "./AnnouncementSection"
 import { ApplicationFormSection } from "./ApplicationFormSection"
 import { BasicInfoSection } from "./BasicInfoSection"
 import { CurriculumSection } from "./CurriculumSection"
@@ -49,6 +51,7 @@ const buildDefaults = (prefill?: SemesterRegisterForm): SemesterRegisterForm =>
       interviewEndDate: "",
       finalResultDate: "",
     },
+    announcement: { ...EMPTY_ANNOUNCEMENT },
     curriculum: Array.from({ length: CURRICULUM_WEEK_COUNT }, () => ({
       date: "",
       description: "",
@@ -105,7 +108,10 @@ export function SemesterRegisterDrawer({
 
   // 임시 저장본이 있으면 그것으로, 없으면 서버 값(prefill)으로 채운다.
   useEffect(function restoreDraftOrPrefillOnOpen() {
-    if (isOpen) reset(readFormDraft(draftKey) ?? buildDefaults(prefill))
+    if (isOpen) {
+      const defaults = buildDefaults(prefill)
+      reset(readFormDraft(draftKey, defaults.announcement) ?? defaults)
+    }
   }, [isOpen, mode, prefill, reset, draftKey])
 
   const [invalidCells, setInvalidCells] = useState<ReadonlySet<string>>(
@@ -212,6 +218,7 @@ export function SemesterRegisterDrawer({
               <form id={FORM_ID} onSubmit={onSubmit} className="space-y-8">
                 <BasicInfoSection />
                 <ProcessSection />
+                <AnnouncementSection />
                 <CurriculumSection />
                 <ApplicationFormSection invalidCells={invalidCells} />
               </form>
