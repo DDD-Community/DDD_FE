@@ -10,8 +10,9 @@ import {
   DEFAULT_ATTENDANCE_START_TIME,
   SEMESTER_PARTS,
 } from "@/pages/semesters/constants"
+import { EMPTY_ANNOUNCEMENT } from "@/pages/semesters/lib/announcement"
 
-import type { SemesterRegisterForm } from "../types"
+import type { AnnouncementInfo, SemesterRegisterForm } from "../types"
 
 /**
  * 기수 등록/수정 폼 임시 저장 (sessionStorage).
@@ -60,6 +61,18 @@ const draftSchema = z.object({
     interviewEndDate: z.string(),
     finalResultDate: z.string(),
   }),
+  // 안내 메일 칸 도입 전에 만든 초안에는 없다. 통째로 버리지 않고 readFormDraft 가 채운다.
+  announcement: z
+    .object({
+      interviewDurationMinutes: z.string(),
+      interviewRescheduleDeadline: z.string(),
+      participationFee: z.string(),
+      participationFeeDetail: z.string(),
+      bankAccount: z.string(),
+      accountHolder: z.string(),
+      participationConfirmDeadline: z.string(),
+    })
+    .optional(),
   curriculum: z.array(
     z.object({
       date: z.string(),
@@ -77,10 +90,16 @@ const draftSchema = z.object({
 
 /**
  * 저장된 draft 를 읽는다. 없거나 형식이 맞지 않으면 null.
+ *
+ * 안내 메일 칸이 없는 옛 draft 는 announcementFallback(서버 값)으로 채운다. 빈 칸으로 두면
+ * 저장할 때 null 이 나가 서버의 참가비·계좌 값이 지워진다.
  * 스토리지 값은 신뢰할 수 없으므로(폼 구조 변경·수동 조작) 반드시 검증하고,
  * 깨진 값은 그 자리에서 버려 다음 열람 때 반복 실패하지 않게 한다.
  */
-export const readFormDraft = (key: string): SemesterRegisterForm | null => {
+export const readFormDraft = (
+  key: string,
+  announcementFallback: AnnouncementInfo = EMPTY_ANNOUNCEMENT,
+): SemesterRegisterForm | null => {
   try {
     const raw = sessionStorage.getItem(key)
     if (!raw) return null
@@ -90,7 +109,10 @@ export const readFormDraft = (key: string): SemesterRegisterForm | null => {
       sessionStorage.removeItem(key)
       return null
     }
-    return parsed.data
+    return {
+      ...parsed.data,
+      announcement: parsed.data.announcement ?? { ...announcementFallback },
+    }
   } catch {
     // JSON 파싱 실패 / 스토리지 접근 불가(프라이빗 모드 등) — draft 없음으로 취급
     return null

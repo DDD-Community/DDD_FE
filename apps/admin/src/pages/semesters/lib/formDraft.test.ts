@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { SEMESTER_PARTS } from "@/pages/semesters/constants"
 
+import { EMPTY_ANNOUNCEMENT } from "./announcement"
 import { readFormDraft } from "./formDraft"
 
 const KEY = "semester-draft-test"
@@ -71,3 +72,45 @@ describe("readFormDraft 커리큘럼 출석 시각", () => {
     expect(readFormDraft(KEY)?.curriculum[0].time).toBe("13:30")
   })
 })
+
+describe("readFormDraft 안내 메일 값", () => {
+  beforeEach(() => {
+    storage.clear()
+    vi.stubGlobal("sessionStorage", {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => storage.set(key, value),
+      removeItem: (key: string) => storage.delete(key),
+    })
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it("안내 메일 칸 도입 전 초안은 서버 값으로 채운다 — 빈 칸이면 저장 때 서버 값이 지워진다", () => {
+    storage.set(KEY, JSON.stringify(draftWithCurriculum([])))
+
+    const draft = readFormDraft(KEY, {
+      ...EMPTY_ANNOUNCEMENT,
+      bankAccount: "토스뱅크 1000-0000-0000",
+    })
+
+    expect(draft?.announcement.bankAccount).toBe("토스뱅크 1000-0000-0000")
+    expect(draft?.cohortNumber).toBe("14")
+  })
+
+  it("초안에 안내 메일 칸이 있으면 초안 값을 쓴다", () => {
+    storage.set(
+      KEY,
+      JSON.stringify({
+        ...draftWithCurriculum([]),
+        announcement: { ...EMPTY_ANNOUNCEMENT, accountHolder: "초안" },
+      })
+    )
+
+    const draft = readFormDraft(KEY, { ...EMPTY_ANNOUNCEMENT, accountHolder: "서버" })
+
+    expect(draft?.announcement.accountHolder).toBe("초안")
+  })
+})
+

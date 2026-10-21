@@ -10,6 +10,11 @@ import type {
 } from "@ddd/api"
 
 import { DEFAULT_ATTENDANCE_START_TIME } from "@/pages/semesters/constants"
+import {
+  EMPTY_ANNOUNCEMENT,
+  extractAnnouncement,
+  toAnnouncementProcess,
+} from "@/pages/semesters/lib/announcement"
 import { slugify } from "@/shared/lib/slug"
 
 import type {
@@ -48,6 +53,7 @@ const emptyForm = (): SemesterRegisterForm => ({
     interviewEndDate: "",
     finalResultDate: "",
   },
+  announcement: { ...EMPTY_ANNOUNCEMENT },
   curriculum: Array.from({ length: 9 }, () => ({
     date: "",
     description: "",
@@ -71,7 +77,7 @@ export const serializeFormToCreatePayload = (
   recruitStartAt: form.recruitStartDate,
   recruitEndAt: form.recruitEndDate,
   status: form.status,
-  process: { ...form.process },
+  process: { ...form.process, ...toAnnouncementProcess(form.announcement) },
   curriculum: form.curriculum.map(({ time, ...week }) => ({ ...week, ...(time ? { time } : {}) })),
 })
 
@@ -82,7 +88,7 @@ export const serializeFormToUpdatePayload = (
   recruitStartAt: form.recruitStartDate,
   recruitEndAt: form.recruitEndDate,
   status: form.status,
-  process: { ...form.process },
+  process: { ...form.process, ...toAnnouncementProcess(form.announcement) },
   curriculum: form.curriculum.map(({ time, ...week }) => ({ ...week, ...(time ? { time } : {}) })),
 })
 
@@ -117,6 +123,7 @@ export const serializeCohortToForm = (
     recruitStartDate: cohort.recruitStartAt ?? "",
     recruitEndDate: cohort.recruitEndAt ?? "",
     process: extractProcess(cohort.process) ?? base.process,
+    announcement: extractAnnouncement(cohort.process),
     curriculum: extractCurriculum(cohort.curriculum) ?? base.curriculum,
     parts: extractParts(cohort.parts) ?? base.parts,
   }
