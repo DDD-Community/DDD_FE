@@ -218,7 +218,7 @@ export function SemesterRegisterDrawer({
               <form id={FORM_ID} onSubmit={onSubmit} className="space-y-8">
                 <BasicInfoSection />
                 <ProcessSection />
-                <AnnouncementSection />
+                <AnnouncementSection cohortId={mode === "create" ? null : targetId} />
                 <CurriculumSection />
                 <ApplicationFormSection invalidCells={invalidCells} />
               </form>

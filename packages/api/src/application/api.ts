@@ -9,6 +9,7 @@ import type {
   GetAdminApplicationResponse,
   PatchApplicationStatusParams,
   PatchApplicationStatusRequest,
+  PostSendTestEmailRequest,
   PostSaveApplicationDraftRequest,
   GetApplicationDraftParams,
   PostSubmitApplicationRequest,
@@ -64,6 +65,17 @@ export const applicationAPI = {
   }) =>
     api.patch("/api/v1/admin/applications/{id}/status", {
       params: { path: { id: params.id } },
+      body: payload,
+    }) as unknown as Promise<void>,
+
+  /**
+   * 안내 메일 테스트 발송 - POST /api/v1/admin/applications/test-emails
+   *
+   * 기수에 **저장된** 값으로 실제 양식 그대로 만든 메일을 로그인한 운영진 본인 주소로 보낸다.
+   * 지원서 상태는 바뀌지 않는다.
+   */
+  sendTestEmail: ({ payload }: { payload: PostSendTestEmailRequest }) =>
+    api.post("/api/v1/admin/applications/test-emails", {
       body: payload,
     }) as unknown as Promise<void>,
 

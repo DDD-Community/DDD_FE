@@ -558,6 +558,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/applications/test-emails": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 지원자 안내 메일 테스트 발송
+         * @description 기수의 현재 설정값으로 지원자 안내 메일을 실제 양식 그대로 만들어 로그인한 운영진 본인 이메일로 보냅니다. 지원서 상태는 바뀌지 않습니다.
+         */
+        post: operations["application_sendTestEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/applications/{id}": {
         parameters: {
             query?: never;
@@ -1875,6 +1895,19 @@ export interface components {
             html?: string;
             /** @description 플레인텍스트 본문 */
             text?: string;
+        };
+        SendTestEmailRequestDto: {
+            /**
+             * @description 메일에 넣을 설정값을 읽을 기수 ID
+             * @example 15
+             */
+            cohortId: number;
+            /**
+             * @description 보낼 안내 메일 종류
+             * @example 면접합격
+             * @enum {string}
+             */
+            type: "지원접수" | "서류합격" | "서류불합격" | "면접합격" | "최종불합격";
         };
         UpdateApplicationStatusRequestDto: {
             /**
@@ -3568,6 +3601,27 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    application_sendTestEmail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendTestEmailRequestDto"];
+            };
+        };
         responses: {
             204: {
                 headers: {
