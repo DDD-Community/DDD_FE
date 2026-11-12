@@ -200,12 +200,15 @@ export function voteToForm(detail: AttendanceVoteDetail): {
       feedback?.questions.map(unsupportedQuestion).find(Boolean) ?? null,
   }
 }
+const COPY_SUFFIX = " (복사)"
+
 export function duplicateForm(detail: AttendanceVoteDetail): {
   form: VoteEditorForm
   unsupported: string | null
 } {
   const result = voteToForm(detail)
-  result.form.title = `${detail.title} (복사)`.slice(0, 100)
+  // 100자 제한에 걸리면 원본 쪽을 줄여 복제 표시가 남게 한다.
+  result.form.title = `${detail.title.slice(0, 100 - COPY_SUFFIX.length)}${COPY_SUFFIX}`
   return result
 }
 

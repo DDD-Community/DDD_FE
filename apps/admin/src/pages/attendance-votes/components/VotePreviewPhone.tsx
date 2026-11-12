@@ -7,15 +7,23 @@ import type { VoteEditorForm } from "../lib/voteTemplate"
 export function VotePreviewPhone({ generationId }: { generationId: number }) {
   const { control } = useFormContext<VoteEditorForm>()
   const form = useWatch({ control }) as VoteEditorForm
-  const { data } = useQuery(
+  const { data, isError } = useQuery(
     attendanceQueries.getTeams({ params: { generationId } })
   )
+  // 실제 팀이 없으면 예시 팀으로 그리되, 실제 팀으로 오해하지 않게 이름과 안내로 구분한다.
   const teams = data?.length
     ? data
     : [
-        { id: -1, name: "팀 A", serviceName: null },
-        { id: -2, name: "팀 B", serviceName: null },
+        { id: -1, name: "예시 팀 A", serviceName: null },
+        { id: -2, name: "예시 팀 B", serviceName: null },
       ]
+  const teamNotice = data?.length
+    ? null
+    : isError
+      ? "팀 목록을 불러오지 못해 예시 팀으로 보여 줍니다."
+      : data
+        ? "이 기수에 등록된 팀이 없어 예시 팀으로 보여 줍니다."
+        : "팀 목록을 불러오는 중이라 예시 팀으로 보여 줍니다."
   const steps = Number(form.teamVote.enabled) + Number(form.feedback.enabled)
   return (
     <div aria-label="앱 화면 미리보기" className="mx-auto w-full max-w-[360px]">
@@ -159,6 +167,11 @@ export function VotePreviewPhone({ generationId }: { generationId: number }) {
           </Phone>
         </Tabs.Panel>
       </Tabs>
+      {teamNotice && (
+        <p role="status" className="mt-2 text-xs text-warning">
+          {teamNotice}
+        </p>
+      )}
       <p className="mt-2 text-xs text-gray-500">
         Android 앱 화면을 근사한 미리보기입니다. iOS 는 부문 제목을 입력한
         그대로 보여 줍니다.

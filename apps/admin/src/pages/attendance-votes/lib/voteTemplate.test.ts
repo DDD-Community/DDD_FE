@@ -215,6 +215,10 @@ describe("vote template conversion", () => {
     expect(result.form.teamVote.categories[0].id).toBe("PLANNING")
     expect(result.form.feedback.questions[0].followUp?.id).toBe("BEST_WHY")
     expect(duplicateForm(detail()).form.title).toBe("DDD 13기 최종 투표 (복사)")
+    const long = { ...detail(), title: "가".repeat(100) }
+    const copied = duplicateForm(long).form.title
+    expect(copied).toHaveLength(100)
+    expect(copied.endsWith(" (복사)")).toBe(true)
   })
 
   it("reports unsupported follow-up shapes instead of silently dropping them", () => {
