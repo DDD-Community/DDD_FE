@@ -25,11 +25,19 @@ export function VoteConfirmDialog({
   isPending,
   onConfirm,
 }: Props) {
+  // 요청 중에는 닫지 못하게 한다. 닫아도 요청은 계속돼 결과를 놓친다.
   return (
-    <AlertDialog.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
+    <AlertDialog.Backdrop
+      isOpen={isOpen}
+      onOpenChange={(open) => {
+        if (open || !isPending) onOpenChange(open)
+      }}
+      isDismissable={!isPending}
+      isKeyboardDismissDisabled={isPending}
+    >
       <AlertDialog.Container>
         <AlertDialog.Dialog className="sm:max-w-100">
-          <AlertDialog.CloseTrigger />
+          {!isPending && <AlertDialog.CloseTrigger />}
           <AlertDialog.Header>
             <AlertDialog.Icon status={iconStatus} />
             <AlertDialog.Heading>{title}</AlertDialog.Heading>
@@ -38,7 +46,7 @@ export function VoteConfirmDialog({
             <p>{description}</p>
           </AlertDialog.Body>
           <AlertDialog.Footer>
-            <Button slot="close" variant="tertiary">
+            <Button slot="close" variant="tertiary" isDisabled={isPending}>
               취소
             </Button>
             <Button
