@@ -62,3 +62,70 @@ export type AttendanceTeam = components["schemas"]["AttendanceTeamResponseDto"];
 export type AttendanceInvitation = components["schemas"]["AttendanceInvitationResponseDto"];
 export type AttendanceBoard = components["schemas"]["AttendanceBoardResponseDto"];
 export type AttendanceStatus = components["schemas"]["AttendanceCellResponseDto"]["status"];
+
+// GET /api/v1/admin/attendance/generations/{generationId}/votes - 출석 투표 목록 조회
+export type GetAttendanceVotesParams =
+  paths["/api/v1/admin/attendance/generations/{generationId}/votes"]["get"]["parameters"]["path"];
+export type GetAttendanceVotesResponse =
+  components["schemas"]["AttendanceVoteSummaryResponseDto"][];
+
+// GET /api/v1/admin/attendance/votes/{voteId} - 출석 투표 상세 조회
+export type GetAttendanceVoteParams =
+  paths["/api/v1/admin/attendance/votes/{voteId}"]["get"]["parameters"]["path"];
+export type GetAttendanceVoteResponse = components["schemas"]["AttendanceVoteDetailResponseDto"];
+
+// DELETE /api/v1/admin/attendance/votes/{voteId} - 작성 중 투표 삭제
+export type DeleteAttendanceVoteParams =
+  paths["/api/v1/admin/attendance/votes/{voteId}"]["delete"]["parameters"]["path"];
+
+// PATCH /api/v1/admin/attendance/votes/{voteId}/open - 출석 투표 시작
+export type OpenAttendanceVoteParams =
+  paths["/api/v1/admin/attendance/votes/{voteId}/open"]["patch"]["parameters"]["path"];
+export type OpenAttendanceVoteResponse = components["schemas"]["AttendanceVoteDetailResponseDto"];
+
+// PATCH /api/v1/admin/attendance/votes/{voteId}/close - 출석 투표 종료
+export type CloseAttendanceVoteParams =
+  paths["/api/v1/admin/attendance/votes/{voteId}/close"]["patch"]["parameters"]["path"];
+export type CloseAttendanceVoteResponse = components["schemas"]["AttendanceVoteDetailResponseDto"];
+
+// GET /api/v1/admin/attendance/votes/{voteId}/participation - 참여 현황 조회
+export type GetAttendanceVoteParticipationParams =
+  paths["/api/v1/admin/attendance/votes/{voteId}/participation"]["get"]["parameters"]["path"];
+export type GetAttendanceVoteParticipationResponse =
+  components["schemas"]["AttendanceVoteParticipationResponseDto"];
+
+// GET /api/v1/admin/attendance/votes/{voteId}/non-responders - 미참여 명단 조회
+export type GetAttendanceVoteNonRespondersParams =
+  paths["/api/v1/admin/attendance/votes/{voteId}/non-responders"]["get"]["parameters"]["path"];
+export type GetAttendanceVoteNonRespondersResponse =
+  components["schemas"]["AttendanceVoteNonRespondersResponseDto"];
+
+// GET /api/v1/admin/attendance/votes/{voteId}/team-vote/results - 팀 투표 결과 조회
+export type GetAttendanceVoteTeamResultsParams =
+  paths["/api/v1/admin/attendance/votes/{voteId}/team-vote/results"]["get"]["parameters"]["path"];
+export type GetAttendanceVoteTeamResultsResponse =
+  components["schemas"]["AttendanceVoteTeamResultsResponseDto"];
+
+// GET /api/v1/admin/attendance/votes/{voteId}/feedback/results - 피드백 결과 조회
+export type GetAttendanceVoteFeedbackResultsParams =
+  paths["/api/v1/admin/attendance/votes/{voteId}/feedback/results"]["get"]["parameters"]["path"];
+export type GetAttendanceVoteFeedbackResultsResponse =
+  components["schemas"]["AttendanceVoteFeedbackResultsResponseDto"];
+
+// GET /api/v1/admin/attendance/votes/{voteId}/export/{kind} - 출석 투표 CSV 내보내기
+export type GetAttendanceVoteCsvParams =
+  paths["/api/v1/admin/attendance/votes/{voteId}/export/{kind}"]["get"]["parameters"]["path"];
+export type GetAttendanceVoteCsvResponse = string;
+
+export type AttendanceVoteSummary = components["schemas"]["AttendanceVoteSummaryResponseDto"];
+export type AttendanceVoteDetail = components["schemas"]["AttendanceVoteDetailResponseDto"];
+export type AttendanceVoteStatus = AttendanceVoteSummary["status"];
+export type AttendanceVoteExportKind = "team-vote" | "feedback" | "responses" | "non-responders";
+export type AttendanceVoteParticipation =
+  components["schemas"]["AttendanceVoteParticipationResponseDto"];
+export type AttendanceVoteNonResponders =
+  components["schemas"]["AttendanceVoteNonRespondersResponseDto"];
+export type AttendanceVoteTeamResults =
+  components["schemas"]["AttendanceVoteTeamResultsResponseDto"];
+export type AttendanceVoteFeedbackResults =
+  components["schemas"]["AttendanceVoteFeedbackResultsResponseDto"];

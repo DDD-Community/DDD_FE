@@ -4,6 +4,7 @@ import {
   ChartLineData02Icon,
   Calendar01Icon,
   Calendar03Icon,
+  CheckListIcon,
   CodeIcon,
   ComputerCloudIcon,
   LicenseDraftIcon,
@@ -33,6 +34,7 @@ export const OPERATIONS = [
     icon: ChartLineData02Icon,
     path: paths.attendanceBoard,
   },
+  { name: "출석 투표", icon: CheckListIcon, path: paths.attendanceVotes },
 ]
 
 export const CONTENTS = [

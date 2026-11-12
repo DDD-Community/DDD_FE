@@ -57,6 +57,12 @@ export const ErrorMessage = {
   ATTENDANCE_TEAM_DUPLICATED: "이미 존재하는 팀입니다.",
   ATTENDANCE_TEAM_IN_USE: "회원이 소속된 팀은 삭제할 수 없습니다.",
   ATTENDANCE_INVITATION_DUPLICATED: "이미 사용 중인 초대 코드입니다.",
+  ATTENDANCE_VOTE_NOT_DRAFT: "작성 중인 투표만 수정·삭제할 수 있습니다.",
+  ATTENDANCE_VOTE_NOT_OPEN: "진행 중인 투표가 아닙니다.",
+  ATTENDANCE_VOTE_INVALID_STATUS: "현재 투표 상태에서는 할 수 없는 작업입니다.",
+  ATTENDANCE_VOTE_ALREADY_OPEN: "이 기수에 이미 진행 중인 투표가 있습니다.",
+  ATTENDANCE_VOTE_TEMPLATE_INVALID: "투표 템플릿이 올바르지 않습니다.",
+  ATTENDANCE_VOTE_TEMPLATE_STRUCTURE_CHANGED: "진행 중인 투표는 글자만 수정할 수 있습니다.",
   ATTENDANCE_UPSTREAM_ERROR: "출석 관리 서버 요청에 실패했습니다.",
 
   INVALID_STATUS_TRANSITION: "올바르지 않은 상태 변경입니다.",
