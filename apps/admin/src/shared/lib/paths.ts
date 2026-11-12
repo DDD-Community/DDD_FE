@@ -7,6 +7,7 @@ export const paths = {
   interviewSlots: "/interview-slots",
   attendanceCodes: "/attendance/codes",
   attendanceBoard: "/attendance/board",
+  attendanceVotes: "/attendance/votes",
   /** 지원자용 공개 예약 페이지 — BE `INTERVIEW_BOOKING_URL` 과 경로를 맞춘다 */
   interviewBooking: "/interview",
   projects: "/projects",
