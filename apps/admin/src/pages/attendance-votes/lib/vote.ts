@@ -2,7 +2,6 @@ import type {
   AttendanceVoteExportKind,
   AttendanceVoteStatus,
   AttendanceVoteSummary,
-  AttendanceVoteTeamResults,
 } from "@ddd/api"
 
 export const VOTE_STATUS_LABEL: Record<AttendanceVoteStatus, string> = {
@@ -38,19 +37,6 @@ export function formatVoteTeamName(
 
 export function calculateVotePercentage(count: number, total: number): number {
   return total > 0 ? Math.round((count / total) * 100) : 0
-}
-
-type VoteTeam = AttendanceVoteTeamResults["categories"][number]["teams"][number]
-
-export function rankVoteTeams(teams: VoteTeam[]): VoteTeam[] {
-  const sorted = teams
-    .filter((team) => team.voteCount > 0)
-    .sort((a, b) => b.voteCount - a.voteCount)
-
-  return sorted.map((team) => ({
-    ...team,
-    rank: sorted.findIndex((other) => other.voteCount === team.voteCount) + 1,
-  }))
 }
 
 export function chooseDefaultVote(

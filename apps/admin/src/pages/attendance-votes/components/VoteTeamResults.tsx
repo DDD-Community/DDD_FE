@@ -2,7 +2,7 @@ import { Card, Table } from "@heroui/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { attendanceQueries } from "@ddd/api"
 import { EmptyState } from "@/shared/ui/EmptyState"
-import { formatVoteTeamName, rankVoteTeams } from "../lib/vote"
+import { formatVoteTeamName } from "../lib/vote"
 
 export function VoteTeamResults({ voteId }: { voteId: number }) {
   const { data } = useSuspenseQuery(
@@ -25,7 +25,7 @@ export function VoteTeamResults({ voteId }: { voteId: number }) {
               <Card.Title>{category.title ?? "-"}</Card.Title>
             </Card.Header>
             <Card.Content className="space-y-4">
-              {rankVoteTeams(category.teams).length === 0 ? (
+              {category.teams.length === 0 ? (
                 <EmptyState>아직 득표가 없습니다.</EmptyState>
               ) : (
                 <Table>
@@ -41,7 +41,7 @@ export function VoteTeamResults({ voteId }: { voteId: number }) {
                         <Table.Column>득표수</Table.Column>
                       </Table.Header>
                       <Table.Body>
-                        {rankVoteTeams(category.teams).map((team) => (
+                        {category.teams.map((team) => (
                           <Table.Row key={team.teamId}>
                             <Table.Cell>{team.rank}</Table.Cell>
                             <Table.Cell>
