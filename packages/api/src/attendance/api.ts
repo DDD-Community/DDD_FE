@@ -1,5 +1,8 @@
 import { api } from "../fetchClient";
+import type { components } from "../generated/api";
 import type {
+  CreateAttendanceVoteParams,
+  CreateAttendanceVoteResponse,
   DeleteAttendanceGenerationParams,
   DeleteAttendanceInvitationParams,
   DeleteAttendanceTeamParams,
@@ -39,6 +42,11 @@ import type {
   PostAttendanceTeamParams,
   PostAttendanceTeamRequest,
   PostAttendanceTeamResponse,
+  UpdateAttendanceVoteParams,
+  UpdateAttendanceVoteResponse,
+  UpdateAttendanceVoteTextParams,
+  UpdateAttendanceVoteTextResponse,
+  UpsertAttendanceVoteRequest,
 } from "./types";
 
 export const attendanceAPI = {
@@ -134,6 +142,45 @@ export const attendanceAPI = {
     api.get("/api/v1/admin/attendance/votes/{voteId}", {
       params: { path: params },
     }) as unknown as Promise<GetAttendanceVoteResponse>,
+
+  /** 출석 투표 생성 - POST /api/v1/admin/attendance/generations/{generationId}/votes */
+  createVote: ({
+    params,
+    payload,
+  }: {
+    params: CreateAttendanceVoteParams;
+    payload: UpsertAttendanceVoteRequest;
+  }) =>
+    api.post("/api/v1/admin/attendance/generations/{generationId}/votes", {
+      params: { path: params },
+      body: payload as components["schemas"]["UpsertAttendanceVoteRequestDto"],
+    }) as unknown as Promise<CreateAttendanceVoteResponse>,
+
+  /** 작성 중 투표 수정 - PUT /api/v1/admin/attendance/votes/{voteId} */
+  updateVote: ({
+    params,
+    payload,
+  }: {
+    params: UpdateAttendanceVoteParams;
+    payload: UpsertAttendanceVoteRequest;
+  }) =>
+    api.put("/api/v1/admin/attendance/votes/{voteId}", {
+      params: { path: params },
+      body: payload as components["schemas"]["UpsertAttendanceVoteRequestDto"],
+    }) as unknown as Promise<UpdateAttendanceVoteResponse>,
+
+  /** 진행 중 투표 글자 수정 - PUT /api/v1/admin/attendance/votes/{voteId}/text */
+  updateVoteText: ({
+    params,
+    payload,
+  }: {
+    params: UpdateAttendanceVoteTextParams;
+    payload: UpsertAttendanceVoteRequest;
+  }) =>
+    api.put("/api/v1/admin/attendance/votes/{voteId}/text", {
+      params: { path: params },
+      body: payload as components["schemas"]["UpsertAttendanceVoteRequestDto"],
+    }) as unknown as Promise<UpdateAttendanceVoteTextResponse>,
 
   /** 작성 중 투표 삭제 - DELETE /api/v1/admin/attendance/votes/{voteId} */
   deleteVote: ({ params }: { params: DeleteAttendanceVoteParams }) =>

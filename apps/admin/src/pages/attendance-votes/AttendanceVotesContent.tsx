@@ -1,5 +1,5 @@
-import { Suspense } from "react"
-import { ListBox, Select } from "@heroui/react"
+import { Suspense, useState } from "react"
+import { Button, ListBox, Select } from "@heroui/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ErrorBoundary } from "react-error-boundary"
 
@@ -8,6 +8,10 @@ import { useSelectedAttendanceGeneration } from "@/shared/hooks/useSelectedAtten
 import { EmptyState } from "@/shared/ui/EmptyState"
 import { ErrorFallback } from "@/shared/ui/ErrorFallback"
 import { FormField } from "@/shared/ui/FormField"
+import {
+  VoteEditorDrawer,
+  type VoteEditorMode,
+} from "./components/VoteEditorDrawer"
 import { VoteListTable } from "./components/VoteListTable"
 import { VoteDetailPanel } from "./components/VoteDetailPanel"
 import { useSelectedVote } from "./hooks/useSelectedVote"
@@ -73,17 +77,27 @@ function VoteGenerationContent({ generationId }: { generationId: number }) {
     attendanceQueries.getVotes({ params: { generationId } })
   )
   const { vote: selectedVote, select } = useSelectedVote(votes)
-
-  if (votes.length === 0)
-    return <EmptyState>이 기수에 등록된 투표가 없습니다.</EmptyState>
-
+  const [editor, setEditor] = useState<{
+    mode: VoteEditorMode
+    voteId: number | null
+  } | null>(null)
   return (
     <div className="space-y-5">
-      <VoteListTable
-        votes={votes}
-        selectedId={selectedVote?.voteId ?? null}
-        onSelect={select}
-      />
+      <Button
+        variant="primary"
+        onPress={() => setEditor({ mode: "create", voteId: null })}
+      >
+        새 투표
+      </Button>
+      {votes.length === 0 ? (
+        <EmptyState>이 기수에 등록된 투표가 없습니다.</EmptyState>
+      ) : (
+        <VoteListTable
+          votes={votes}
+          selectedId={selectedVote?.voteId ?? null}
+          onSelect={select}
+        />
+      )}
       {selectedVote && (
         <ErrorBoundary
           key={selectedVote.voteId}
@@ -94,8 +108,21 @@ function VoteGenerationContent({ generationId }: { generationId: number }) {
             vote={selectedVote}
             generationId={generationId}
             hasOpenVote={votes.some((vote) => vote.status === "OPEN")}
+            onEdit={(mode) => setEditor({ mode, voteId: selectedVote.voteId })}
           />
         </ErrorBoundary>
+      )}
+      {editor && (
+        <VoteEditorDrawer
+          isOpen
+          mode={editor.mode}
+          voteId={editor.voteId}
+          generationId={generationId}
+          onOpenChange={(open) => {
+            if (!open) setEditor(null)
+          }}
+          onCreated={select}
+        />
       )}
     </div>
   )
