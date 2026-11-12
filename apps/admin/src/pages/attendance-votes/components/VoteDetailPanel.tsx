@@ -80,10 +80,12 @@ export function VoteDetailPanel({
   vote,
   generationId,
   hasOpenVote,
+  onEdit,
 }: {
   vote: AttendanceVoteSummary
   generationId: number
   hasOpenVote: boolean
+  onEdit: (mode: "edit" | "text" | "duplicate") => void
 }) {
   const voteId = vote.voteId
   const [action, setAction] = useState<Action | null>(null)
@@ -111,6 +113,19 @@ export function VoteDetailPanel({
             </Chip>
           </div>
           <div className="flex flex-wrap gap-2">
+            {vote.status === "DRAFT" && (
+              <Button variant="secondary" onPress={() => onEdit("edit")}>
+                편집
+              </Button>
+            )}
+            {vote.status === "OPEN" && (
+              <Button variant="secondary" onPress={() => onEdit("text")}>
+                글자 수정
+              </Button>
+            )}
+            <Button variant="secondary" onPress={() => onEdit("duplicate")}>
+              복제
+            </Button>
             {vote.status === "DRAFT" && (
               <>
                 <Button
@@ -184,8 +199,8 @@ export function VoteDetailPanel({
           </div>
           {vote.status === "DRAFT" ? (
             <p className="rounded-lg bg-gray-50 p-5 text-sm">
-              아직 시작하지 않은 투표입니다. 시작하면 참여 현황과 결과를 볼 수
-              있습니다.
+              아직 시작하지 않은 투표입니다. 「편집」으로 내용을 고치고,
+              시작하면 참여 현황과 결과를 볼 수 있습니다.
             </p>
           ) : (
             <Tabs>

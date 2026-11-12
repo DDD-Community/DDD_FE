@@ -74,6 +74,73 @@ export type GetAttendanceVoteParams =
   paths["/api/v1/admin/attendance/votes/{voteId}"]["get"]["parameters"]["path"];
 export type GetAttendanceVoteResponse = components["schemas"]["AttendanceVoteDetailResponseDto"];
 
+export interface AttendanceTeamVoteCategory {
+  id: string;
+  order: number;
+  title: string | null;
+  maxSelectableTeams: number;
+  reasonRequired: boolean;
+  reasonMinLength: number;
+  reasonMaxLength: number;
+  reasonLabel: string | null;
+}
+
+export interface AttendanceTeamVoteTemplate {
+  title: string | null;
+  description: string | null;
+  notice: string | null;
+  categories: AttendanceTeamVoteCategory[];
+}
+
+export type AttendanceFeedbackQuestionType = "MULTI_SELECT" | "LONG_TEXT" | "BOOLEAN";
+
+export interface AttendanceFeedbackOption {
+  id: string;
+  label: string;
+}
+
+export interface AttendanceFeedbackQuestion {
+  id: string;
+  order: number;
+  type: AttendanceFeedbackQuestionType;
+  title: string | null;
+  helpText: string | null;
+  required: boolean;
+  maxSelectableOptions: number | null;
+  maxLength: number | null;
+  options: AttendanceFeedbackOption[] | null;
+  followUp: AttendanceFeedbackQuestion | null;
+}
+
+export interface AttendanceFeedbackTemplate {
+  title: string | null;
+  description: string | null;
+  questions: AttendanceFeedbackQuestion[];
+}
+
+export type UpsertAttendanceVoteRequest = Omit<
+  components["schemas"]["UpsertAttendanceVoteRequestDto"],
+  "teamVoteTemplate" | "feedbackTemplate"
+> & {
+  teamVoteTemplate: AttendanceTeamVoteTemplate | null;
+  feedbackTemplate: AttendanceFeedbackTemplate | null;
+};
+
+// POST /api/v1/admin/attendance/generations/{generationId}/votes - 출석 투표 생성
+export type CreateAttendanceVoteParams =
+  paths["/api/v1/admin/attendance/generations/{generationId}/votes"]["post"]["parameters"]["path"];
+export type CreateAttendanceVoteResponse = AttendanceVoteDetail;
+
+// PUT /api/v1/admin/attendance/votes/{voteId} - 작성 중 투표 수정
+export type UpdateAttendanceVoteParams =
+  paths["/api/v1/admin/attendance/votes/{voteId}"]["put"]["parameters"]["path"];
+export type UpdateAttendanceVoteResponse = AttendanceVoteDetail;
+
+// PUT /api/v1/admin/attendance/votes/{voteId}/text - 진행 중 투표 글자 수정
+export type UpdateAttendanceVoteTextParams =
+  paths["/api/v1/admin/attendance/votes/{voteId}/text"]["put"]["parameters"]["path"];
+export type UpdateAttendanceVoteTextResponse = AttendanceVoteDetail;
+
 // DELETE /api/v1/admin/attendance/votes/{voteId} - 작성 중 투표 삭제
 export type DeleteAttendanceVoteParams =
   paths["/api/v1/admin/attendance/votes/{voteId}"]["delete"]["parameters"]["path"];

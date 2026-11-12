@@ -2,6 +2,7 @@ import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { attendanceAPI } from "./api";
 import { attendanceKeys } from "./queryKeys";
 import type {
+  CreateAttendanceVoteParams,
   DeleteAttendanceGenerationParams,
   DeleteAttendanceInvitationParams,
   DeleteAttendanceTeamParams,
@@ -24,6 +25,9 @@ import type {
   PostAttendanceInvitationRequest,
   PostAttendanceTeamParams,
   PostAttendanceTeamRequest,
+  UpdateAttendanceVoteParams,
+  UpdateAttendanceVoteTextParams,
+  UpsertAttendanceVoteRequest,
 } from "./types";
 
 export const attendanceQueries = {
@@ -154,6 +158,42 @@ export const attendanceQueries = {
 };
 
 export const attendanceMutations = {
+  /** 출석 투표 생성 mutation */
+  createVote: () =>
+    mutationOptions({
+      mutationFn: ({
+        params,
+        payload,
+      }: {
+        params: CreateAttendanceVoteParams;
+        payload: UpsertAttendanceVoteRequest;
+      }) => attendanceAPI.createVote({ params, payload }),
+    }),
+
+  /** 작성 중 투표 수정 mutation */
+  updateVote: () =>
+    mutationOptions({
+      mutationFn: ({
+        params,
+        payload,
+      }: {
+        params: UpdateAttendanceVoteParams;
+        payload: UpsertAttendanceVoteRequest;
+      }) => attendanceAPI.updateVote({ params, payload }),
+    }),
+
+  /** 진행 중 투표 글자 수정 mutation */
+  updateVoteText: () =>
+    mutationOptions({
+      mutationFn: ({
+        params,
+        payload,
+      }: {
+        params: UpdateAttendanceVoteTextParams;
+        payload: UpsertAttendanceVoteRequest;
+      }) => attendanceAPI.updateVoteText({ params, payload }),
+    }),
+
   /**
    * 출석 기수 생성 mutation
    *
