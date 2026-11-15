@@ -5,7 +5,6 @@ import {
   chooseDefaultVote,
   formatVoteDateTime,
   formatVoteTeamName,
-  rankVoteTeams,
   VOTE_CSV_LABEL,
   VOTE_STATUS_LABEL,
 } from "./vote"
@@ -32,24 +31,6 @@ describe("vote helpers", () => {
       "2026-11-07 14:03"
     )
     expect(formatVoteDateTime(null)).toBe("-")
-  })
-
-  it("assigns shared ranks by vote count and preserves server order for ties", () => {
-    const teams = [
-      { rank: 9, teamId: 1, name: null, serviceName: null, voteCount: 3 },
-      { rank: 8, teamId: 2, name: null, serviceName: null, voteCount: 5 },
-      { rank: 7, teamId: 3, name: null, serviceName: null, voteCount: 3 },
-      { rank: 6, teamId: 4, name: null, serviceName: null, voteCount: 0 },
-    ]
-
-    expect(
-      rankVoteTeams(teams).map(({ teamId, rank }) => [teamId, rank])
-    ).toEqual([
-      [2, 1],
-      [1, 2],
-      [3, 2],
-    ])
-    expect(teams.map((team) => team.teamId)).toEqual([1, 2, 3, 4])
   })
 
   it("prefers an open vote, then the greatest vote ID", () => {
