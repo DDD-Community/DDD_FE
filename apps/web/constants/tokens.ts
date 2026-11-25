@@ -1,5 +1,9 @@
 export const colors = {
   primary: "#2e71ff",
+  /** 흰 글자를 올리는 primary 버튼 배경 — #2e71ff 는 흰 글자와 대비 4.27:1 이라 WCAG AA(4.5:1) 미달, 이 색은 4.60:1 */
+  primaryStrong: "#2b6cf5",
+  /** mainLight 배경 위 primary 글자 — #2e71ff 는 3.79:1, 이 색은 4.73:1 */
+  primaryText: "#2563e0",
   background: "#0c0e0f",
   backgroundDark: "#1d212d",
   textPrimary: "#202325",

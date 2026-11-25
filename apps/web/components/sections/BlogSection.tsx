@@ -225,19 +225,30 @@ const MobileBulletRow = styled.div({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "10px",
+    // 점 버튼이 24px 이라 간격 없이 붙여도 점 사이는 14px. 위아래 -7px 로 줄 높이는 10px 때와 같게 둔다.
+    gap: "0",
+    margin: "-7px 0",
   },
 });
 
+// 점은 10px 그대로 보이고, 누르는 영역만 24px(WCAG 2.5.8 최소 크기)로 넓힌다.
 const MobileBullet = styled.button<{ active: boolean }>(({ active }) => ({
-  width: "10px",
-  height: "10px",
-  borderRadius: "50%",
-  background: active ? colors.slate500 : colors.slate200,
-  opacity: active ? 1 : 0.9,
+  width: "24px",
+  height: "24px",
+  display: "grid",
+  placeItems: "center",
+  background: "none",
   border: "none",
   padding: 0,
   cursor: "pointer",
+  "&::before": {
+    content: '""',
+    width: "10px",
+    height: "10px",
+    borderRadius: "50%",
+    background: active ? colors.slate500 : colors.slate200,
+    opacity: active ? 1 : 0.9,
+  },
 }));
 
 const MoreButton = styled(Link)({
@@ -246,7 +257,7 @@ const MoreButton = styled(Link)({
   gap: "4px",
   height: "80px",
   padding: "20px 50px",
-  background: colors.primary,
+  background: colors.primaryStrong,
   borderRadius: "100px",
   color: colors.textInverse,
   fontFamily: "var(--font-pretendard), sans-serif",
