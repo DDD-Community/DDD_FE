@@ -162,7 +162,13 @@ const AccordionTrigger = styled.button<AccordionTriggerProps>({
   textAlign: "left",
 });
 
-const AccordionQuestion = styled.dt({
+// dl 안에는 dt/dd(또는 그것을 감싼 div)만 올 수 있고, button 안에는 dt 를 둘 수 없다.
+// 그래서 dt 가 버튼을 감싸고, 질문 글자는 버튼 안의 span 으로 둔다(보이는 모양은 같다).
+const AccordionHeading = styled.dt({
+  margin: 0,
+});
+
+const AccordionQuestion = styled.span({
   fontFamily: "var(--font-pretendard), sans-serif",
   fontSize: fontSizes.headingMedium,
   fontWeight: fontWeights.medium,
@@ -256,27 +262,29 @@ export const FaqSection = () => {
             const isOpen = openIndex === index;
             return (
               <AccordionItem key={question}>
-                <AccordionTrigger
-                  aria-expanded={isOpen}
-                  onClick={() => handleToggle(index)}
-                  isOpen={isOpen}
-                >
-                  <AccordionQuestion>Q. {question}</AccordionQuestion>
-                  <ChevronIcon
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    aria-hidden
+                <AccordionHeading>
+                  <AccordionTrigger
+                    aria-expanded={isOpen}
+                    onClick={() => handleToggle(index)}
+                    isOpen={isOpen}
                   >
-                    {isOpen ? (
-                      <path d="M12 7.5L2 17.5H22L12 7.5Z" fill="white" />
-                    ) : (
-                      <path d="M12 17.5L2 7.5H22L12 17.5Z" fill="white" />
-                    )}
-                  </ChevronIcon>
-                </AccordionTrigger>
+                    <AccordionQuestion>Q. {question}</AccordionQuestion>
+                    <ChevronIcon
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      aria-hidden
+                    >
+                      {isOpen ? (
+                        <path d="M12 7.5L2 17.5H22L12 7.5Z" fill="white" />
+                      ) : (
+                        <path d="M12 17.5L2 7.5H22L12 17.5Z" fill="white" />
+                      )}
+                    </ChevronIcon>
+                  </AccordionTrigger>
+                </AccordionHeading>
                 <AccordionBody isOpen={isOpen}>
                   <AccordionBodyInner isOpen={isOpen}>
                     <AnswerParagraphs>

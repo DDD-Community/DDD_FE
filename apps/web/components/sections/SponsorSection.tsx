@@ -119,7 +119,7 @@ const ContactButton = styled(Link)({
   gap: "4px",
   height: "80px",
   padding: "20px 50px",
-  background: colors.primary,
+  background: colors.primaryStrong,
   borderRadius: "100px",
   color: colors.textInverse,
   fontFamily: "var(--font-pretendard), sans-serif",

@@ -237,7 +237,7 @@ const Badge = styled.span<{ kind: "primary" | "gray" }>(({ kind }) => ({
   lineHeight: "28px",
   fontWeight: fontWeights.medium,
   background: kind === "primary" ? colors.mainLight : "#e9e9e9",
-  color: kind === "primary" ? colors.primary : "#525252",
+  color: kind === "primary" ? colors.primaryText : "#525252",
   "@media (max-width: 1024px)": { fontSize: "18px", lineHeight: "23px" },
   "@media (max-width: 768px)": { fontSize: "16px", lineHeight: "20px" },
   "@media (max-width: 767px)": { fontSize: "14px", lineHeight: "18px" },

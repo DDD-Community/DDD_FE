@@ -147,7 +147,7 @@ const CategoryBadge = styled.span({
   fontSize: fontSizes.large,
   fontWeight: fontWeights.medium,
   lineHeight: "28px",
-  color: colors.primary,
+  color: colors.primaryText,
   whiteSpace: "nowrap",
   "@media (max-width: 1024px)": {
     fontSize: "18px",
